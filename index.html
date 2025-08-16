@@ -241,12 +241,37 @@
             transition: all 0.2s ease;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
 
         .card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-4px);
             box-shadow: var(--shadow-hover);
             border-color: var(--border-hover);
+        }
+
+        .card:active {
+            transform: translateY(-2px);
+        }
+
+        .card.clickable-hint::after {
+            content: '👆 Click para ver Order Blocks';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--accent);
+            text-align: center;
+            padding: 0.25rem;
+            font-size: 0.65rem;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .card:hover.clickable-hint::after {
+            opacity: 1;
         }
 
         .card.highlight {
@@ -354,6 +379,21 @@
         /* Order Blocks Tab */
         .ob-section {
             margin-bottom: 2rem;
+            scroll-margin-top: 100px;
+        }
+
+        .ob-section.highlighted {
+            animation: highlightSection 2s ease;
+        }
+
+        @keyframes highlightSection {
+            0% { 
+                background: rgba(0, 212, 255, 0.1);
+                border-radius: var(--radius);
+            }
+            100% { 
+                background: transparent;
+            }
         }
 
         .ob-section h3 {
@@ -692,7 +732,12 @@
             const hasOB = timeframe.order_block.found;
             
             const card = document.createElement('div');
-            card.className = `card ${hasOB ? 'highlight' : ''}`;
+            card.className = `card clickable-hint ${hasOB ? 'highlight' : ''}`;
+            
+            // Add click event to navigate to order blocks
+            card.addEventListener('click', () => {
+                navigateToOrderBlock(timeframe.timeframe);
+            });
             
             card.innerHTML = `
                 <div class="card-header">
@@ -745,6 +790,7 @@
             Object.entries(reportData.order_blocks_detail).forEach(([timeframe, blocks]) => {
                 const section = document.createElement('div');
                 section.className = 'ob-section';
+                section.id = `ob-section-${timeframe}`;
                 
                 if (blocks.length === 0) {
                     section.innerHTML = `
@@ -814,6 +860,32 @@
             legendContainer.innerHTML = legendItems;
         }
 
+        // Navigate to specific order block section
+        function navigateToOrderBlock(timeframe) {
+            // Switch to order blocks tab
+            showTab('order-blocks');
+            
+            // Scroll to specific timeframe section after a short delay
+            setTimeout(() => {
+                const section = document.getElementById(`ob-section-${timeframe}`);
+                if (section) {
+                    // Add highlight animation
+                    section.classList.add('highlighted');
+                    
+                    // Scroll to section
+                    section.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    
+                    // Remove highlight after animation
+                    setTimeout(() => {
+                        section.classList.remove('highlighted');
+                    }, 2000);
+                }
+            }, 100);
+        }
+
         // Tab functionality
         function showTab(tabName) {
             // Hide all tab contents
@@ -827,8 +899,17 @@
             // Show selected tab content
             document.getElementById(tabName).classList.add('active');
             
-            // Add active class to clicked button
-            event.target.classList.add('active');
+            // Add active class to corresponding button
+            const targetButton = Array.from(buttons).find(button => {
+                if (tabName === 'analysis') return button.textContent.includes('Análisis');
+                if (tabName === 'order-blocks') return button.textContent.includes('Order Blocks');
+                if (tabName === 'config') return button.textContent.includes('Configuración');
+                return false;
+            });
+            
+            if (targetButton) {
+                targetButton.classList.add('active');
+            }
         }
 
         // Utility function to format datetime
