@@ -237,7 +237,7 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 1rem;
+            padding: 1.25rem;
             transition: all 0.2s ease;
             position: relative;
             overflow: hidden;
@@ -315,11 +315,12 @@
         .trend-badge {
             background: rgba(76, 175, 80, 0.2);
             color: var(--success);
-            padding: 0.15rem 0.5rem;
+            padding: 0.25rem 0.6rem;
             border-radius: 12px;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
         .trend-badge.bearish {
@@ -331,7 +332,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.3rem 0;
+            padding: 0.4rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
@@ -346,14 +347,27 @@
 
         .data-value {
             font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
-            font-weight: 500;
+            font-weight: 600;
             text-align: right;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
+            letter-spacing: -0.3px;
         }
 
-        .data-value.success { color: var(--success); }
-        .data-value.warning { color: var(--warning); }
-        .data-value.error { color: var(--error); }
+        .data-value.success { 
+            color: var(--success);
+            background: none;
+            padding: 0;
+        }
+        .data-value.warning { 
+            color: var(--warning);
+            background: none;
+            padding: 0;
+        }
+        .data-value.error { 
+            color: var(--error);
+            background: none;
+            padding: 0;
+        }
 
         .card-footer {
             margin-top: 0.75rem;
@@ -371,10 +385,21 @@
 
         .ob-status {
             font-weight: 600;
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
         }
 
-        .ob-status.success { color: var(--success); }
-        .ob-status.error { color: var(--error); }
+        .ob-status.success { 
+            color: var(--success);
+            background: none !important;
+            border: none !important;
+        }
+        .ob-status.error { 
+            color: var(--error);
+            background: none !important;
+            border: none !important;
+        }
 
         /* Order Blocks Tab */
         .ob-section {
@@ -641,8 +666,35 @@
     <script>
         let reportData = null;
 
-        // API URL
-        const API_URL = 'https://55b08d99-691f-4173-8fdc-96cd3a34c07a.mock.pstmn.io/fibonacci-report';
+
+        // API URL - Check if running locally
+        const API_URL = 'https://eagolden.online/api/fibonacci-report';
+        
+        // Test data for local development (if CORS error occurs)
+        const TEST_DATA = {
+            "fibonacci_strategy_report": {
+                "metadata": {
+                    "version": "v1.072825",
+                    "timestamp": new Date().toISOString(),
+                    "symbol": "XAUUSD",
+                    "current_price": 3333.2,
+                    "next_report": "17:39"
+                },
+                "timeframes": [],
+                "order_blocks_detail": {},
+                "summary": {
+                    "total_timeframes_analyzed": 0,
+                    "bullish_timeframes": 0,
+                    "bearish_timeframes": 0,
+                    "order_blocks_found": {
+                        "total": 0,
+                        "by_timeframe": {}
+                    },
+                    "overall_trend": "Neutral",
+                    "dominant_position": "N/A"
+                }
+            }
+        };
 
         // Load data on page load
         document.addEventListener('DOMContentLoaded', function() {
@@ -654,7 +706,13 @@
             showLoading();
             
             try {
-                const response = await fetch(API_URL);
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                });
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -668,7 +726,14 @@
                 
             } catch (error) {
                 console.error('Error loading data:', error);
-                showError(error.message);
+                
+                // If CORS error and running locally, try using test data
+                if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
+                    console.log('CORS error detected. Para desarrollo local, considera usar una extensión de Chrome para deshabilitar CORS o configurar un proxy.');
+                    showError('Error CORS: No se puede acceder a la API desde localhost. Usa una extensión de navegador para desarrollo o despliega el sitio.');
+                } else {
+                    showError(error.message);
+                }
             }
         }
 
@@ -758,7 +823,7 @@
                 </div>
                 <div class="data-row">
                     <span class="data-label">🔧 Rango</span>
-                    <span class="data-value">${timeframe.price_data.range_pips} pips</span>
+                    <span class="data-value">${Math.round(timeframe.price_data.range_pips)} pips</span>
                 </div>
                 <div class="data-row">
                     <span class="data-label">🎯 Nivel 50%</span>
@@ -766,15 +831,15 @@
                 </div>
                 <div class="data-row">
                     <span class="data-label">📍 Posición</span>
-                    <span class="data-value ${timeframe.position.direction === 'above' ? 'success' : 'error'}">
-                        ${timeframe.position.status} (${timeframe.position.direction === 'above' ? '+' : ''}${timeframe.position.pips})
+                    <span class="data-value ${timeframe.position.direction === 'above' ? 'success' : 'warning'}">
+                        ${timeframe.position.status} (${timeframe.position.direction === 'above' ? '+' : '-'}${Math.abs(Math.round(timeframe.position.pips))} pips)
                     </span>
                 </div>
                 
                 <div class="card-footer">
                     <span class="window-info">🔍 Ventana: ${timeframe.analysis_window.days} días</span>
                     <span class="ob-status ${hasOB ? 'success' : 'error'}">
-                        ${hasOB ? `OB: ${timeframe.order_block.price.toFixed(5)} ✅` : 'No Encontrado ❌'}
+                        ${hasOB ? `OB: ${timeframe.order_block.price ? timeframe.order_block.price.toFixed(5) : 'N/A'} ✅` : 'No Encontrado ❌'}
                     </span>
                 </div>
             `;
@@ -787,12 +852,17 @@
             const container = document.getElementById('order-blocks-content');
             container.innerHTML = '';
 
+            if (!reportData.order_blocks_detail || Object.keys(reportData.order_blocks_detail).length === 0) {
+                container.innerHTML = '<p class="no-ob">No se encontraron Order Blocks en ningún timeframe</p>';
+                return;
+            }
+
             Object.entries(reportData.order_blocks_detail).forEach(([timeframe, blocks]) => {
                 const section = document.createElement('div');
                 section.className = 'ob-section';
                 section.id = `ob-section-${timeframe}`;
                 
-                if (blocks.length === 0) {
+                if (!blocks || blocks.length === 0) {
                     section.innerHTML = `
                         <h3>🔸 ${timeframe}:</h3>
                         <p class="no-ob">No encontrado</p>
@@ -801,7 +871,7 @@
                     const blocksHtml = blocks.map(block => `
                         <div class="ob-item">
                             <div class="ob-price">${block.type} [${timeframe}]: ${block.price.toFixed(5)}</div>
-                            <div class="ob-meta">📅 Fecha: ${formatDateTime(block.datetime)}</div>
+                            <div class="ob-meta">📅 Fecha: ${block.datetime}</div>
                             <div class="ob-meta">📊 Pips Open-Close: ${block.pips_open_close}p</div>
                             <div class="ob-meta">📈 % Cuerpo: ${block.body_percentage}%</div>
                         </div>
@@ -824,40 +894,73 @@
             const configContainer = document.getElementById('config-content');
             const legendContainer = document.getElementById('legend-content');
             
-            // Configuration
-            const activationLevels = Object.entries(reportData.configuration.activation_levels)
-                .map(([tf, level]) => `
-                    <div class="config-item">
-                        <span>${tf}</span>
-                        <span class="config-value">${level}%</span>
-                    </div>
-                `).join('');
-            
-            configContainer.innerHTML = `
-                <div class="config-section">
-                    <h3>📋 Niveles de Activación:</h3>
-                    ${activationLevels}
-                </div>
-                <div class="config-section">
-                    <h3>🧩 Order Blocks:</h3>
-                    <p>${reportData.configuration.order_blocks.description}</p>
-                </div>
-                <div class="config-section">
-                    <h3>🔥 Stophunt:</h3>
-                    <p>${reportData.configuration.stophunt.description}</p>
-                </div>
-            `;
+            // Check if configuration exists
+            if (!reportData.configuration) {
+                configContainer.innerHTML = '<p>Configuración no disponible en este reporte</p>';
+            } else {
+                // Configuration
+                const activationLevels = reportData.configuration.activation_levels ? 
+                    Object.entries(reportData.configuration.activation_levels)
+                        .map(([tf, level]) => `
+                            <div class="config-item">
+                                <span>${tf}</span>
+                                <span class="config-value">${level}%</span>
+                            </div>
+                        `).join('') : '';
+                
+                configContainer.innerHTML = `
+                    ${activationLevels ? `
+                        <div class="config-section">
+                            <h3>📋 Niveles de Activación:</h3>
+                            ${activationLevels}
+                        </div>
+                    ` : ''}
+                    ${reportData.configuration.order_blocks ? `
+                        <div class="config-section">
+                            <h3>🧩 Order Blocks:</h3>
+                            <p>${reportData.configuration.order_blocks.description}</p>
+                        </div>
+                    ` : ''}
+                    ${reportData.configuration.stophunt ? `
+                        <div class="config-section">
+                            <h3>🔥 Stophunt:</h3>
+                            <p>${reportData.configuration.stophunt.description}</p>
+                        </div>
+                    ` : ''}
+                `;
+            }
             
             // Legend
-            const legendItems = Object.entries(reportData.legend)
-                .map(([key, value]) => `
+            if (!reportData.legend) {
+                legendContainer.innerHTML = `
                     <div class="config-item">
-                        <span>${key.charAt(0).toUpperCase() + key.slice(1)}:</span>
-                        <span>${value}</span>
+                        <span>Bullish:</span>
+                        <span>Tendencia alcista</span>
                     </div>
-                `).join('');
-            
-            legendContainer.innerHTML = legendItems;
+                    <div class="config-item">
+                        <span>Bearish:</span>
+                        <span>Tendencia bajista</span>
+                    </div>
+                    <div class="config-item">
+                        <span>Order Block:</span>
+                        <span>Zona de interés institucional</span>
+                    </div>
+                    <div class="config-item">
+                        <span>50% Level:</span>
+                        <span>Nivel de retroceso de Fibonacci</span>
+                    </div>
+                `;
+            } else {
+                const legendItems = Object.entries(reportData.legend)
+                    .map(([key, value]) => `
+                        <div class="config-item">
+                            <span>${key.charAt(0).toUpperCase() + key.slice(1)}:</span>
+                            <span>${value}</span>
+                        </div>
+                    `).join('');
+                
+                legendContainer.innerHTML = legendItems;
+            }
         }
 
         // Navigate to specific order block section
@@ -925,12 +1028,6 @@
             });
         }
 
-        // Auto-refresh every 2 minutes
-        setInterval(() => {
-            if (document.getElementById('main-content').style.display !== 'none') {
-                loadData();
-            }
-        }, 120000); // 2 minutes
     </script>
 </body>
 </html>
