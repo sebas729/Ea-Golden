@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario Económico</title>
+    <style>
+        /* --- Reset and Base Styles --- */
+        :root {
+            --bg-dark-900: #111827;
+            --bg-dark-800: #1f2937;
+            --bg-dark-700: #374151;
+            --border-color: #4b5563;
+            --text-light: #d1d5db;
+            --text-medium: #9ca3af;
+            --text-white: #f9fafb;
+            --blue: #60a5fa;
+            --green: #4ade80;
+            --red: #f87171;
+            --yellow: #facc15;
+            --orange: #fb923c;
+            --red-accent: #dc2626;
+            --yellow-accent: #d97706;
+            --green-accent: #16a34a;
+            --blue-accent: #3b82f6;
+        }
+
+        /* Menú hamburguesa */
+        .hamburger-menu {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            background: var(--bg-dark-800);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu:hover {
+            background: var(--bg-dark-700);
+            transform: scale(1.05);
+        }
+
+        .hamburger-menu span {
+            width: 24px;
+            height: 2px;
+            background: var(--blue-accent);
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* Menú lateral */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-dark-800);
+            border-right: 1px solid var(--border-color);
+            transition: left 0.3s ease;
+            z-index: 999;
+            padding: 80px 20px 20px;
+            overflow-y: auto;
+        }
+
+        .side-menu.active {
+            left: 0;
+        }
+
+        .side-menu h3 {
+            color: var(--blue-accent);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: var(--bg-dark-700);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: var(--bg-dark-700);
+            transform: translateX(5px);
+            border-color: var(--blue-accent);
+        }
+
+        .menu-item.active {
+            background: var(--blue-accent);
+            color: var(--bg-dark-900);
+            font-weight: 600;
+        }
+
+        .menu-item .icon {
+            font-size: 1.2rem;
+        }
+
+        /* Overlay */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 998;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-dark-900);
+            color: var(--text-light);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* --- Layout --- */
+        .container {
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 1rem;
+        }
+
+        /* --- Typography --- */
+        h1 { 
+            font-size: 1.5rem; 
+            line-height: 2rem; 
+            font-weight: 700; 
+            color: var(--text-white); 
+            margin: 0;
+            display: flex; 
+            align-items: center; 
+            gap: 0.75rem;
+        }
+        
+        h2 { 
+            font-size: 1.125rem; 
+            line-height: 1.75rem; 
+            font-weight: 600; 
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-white);
+        }
+
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+
+        /* --- Header --- */
+        .header { 
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .header p { 
+            color: var(--text-medium); 
+            margin: 0.5rem 0 0 0;
+        }
+        .header .icon { color: var(--blue); }
+
+        /* --- Loading Indicator --- */
+        .loading {
+            background-color: var(--bg-dark-800);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .loading .spinner {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- Update Info --- */
+        .update-info {
+            background-color: var(--bg-dark-800);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            display: none; /* Oculto porque ahora está en el control panel */
+        }
+        .update-info .label { 
+            font-size: 0.875rem; 
+            color: var(--blue); 
+            font-weight: 600; 
+            margin-bottom: 0.25rem;
+        }
+        .update-info .value { 
+            font-size: 1.125rem; 
+            font-weight: 500; 
+            color: var(--text-white); 
+        }
+
+        /* --- Filters Panel --- */
+        .filters-panel {
+            background-color: var(--bg-dark-800);
+            border-radius: 0.5rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .filters-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 0.5rem 0;
+            user-select: none;
+        }
+
+        .filters-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-white);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filters-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-medium);
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .filters-toggle:hover {
+            color: var(--text-white);
+        }
+
+        .filters-toggle-icon {
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .filters-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0;
+        }
+
+        .filters-content.expanded {
+            max-height: 500px;
+            padding-top: 1rem;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-medium);
+        }
+
+        .filter-select, .filter-input {
+            background-color: var(--bg-dark-700);
+            color: var(--text-white);
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: var(--blue-accent);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            justify-content: flex-end; /* Alinear botones a la derecha */
+        }
+
+        .filter-btn {
+            background: linear-gradient(135deg, var(--bg-dark-700) 0%, var(--border-color) 100%);
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: linear-gradient(135deg, var(--border-color) 0%, var(--bg-dark-700) 100%);
+            transform: translateY(-1px);
+        }
+
+        .filter-btn.primary {
+            background: linear-gradient(135deg, var(--blue-accent) 0%, var(--blue) 100%);
+            color: white;
+            border-color: var(--blue-accent);
+        }
+
+        .filter-btn.primary:hover {
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-accent) 100%);
+        }
+
+        .active-filters {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .filter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            background-color: var(--blue-accent);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            margin: 0.25rem 0.25rem 0.25rem 0;
+        }
+
+        .filter-tag .remove {
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0 0.25rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .filter-tag .remove:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* --- Control Panel Mejorado --- */
+        .control-panel {
+            background-color: var(--bg-dark-800);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem; /* Espacio entre elementos */
+        }
+
+        .update-info-inline {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .update-info-inline .label {
+            font-size: 0.875rem;
+            color: var(--blue);
+            font-weight: 600;
+        }
+
+        .update-info-inline .value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-white);
+            font-family: monospace;
+        }
+
+        .control-panel button {
+            background: linear-gradient(135deg, var(--blue-accent) 0%, var(--blue) 100%);
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .control-panel button:hover {
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-accent) 100%);
+            transform: translateY(-1px);
+        }
+
+        .control-panel button:disabled {
+            background: var(--bg-dark-700);
+            color: var(--text-medium);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .api-url {
+            flex: 1;
+            min-width: 300px;
+            background-color: var(--bg-dark-700);
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            padding: 0.75rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+
+        /* --- Error Message --- */
+        .error-message {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--red);
+        }
+
+        /* --- Tab System Without JavaScript --- */
+        .tabs-container {
+            position: relative;
+        }
+        
+        .tabs-nav {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .tabs-nav nav { display: flex; gap: 1rem; }
+        
+        /* Hide radio buttons */
+        .tab-radio {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        /* Style the labels as buttons */
+        .tab-label {
+            display: block;
+            padding: 1rem 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-medium);
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s;
+            text-decoration: none;
+            user-select: none;
+        }
+        .tab-label:hover { color: var(--text-white); }
+        
+        /* Active tab styling */
+        .tabs-container #tab-high:checked ~ .tabs-nav .tab-label[for="tab-high"],
+        .tabs-container #tab-medium:checked ~ .tabs-nav .tab-label[for="tab-medium"],
+        .tabs-container #tab-low:checked ~ .tabs-nav .tab-label[for="tab-low"],
+        .tabs-container #tab-all:checked ~ .tabs-nav .tab-label[for="tab-all"] {
+            color: var(--text-white);
+            border-bottom-color: var(--blue-accent);
+        }
+
+        /* High impact tab special styling */
+        .tabs-container #tab-high:checked ~ .tabs-nav .tab-label[for="tab-high"] {
+            border-bottom-color: var(--red-accent);
+        }
+
+        /* Medium impact tab special styling */
+        .tabs-container #tab-medium:checked ~ .tabs-nav .tab-label[for="tab-medium"] {
+            border-bottom-color: var(--yellow-accent);
+        }
+
+        /* Low impact tab special styling */
+        .tabs-container #tab-low:checked ~ .tabs-nav .tab-label[for="tab-low"] {
+            border-bottom-color: var(--green-accent);
+        }
+
+        /* Hide all tab content by default */
+        .tab-content { display: none; }
+        
+        /* Show content when corresponding radio is checked */
+        .tabs-container #tab-high:checked ~ main .tab-content#high { display: block; }
+        .tabs-container #tab-medium:checked ~ main .tab-content#medium { display: block; }
+        .tabs-container #tab-low:checked ~ main .tab-content#low { display: block; }
+        .tabs-container #tab-all:checked ~ main .tab-content#all { display: block; }
+
+        /* --- Impact Categories --- */
+        .impact-section {
+            background-color: var(--bg-dark-800);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .impact-section.low {
+            border-left: 4px solid var(--green-accent);
+            background: linear-gradient(135deg, var(--bg-dark-800) 0%, rgba(22, 163, 74, 0.05) 100%);
+        }
+
+        .impact-section.medium {
+            border-left: 4px solid var(--yellow-accent);
+            background: linear-gradient(135deg, var(--bg-dark-800) 0%, rgba(217, 119, 6, 0.05) 100%);
+        }
+
+        .impact-section.high {
+            border-left: 4px solid var(--red-accent);
+            background: linear-gradient(135deg, var(--bg-dark-800) 0%, rgba(220, 38, 38, 0.05) 100%);
+        }
+
+        /* --- Event Cards --- */
+        .event {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid rgba(75, 85, 99, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .event:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .event-time {
+            background-color: var(--bg-dark-700);
+            color: var(--blue);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: monospace;
+        }
+
+        .event-impact {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .impact-low { background-color: rgba(22, 163, 74, 0.2); color: var(--green); }
+        .impact-medium { background-color: rgba(217, 119, 6, 0.2); color: var(--yellow); }
+        .impact-high { background-color: rgba(220, 38, 38, 0.2); color: var(--red); }
+
+        .event-title {
+            font-weight: 600;
+            color: var(--text-white);
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .event-details {
+            display: grid;
+            gap: 0.25rem;
+        }
+
+        .forecast-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .forecast-label {
+            color: var(--text-medium);
+            font-weight: 500;
+        }
+
+        .forecast-value {
+            color: var(--text-white);
+            font-weight: 600;
+            font-family: monospace;
+        }
+
+        /* --- Warning Note --- */
+        .warning-note {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .warning-note .icon {
+            color: var(--red);
+            font-size: 1.25rem;
+        }
+
+        .warning-note .text {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        /* --- Event Count --- */
+        .event-count {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-medium);
+            margin-left: auto;
+        }
+
+        /* --- Add to Calendar Button --- */
+        .add-calendar-btn {
+            background: linear-gradient(135deg, var(--blue-accent) 0%, var(--blue) 100%);
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            text-decoration: none;
+            margin-top: 0.75rem;
+            width: fit-content;
+        }
+
+        .add-calendar-btn:hover {
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-accent) 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .add-calendar-btn:active {
+            transform: translateY(0);
+        }
+
+        .calendar-icon {
+            font-size: 0.875rem;
+        }
+
+        /* --- Responsive Design --- */
+        @media (min-width: 640px) {
+            .container { padding: 1.5rem; }
+            h1 { font-size: 1.875rem; line-height: 2.25rem; }
+            
+            .event-header {
+                flex-wrap: nowrap;
+            }
+            
+            .forecast-row {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 639px) {
+            .control-panel {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .update-info-inline {
+                align-items: center;
+            }
+
+            .filter-buttons {
+                justify-content: center; /* Centrar en móvil */
+            }
+        }
+
+        @media (min-width: 768px) {
+            .event-details {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+            }
+            
+            .forecast-row.full-width {
+                grid-column: 1 / -1;
+            }
+        }
+
+        /* --- Utility Classes --- */
+        .hidden { display: none; }
+        .text-green { color: var(--green); }
+        .text-yellow { color: var(--yellow); }
+        .text-red { color: var(--red); }
+
+    </style>
+</head>
+<body>
+    <!-- Menú Hamburguesa -->
+    <div class="hamburger-menu" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Menú Lateral -->
+    <nav class="side-menu" id="sideMenu">
+        <h3>📊 Navegación</h3>
+        <a href="index.html" class="menu-item">
+            <span class="icon">📈</span>
+            <span>Fibonacci Report</span>
+        </a>
+        <a href="economicCalendar.html" class="menu-item active">
+            <span class="icon">📅</span>
+            <span>Calendario Económico</span>
+        </a>
+    </nav>
+
+    <!-- Overlay -->
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+
+    <div class="container">
+
+        <!-- Header -->
+        <header class="header">
+            <h1><span class="icon">📅</span><span>Calendario Económico</span></h1>
+        </header>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="update-info-inline">
+                <span class="label">Última actualización</span>
+                <span class="value" id="lastUpdate">-</span>
+            </div>
+            <button onclick="loadFromAPI()" id="loadBtn">
+                <span>🔄</span>
+                Actualizar Datos
+            </button>
+        </div>
+
+        <!-- Filters Panel -->
+        <div class="filters-panel">
+            <div class="filters-header" onclick="toggleFilters()">
+                <div class="filters-title">
+                    <span>🔍</span>
+                    Filtros
+                </div>
+                <div class="filters-toggle">
+                    <span>Expandir</span>
+                    <span class="filters-toggle-icon">▼</span>
+                </div>
+            </div>
+            
+            <div class="filters-content" id="filtersContent">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label class="filter-label">País</label>
+                        <select id="countryFilter" class="filter-select">
+                            <option value="">Todos los países</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Impacto</label>
+                        <select id="impactFilter" class="filter-select">
+                            <option value="">Todos los impactos</option>
+                            <option value="Alto">🔴 Alto Impacto</option>
+                            <option value="Medio">🟡 Medio Impacto</option>
+                            <option value="Bajo">🟢 Bajo Impacto</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Hora (desde)</label>
+                        <input type="time" id="timeFromFilter" class="filter-input">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Hora (hasta)</label>
+                        <input type="time" id="timeToFilter" class="filter-input">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Buscar evento</label>
+                        <input type="text" id="searchFilter" class="filter-input" placeholder="Ej: Retail Sales">
+                    </div>
+                </div>
+                
+                <div class="filter-buttons">
+                    <button class="filter-btn primary" onclick="applyFilters()">
+                        <span>✅</span> Aplicar Filtros
+                    </button>
+                    <button class="filter-btn" onclick="clearFilters()">
+                        <span>🗑️</span> Limpiar
+                    </button>
+                </div>
+                
+                <div class="active-filters" id="activeFilters" style="display: none;">
+                    <div style="font-size: 0.875rem; color: var(--text-medium); margin-bottom: 0.5rem;">Filtros activos:</div>
+                    <div id="filterTags"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Cargando eventos económicos...</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message hidden">
+            <span>⚠️</span>
+            <span id="errorText">Error al cargar los datos</span>
+        </div>
+
+        <!-- Update Info -->
+        <div class="update-info">
+            <p class="label">⏰ Última Actualización</p>
+            <p class="value" id="lastUpdate2">-</p>
+        </div>
+
+        <!-- Tabs System -->
+        <div class="tabs-container">
+            <!-- Hidden radio buttons -->
+            <input type="radio" id="tab-high" name="tabs" class="tab-radio" checked>
+            <input type="radio" id="tab-medium" name="tabs" class="tab-radio">
+            <input type="radio" id="tab-low" name="tabs" class="tab-radio">
+            <input type="radio" id="tab-all" name="tabs" class="tab-radio">
+            
+            <!-- Tabs Navigation -->
+            <div class="tabs-nav">
+                <nav>
+                    <label for="tab-high" class="tab-label">🔴 Alto Impacto</label>
+                    <label for="tab-medium" class="tab-label">🟡 Medio Impacto</label>
+                    <label for="tab-low" class="tab-label">🟢 Bajo Impacto</label>
+                    <label for="tab-all" class="tab-label">📊 Todos los Eventos</label>
+                </nav>
+            </div>
+
+            <!-- Tabs Content -->
+            <main>
+                <!-- High Impact Tab -->
+                <div id="high" class="tab-content">
+                    <section class="impact-section high">
+                        <h2>
+                            <span>🔴</span> 
+                            EVENTOS DE ALTO IMPACTO 
+                            <span class="event-count" id="highCount">0 eventos</span>
+                        </h2>
+                        <div id="highEvents">
+                            <p style="text-align: center; color: var(--text-medium); padding: 2rem;">
+                                Presiona "Cargar Datos" para obtener los eventos económicos.
+                            </p>
+                        </div>
+                    </section>
+
+                    <!-- Warning Note -->
+                    <div class="warning-note">
+                        <span class="icon">⚠️</span>
+                        <span class="text">Nota: Estos eventos pueden causar alta volatilidad en el mercado.</span>
+                    </div>
+                </div>
+
+                <!-- Medium Impact Tab -->
+                <div id="medium" class="tab-content">
+                    <section class="impact-section medium">
+                        <h2>
+                            <span>🟡</span> 
+                            EVENTOS DE MEDIO IMPACTO 
+                            <span class="event-count" id="mediumCount">0 eventos</span>
+                        </h2>
+                        <div id="mediumEvents">
+                            <p style="text-align: center; color: var(--text-medium); padding: 2rem;">
+                                Presiona "Cargar Datos" para obtener los eventos económicos.
+                            </p>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Low Impact Tab -->
+                <div id="low" class="tab-content">
+                    <section class="impact-section low">
+                        <h2>
+                            <span>🟢</span> 
+                            EVENTOS DE BAJO IMPACTO 
+                            <span class="event-count" id="lowCount">0 eventos</span>
+                        </h2>
+                        <div id="lowEvents">
+                            <p style="text-align: center; color: var(--text-medium); padding: 2rem;">
+                                Presiona "Cargar Datos" para obtener los eventos económicos.
+                            </p>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- All Events Tab -->
+                <div id="all" class="tab-content">
+                    <div id="allEvents">
+                        <p style="text-align: center; color: var(--text-medium); padding: 2rem;">
+                            Presiona "Cargar Datos" para obtener los eventos económicos.
+                        </p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let economicData = null;
+        let originalData = null; // Para mantener los datos originales
+        let activeFilters = {};
+        let filtersExpanded = false; // Estado de los filtros
+
+        // Función para toggle del menú
+        function toggleMenu() {
+            const menu = document.getElementById('sideMenu');
+            const overlay = document.getElementById('menuOverlay');
+            const hamburger = document.querySelector('.hamburger-menu');
+            
+            menu.classList.toggle('active');
+            overlay.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        }
+
+        // Función para alternar la visibilidad de los filtros
+        function toggleFilters() {
+            const filtersContent = document.getElementById('filtersContent');
+            const toggleIcon = document.querySelector('.filters-toggle-icon');
+            const toggleText = document.querySelector('.filters-toggle span:first-child');
+            
+            filtersExpanded = !filtersExpanded;
+            
+            if (filtersExpanded) {
+                filtersContent.classList.add('expanded');
+                toggleIcon.style.transform = 'rotate(180deg)';
+                toggleText.textContent = 'Contraer';
+            } else {
+                filtersContent.classList.remove('expanded');
+                toggleIcon.style.transform = 'rotate(0deg)';
+                toggleText.textContent = 'Expandir';
+            }
+        }
+
+        // Configuración - URL interna fija
+        const API_URL = 'https://55b08d99-691f-4173-8fdc-96cd3a34c07a.mock.pstmn.io/api/economic-calendar/api/economic-calendar';
+
+        // Función principal para cargar datos desde la API
+        async function loadFromAPI() {
+            showLoading(true);
+            hideError();
+            disableButtons(true);
+
+            try {
+                console.log('Cargando datos desde API interna...');
+                
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('Datos recibidos:', data);
+
+                // Validar estructura de datos
+                if (!data || !data.eventos_economicos) {
+                    throw new Error('La respuesta no contiene la estructura esperada "eventos_economicos"');
+                }
+
+                economicData = data;
+                originalData = JSON.parse(JSON.stringify(data)); // Copia profunda
+                populateCountryFilter();
+                renderEvents();
+                updateLastUpdateTime();
+                
+                console.log('Eventos cargados exitosamente');
+
+            } catch (error) {
+                console.error('Error al cargar datos:', error);
+                showError(`Error: ${error.message}`);
+            } finally {
+                showLoading(false);
+                disableButtons(false);
+            }
+        }
+
+        // Función para mostrar/ocultar loading
+        function showLoading(show) {
+            const loadingEl = document.getElementById('loadingIndicator');
+            if (show) {
+                loadingEl.classList.remove('hidden');
+            } else {
+                loadingEl.classList.add('hidden');
+            }
+        }
+
+        // Función para mostrar errores
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            const errorTextEl = document.getElementById('errorText');
+            
+            errorTextEl.textContent = message;
+            errorEl.classList.remove('hidden');
+        }
+
+        // Función para ocultar errores
+        function hideError() {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.classList.add('hidden');
+        }
+
+        // Función para poblar el filtro de países
+        function populateCountryFilter() {
+            const countrySelect = document.getElementById('countryFilter');
+            const countries = new Set();
+            
+            // Recopilar todos los países únicos
+            const data = originalData.eventos_economicos;
+            
+            if (data.eventos_alto_impacto) {
+                data.eventos_alto_impacto.forEach(event => {
+                    if (event.pais) countries.add(event.pais);
+                });
+            }
+            
+            if (data.eventos_medio_impacto) {
+                data.eventos_medio_impacto.forEach(event => {
+                    if (event.pais) countries.add(event.pais);
+                });
+            }
+            
+            if (data.eventos_bajo_impacto) {
+                data.eventos_bajo_impacto.forEach(event => {
+                    if (event.pais) countries.add(event.pais);
+                });
+            }
+            
+            // Limpiar opciones existentes (excepto la primera)
+            while (countrySelect.children.length > 1) {
+                countrySelect.removeChild(countrySelect.lastChild);
+            }
+            
+            // Agregar países ordenados alfabéticamente
+            Array.from(countries).sort().forEach(country => {
+                const option = document.createElement('option');
+                option.value = country;
+                option.textContent = country;
+                countrySelect.appendChild(option);
+            });
+        }
+
+        // Función para aplicar filtros
+        function applyFilters() {
+            const countryFilter = document.getElementById('countryFilter').value;
+            const impactFilter = document.getElementById('impactFilter').value;
+            const timeFromFilter = document.getElementById('timeFromFilter').value;
+            const timeToFilter = document.getElementById('timeToFilter').value;
+            const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+            
+            // Actualizar filtros activos
+            activeFilters = {};
+            if (countryFilter) activeFilters.country = countryFilter;
+            if (impactFilter) activeFilters.impact = impactFilter;
+            if (timeFromFilter) activeFilters.timeFrom = timeFromFilter;
+            if (timeToFilter) activeFilters.timeTo = timeToFilter;
+            if (searchFilter) activeFilters.search = searchFilter;
+            
+            // Aplicar filtros a los datos
+            economicData = JSON.parse(JSON.stringify(originalData)); // Resetear datos
+            
+            if (Object.keys(activeFilters).length > 0) {
+                const data = economicData.eventos_economicos;
+                
+                // Filtrar cada categoría
+                if (data.eventos_alto_impacto) {
+                    data.eventos_alto_impacto = filterEvents(data.eventos_alto_impacto);
+                }
+                if (data.eventos_medio_impacto) {
+                    data.eventos_medio_impacto = filterEvents(data.eventos_medio_impacto);
+                }
+                if (data.eventos_bajo_impacto) {
+                    data.eventos_bajo_impacto = filterEvents(data.eventos_bajo_impacto);
+                }
+            }
+            
+            // Re-renderizar eventos
+            renderEvents();
+            updateFilterTags();
+        }
+
+        // Función para filtrar eventos individuales
+        function filterEvents(events) {
+            return events.filter(event => {
+                // Filtro por país
+                if (activeFilters.country && event.pais !== activeFilters.country) {
+                    return false;
+                }
+                
+                // Filtro por impacto
+                if (activeFilters.impact && event.impacto !== activeFilters.impact) {
+                    return false;
+                }
+                
+                // Filtro por hora (desde)
+                if (activeFilters.timeFrom && event.hora < activeFilters.timeFrom) {
+                    return false;
+                }
+                
+                // Filtro por hora (hasta)
+                if (activeFilters.timeTo && event.hora > activeFilters.timeTo) {
+                    return false;
+                }
+                
+                // Filtro de búsqueda por texto
+                if (activeFilters.search) {
+                    const searchText = activeFilters.search;
+                    const eventText = (event.evento || '').toLowerCase();
+                    if (!eventText.includes(searchText)) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
+        }
+
+        // Función para limpiar filtros
+        function clearFilters() {
+            document.getElementById('countryFilter').value = '';
+            document.getElementById('impactFilter').value = '';
+            document.getElementById('timeFromFilter').value = '';
+            document.getElementById('timeToFilter').value = '';
+            document.getElementById('searchFilter').value = '';
+            
+            activeFilters = {};
+            economicData = JSON.parse(JSON.stringify(originalData)); // Resetear datos
+            renderEvents();
+            updateFilterTags();
+        }
+
+        // Función para actualizar las etiquetas de filtros activos
+        function updateFilterTags() {
+            const activeFiltersDiv = document.getElementById('activeFilters');
+            const filterTagsDiv = document.getElementById('filterTags');
+            
+            if (Object.keys(activeFilters).length === 0) {
+                activeFiltersDiv.style.display = 'none';
+                return;
+            }
+            
+            activeFiltersDiv.style.display = 'block';
+            filterTagsDiv.innerHTML = '';
+            
+            Object.entries(activeFilters).forEach(([key, value]) => {
+                const tag = document.createElement('span');
+                tag.className = 'filter-tag';
+                
+                let displayText = '';
+                switch (key) {
+                    case 'country':
+                        displayText = `País: ${value}`;
+                        break;
+                    case 'impact':
+                        displayText = `Impacto: ${value}`;
+                        break;
+                    case 'timeFrom':
+                        displayText = `Desde: ${value}`;
+                        break;
+                    case 'timeTo':
+                        displayText = `Hasta: ${value}`;
+                        break;
+                    case 'search':
+                        displayText = `Buscar: "${value}"`;
+                        break;
+                }
+                
+                tag.innerHTML = `
+                    ${displayText}
+                    <span class="remove" onclick="removeFilter('${key}')">×</span>
+                `;
+                
+                filterTagsDiv.appendChild(tag);
+            });
+        }
+
+        // Función para remover un filtro específico
+        function removeFilter(filterKey) {
+            delete activeFilters[filterKey];
+            
+            // Limpiar el campo correspondiente
+            switch (filterKey) {
+                case 'country':
+                    document.getElementById('countryFilter').value = '';
+                    break;
+                case 'impact':
+                    document.getElementById('impactFilter').value = '';
+                    break;
+                case 'timeFrom':
+                    document.getElementById('timeFromFilter').value = '';
+                    break;
+                case 'timeTo':
+                    document.getElementById('timeToFilter').value = '';
+                    break;
+                case 'search':
+                    document.getElementById('searchFilter').value = '';
+                    break;
+            }
+            
+            applyFilters();
+        }
+        function disableButtons(disable) {
+            const loadBtn = document.getElementById('loadBtn');
+            loadBtn.disabled = disable;
+        }
+
+        // Función para auto-refresh
+        function autoRefresh() {
+            if (autoRefreshInterval) {
+                // Detener auto-refresh
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+                document.getElementById('autoBtn').innerHTML = '<span>⏰</span> Auto-refresh';
+                console.log('Auto-refresh detenido');
+            } else {
+                // Iniciar auto-refresh
+                autoRefreshInterval = setInterval(loadFromAPI, AUTO_REFRESH_INTERVAL);
+                document.getElementById('autoBtn').innerHTML = '<span>⏸️</span> Detener';
+                console.log('Auto-refresh iniciado (cada 5 minutos)');
+                
+                // Cargar datos inmediatamente
+                loadFromAPI();
+            }
+        }
+
+        // Función para renderizar todos los eventos
+        function renderEvents() {
+            const data = economicData.eventos_economicos;
+            
+            console.log('Renderizando eventos:', {
+                alto: data.eventos_alto_impacto?.length || 0,
+                medio: data.eventos_medio_impacto?.length || 0,
+                bajo: data.eventos_bajo_impacto?.length || 0
+            });
+            
+            // Limpiar contenedores
+            document.getElementById('highEvents').innerHTML = '';
+            document.getElementById('mediumEvents').innerHTML = '';
+            document.getElementById('lowEvents').innerHTML = '';
+            document.getElementById('allEvents').innerHTML = '';
+
+            // Renderizar eventos por impacto
+            if (data.eventos_alto_impacto) {
+                renderEventsByImpact(data.eventos_alto_impacto, 'high', 'Alto');
+            }
+            
+            if (data.eventos_medio_impacto) {
+                renderEventsByImpact(data.eventos_medio_impacto, 'medium', 'Medio');
+            }
+            
+            if (data.eventos_bajo_impacto) {
+                renderEventsByImpact(data.eventos_bajo_impacto, 'low', 'Bajo');
+            }
+
+            // Renderizar todos los eventos
+            renderAllEvents();
+            
+            // Actualizar contadores
+            updateEventCounts();
+        }
+
+        // Función para renderizar eventos por tipo de impacto
+        function renderEventsByImpact(events, impactType, impactText) {
+            const container = document.getElementById(impactType + 'Events');
+            
+            if (!events || events.length === 0) {
+                container.innerHTML = `
+                    <p style="text-align: center; color: var(--text-medium); padding: 2rem;">
+                        No hay eventos de ${impactText.toLowerCase()} impacto para hoy.
+                    </p>
+                `;
+                return;
+            }
+            
+            events.forEach(event => {
+                const eventHtml = createEventCard(event, impactType);
+                container.innerHTML += eventHtml;
+            });
+        }
+
+        // Función para renderizar todos los eventos en una sola vista
+        function renderAllEvents() {
+            const allContainer = document.getElementById('allEvents');
+            const data = economicData.eventos_economicos;
+            
+            let allEventsHtml = '';
+
+            // Alto impacto
+            if (data.eventos_alto_impacto && data.eventos_alto_impacto.length > 0) {
+                allEventsHtml += `
+                    <section class="impact-section high">
+                        <h2><span>🔴</span> EVENTOS DE ALTO IMPACTO <span class="event-count">${data.eventos_alto_impacto.length} eventos</span></h2>
+                `;
+                data.eventos_alto_impacto.forEach(event => {
+                    allEventsHtml += createEventCard(event, 'high');
+                });
+                allEventsHtml += '</section>';
+            }
+
+            // Medio impacto
+            if (data.eventos_medio_impacto && data.eventos_medio_impacto.length > 0) {
+                allEventsHtml += `
+                    <section class="impact-section medium">
+                        <h2><span>🟡</span> EVENTOS DE MEDIO IMPACTO <span class="event-count">${data.eventos_medio_impacto.length} eventos</span></h2>
+                `;
+                data.eventos_medio_impacto.forEach(event => {
+                    allEventsHtml += createEventCard(event, 'medium');
+                });
+                allEventsHtml += '</section>';
+            }
+
+            // Bajo impacto
+            if (data.eventos_bajo_impacto && data.eventos_bajo_impacto.length > 0) {
+                allEventsHtml += `
+                    <section class="impact-section low">
+                        <h2><span>🟢</span> EVENTOS DE BAJO IMPACTO <span class="event-count">${data.eventos_bajo_impacto.length} eventos</span></h2>
+                `;
+                data.eventos_bajo_impacto.forEach(event => {
+                    allEventsHtml += createEventCard(event, 'low');
+                });
+                allEventsHtml += '</section>';
+            }
+
+            if (!allEventsHtml) {
+                allEventsHtml = `
+                    <p style="text-align: center; color: var(--text-medium); padding: 2rem;">
+                        No hay eventos programados para hoy.
+                    </p>
+                `;
+            }
+
+            allContainer.innerHTML = allEventsHtml;
+        }
+
+        // Función para crear una tarjeta de evento
+        function createEventCard(event, impactType) {
+            const impactIcons = {
+                'high': '🔴',
+                'medium': '🟡',
+                'low': '🟢'
+            };
+
+            const impactTexts = {
+                'high': 'Alto impacto',
+                'medium': 'Medio impacto',
+                'low': 'Bajo impacto'
+            };
+
+            let eventTitle = event.evento || 'Evento sin título';
+            if (event.periodo) eventTitle += ` (${event.periodo})`;
+            if (event.pais) eventTitle += ` (${event.pais})`;
+
+            let detailsHtml = '';
+            if (event.pronostico || event.anterior) {
+                detailsHtml = '<div class="event-details">';
+                
+                if (event.pronostico) {
+                    detailsHtml += `
+                        <div class="forecast-row">
+                            <span class="forecast-label">Pronóstico:</span>
+                            <span class="forecast-value">${event.pronostico}</span>
+                        </div>
+                    `;
+                }
+                
+                if (event.anterior) {
+                    detailsHtml += `
+                        <div class="forecast-row">
+                            <span class="forecast-label">Anterior:</span>
+                            <span class="forecast-value">${event.anterior}</span>
+                        </div>
+                    `;
+                }
+                
+                detailsHtml += '</div>';
+            }
+
+            // Crear enlace de calendario
+            const calendarLink = createCalendarLink(event);
+
+            return `
+                <div class="event">
+                    <div class="event-header">
+                        <span class="event-time">${event.hora || '00:00'}</span>
+                        <span class="event-impact impact-${impactType}">${impactIcons[impactType]} ${impactTexts[impactType]}</span>
+                    </div>
+                    <div class="event-title">${eventTitle}</div>
+                    ${detailsHtml}
+                    ${calendarLink}
+                </div>
+            `;
+        }
+
+        // Función para crear enlace de Google Calendar
+        function createCalendarLink(event) {
+            const data = economicData.eventos_economicos;
+            const fecha = data.fecha || new Date().toISOString().split('T')[0];
+            
+            // Convertir fecha y hora a formato ISO
+            const eventDate = new Date(`${fecha}T${event.hora || '00:00'}:00`);
+            const endDate = new Date(eventDate.getTime() + 30 * 60000); // +30 minutos
+            
+            const startTime = eventDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            const endTime = endDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            
+            let eventTitle = event.evento || 'Evento Económico';
+            if (event.pais) eventTitle += ` - ${event.pais}`;
+            
+            let details = `📊 Evento: ${event.evento || 'N/A'}\\n`;
+            if (event.periodo) details += `📅 Período: ${event.periodo}\\n`;
+            if (event.pais) details += `🌐 País: ${event.pais}\\n`;
+            if (event.pronostico) details += `📈 Pronóstico: ${event.pronostico}\\n`;
+            if (event.anterior) details += `📉 Anterior: ${event.anterior}\\n`;
+            details += `⚡ Impacto: ${event.impacto || 'N/A'}`;
+            
+            const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${startTime}/${endTime}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(event.pais || '')}&sf=true&output=xml`;
+            
+            return `
+                <a href="${calendarUrl}" target="_blank" class="add-calendar-btn">
+                    <span class="calendar-icon">📅</span>
+                    Agregar al Calendario
+                </a>
+            `;
+        }
+
+        // Función para actualizar contadores
+        function updateEventCounts() {
+            const data = economicData.eventos_economicos;
+            
+            const highCount = data.eventos_alto_impacto ? data.eventos_alto_impacto.length : 0;
+            const mediumCount = data.eventos_medio_impacto ? data.eventos_medio_impacto.length : 0;
+            const lowCount = data.eventos_bajo_impacto ? data.eventos_bajo_impacto.length : 0;
+            
+            document.getElementById('highCount').textContent = `${highCount} eventos`;
+            document.getElementById('mediumCount').textContent = `${mediumCount} eventos`;
+            document.getElementById('lowCount').textContent = `${lowCount} eventos`;
+        }
+
+        // Función para actualizar la hora de última actualización
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const formattedTime = now.toLocaleString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            document.getElementById('lastUpdate').textContent = formattedTime;
+        }
+
+        // Eventos de teclado para aplicar filtros
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchFilter');
+            const timeInputs = document.querySelectorAll('#timeFromFilter, #timeToFilter');
+            
+            // Aplicar filtros al presionar Enter en la búsqueda
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    applyFilters();
+                }
+            });
+            
+            // Aplicar filtros automáticamente al cambiar las horas
+            timeInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    applyFilters();
+                });
+            });
+            
+            // Aplicar filtros automáticamente al cambiar los selects
+            document.getElementById('countryFilter').addEventListener('change', applyFilters);
+            document.getElementById('impactFilter').addEventListener('change', applyFilters);
+        });
+
+        // Manejar carga automática al cargar la página
+        window.addEventListener('load', function() {
+            console.log('Página cargada, iniciando carga automática de datos...');
+            loadFromAPI();
+        });
+
+        // Limpiar interval al cerrar la página
+        window.addEventListener('beforeunload', function() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+        });
+    </script>
+
+</body>
+</html>
