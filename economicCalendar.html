@@ -199,12 +199,23 @@
         .header { 
             margin-bottom: 1.5rem;
             text-align: center;
+            padding: 0 1rem;
+        }
+        .header h1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
         .header p { 
             color: var(--text-medium); 
             margin: 0.5rem 0 0 0;
         }
-        .header .icon { color: var(--blue); }
+        .header .icon { 
+            color: var(--blue);
+            flex-shrink: 0;
+        }
 
         /* --- Loading Indicator --- */
         .loading {
@@ -757,6 +768,11 @@
 
             .filter-buttons {
                 justify-content: center; /* Centrar en móvil */
+            }
+            
+            .header h1 {
+                font-size: 1.25rem;
+                padding: 0 2.5rem; /* Espacio para el menú hamburguesa */
             }
         }
 
@@ -1492,7 +1508,7 @@
             `;
         }
 
-        // Función para crear enlace de Google Calendar
+        // Función para crear enlace de calendario con soporte para Apple Calendar
         function createCalendarLink(event) {
             const data = economicData.eventos_economicos;
             const fecha = data.fecha || new Date().toISOString().split('T')[0];
@@ -1501,27 +1517,91 @@
             const eventDate = new Date(`${fecha}T${event.hora || '00:00'}:00`);
             const endDate = new Date(eventDate.getTime() + 30 * 60000); // +30 minutos
             
-            const startTime = eventDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-            const endTime = endDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-            
             let eventTitle = event.evento || 'Evento Económico';
             if (event.pais) eventTitle += ` - ${event.pais}`;
             
-            let details = `📊 Evento: ${event.evento || 'N/A'}\\n`;
-            if (event.periodo) details += `📅 Período: ${event.periodo}\\n`;
-            if (event.pais) details += `🌐 País: ${event.pais}\\n`;
-            if (event.pronostico) details += `📈 Pronóstico: ${event.pronostico}\\n`;
-            if (event.anterior) details += `📉 Anterior: ${event.anterior}\\n`;
+            let details = `📊 Evento: ${event.evento || 'N/A'}\n`;
+            if (event.periodo) details += `📅 Período: ${event.periodo}\n`;
+            if (event.pais) details += `🌐 País: ${event.pais}\n`;
+            if (event.pronostico) details += `📈 Pronóstico: ${event.pronostico}\n`;
+            if (event.anterior) details += `📉 Anterior: ${event.anterior}\n`;
             details += `⚡ Impacto: ${event.impacto || 'N/A'}`;
             
-            const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${startTime}/${endTime}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(event.pais || '')}&sf=true&output=xml`;
+            // Crear un ID único para el evento
+            const eventId = btoa(event.evento + event.hora).replace(/[^a-zA-Z0-9]/g, '').substring(0, 10);
             
             return `
-                <a href="${calendarUrl}" target="_blank" class="add-calendar-btn">
+                <button onclick="addToCalendar('${eventId}', '${eventTitle.replace(/'/g, "\\'")}', '${eventDate.toISOString()}', '${endDate.toISOString()}', '${details.replace(/'/g, "\\'").replace(/\n/g, "\\n")}', '${event.pais || ''}')" class="add-calendar-btn">
                     <span class="calendar-icon">📅</span>
                     Agregar al Calendario
-                </a>
+                </button>
             `;
+        }
+
+        // Función para agregar evento al calendario (intenta Apple primero, luego Google)
+        function addToCalendar(eventId, title, startTime, endTime, description, location) {
+            // Detectar si es un dispositivo Apple
+            const isApple = /Mac|iPhone|iPad|iPod/.test(navigator.userAgent);
+            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+            
+            if (isApple || isSafari) {
+                // Intentar crear archivo .ics para Apple Calendar
+                const icsContent = createICSFile(eventId, title, startTime, endTime, description, location);
+                downloadICSFile(icsContent, title);
+            } else {
+                // Usar Google Calendar para otros dispositivos
+                openGoogleCalendar(title, startTime, endTime, description, location);
+            }
+        }
+
+        // Crear archivo ICS para Apple Calendar
+        function createICSFile(eventId, title, startTime, endTime, description, location) {
+            const formatDate = (date) => {
+                return new Date(date).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            };
+            
+            const icsContent = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//Economic Calendar//ES',
+                'CALSCALE:GREGORIAN',
+                'METHOD:PUBLISH',
+                'BEGIN:VEVENT',
+                `UID:${eventId}@economiccalendar.com`,
+                `DTSTART:${formatDate(startTime)}`,
+                `DTEND:${formatDate(endTime)}`,
+                `SUMMARY:${title}`,
+                `DESCRIPTION:${description.replace(/\n/g, '\\n')}`,
+                `LOCATION:${location}`,
+                'STATUS:CONFIRMED',
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\r\n');
+            
+            return icsContent;
+        }
+
+        // Descargar archivo ICS
+        function downloadICSFile(icsContent, filename) {
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${filename.replace(/[^a-z0-9]/gi, '_')}.ics`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+        }
+
+        // Abrir Google Calendar como alternativa
+        function openGoogleCalendar(title, startTime, endTime, description, location) {
+            const formatDateGoogle = (date) => {
+                return new Date(date).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            };
+            
+            const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formatDateGoogle(startTime)}/${formatDateGoogle(endTime)}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(location)}&sf=true&output=xml`;
+            
+            window.open(calendarUrl, '_blank');
         }
 
         // Función para actualizar contadores
