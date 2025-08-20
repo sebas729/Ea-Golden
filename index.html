@@ -1277,7 +1277,7 @@
                     const blocksHtml = blocks.map(block => `
                         <div class="block-card ${block.type.toLowerCase()}">
                             <div class="block-header">
-                                <div class="block-type ${block.type.toLowerCase()}">${block.type}</div>
+                                <div class="block-type ${block.type.toLowerCase()}">${block.type} [${block.timeframe}]</div>
                                 <div class="block-price">${block.price.toFixed(5)}</div>
                             </div>
                             <div class="block-details">
