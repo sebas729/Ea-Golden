@@ -1011,6 +1011,12 @@
                     <span class="data-value" style="color: #ff5722">${timeframe.price_data.level_786_percent.toFixed(5)}</span>
                 </div>
                 ` : ''}
+                ${timeframe.stophunt_price ? `
+                <div class="data-row">
+                    <span class="data-label">🔥 StopHunt</span>
+                    <span class="data-value" style="color: #e91e63">${timeframe.stophunt_price.toFixed(5)}</span>
+                </div>
+                ` : ''}
                 <div class="data-row">
                     <span class="data-label">📍 Posición</span>
                     <span class="data-value ${timeframe.position.direction === 'above' ? 'success' : 'warning'}">
