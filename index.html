@@ -574,12 +574,12 @@
         }
 
         /* Order Blocks Tab */
-        .ob-section {
-            margin-bottom: 2rem;
+        .timeframe-section {
+            margin-bottom: 40px;
             scroll-margin-top: 100px;
         }
 
-        .ob-section.highlighted {
+        .timeframe-section.highlighted {
             animation: highlightSection 2s ease;
         }
 
@@ -593,56 +593,194 @@
             }
         }
 
-        .ob-section h3 {
-            color: var(--success);
-            margin-bottom: 1rem;
+        .timeframe-header {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
-        .ob-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-            padding-left: 1rem;
-            border-left: 3px solid var(--success);
-        }
-
-        .ob-item {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1rem;
-            transition: all 0.2s ease;
-        }
-        
-        .ob-item:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-            border-color: var(--border-hover);
-        }
-
-        .ob-price {
-            font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+        .timeframe-badge {
+            background: linear-gradient(135deg, #00d4aa, #00b894);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 0.75rem;
-            font-size: 0.95rem;
-            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .ob-meta {
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            margin-bottom: 0.4rem;
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00ff88;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .blocks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .block-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .block-card.bajista:hover,
+        .block-card.bearish:hover {
+            transform: translateY(-2px);
+            border-color: rgba(186, 54, 49, 0.4);
+            box-shadow: 0 8px 32px rgba(186, 54, 49, 0.15);
+        }
+
+        .block-card.alcista:hover,
+        .block-card.bullish:hover {
+            transform: translateY(-2px);
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.15);
+        }
+
+        .block-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .block-card.bajista::before,
+        .block-card.bearish::before {
+            background: linear-gradient(90deg, #BA3631, #9a2b26);
+        }
+
+        .block-card.alcista::before,
+        .block-card.bullish::before {
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+
+        .block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .block-type {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: white;
+        }
+
+        .block-type.bajista {
+            background: linear-gradient(135deg, #BA3631, #9a2b26);
+        }
+
+        .block-type.alcista {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .block-type.bullish {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .block-type.bearish {
+            background: linear-gradient(135deg, #BA3631, #9a2b26);
+        }
+
+        .block-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #00d4aa;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .block-details {
+            display: grid;
+            gap: 12px;
+        }
+
+        .detail-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .no-ob {
-            color: var(--text-muted);
-            font-style: italic;
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 13px;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .percentage-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .percentage-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .block-card.bajista .percentage-fill,
+        .block-card.bearish .percentage-fill {
+            background: linear-gradient(90deg, #BA3631, #9a2b26);
+        }
+
+        .block-card.alcista .percentage-fill,
+        .block-card.bullish .percentage-fill {
+            background: linear-gradient(90deg, #00d4aa, #00b894);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
         }
 
         /* Config Tab */
@@ -837,11 +975,8 @@
 
                 <!-- Order Blocks Tab -->
                 <div id="order-blocks" class="tab-content">
-                    <div class="card">
-                        <h2>📊 Detalle de Order Blocks</h2>
-                        <div id="order-blocks-content">
-                            <!-- Order blocks will be populated here -->
-                        </div>
+                    <div id="order-blocks-content">
+                        <!-- Order blocks will be populated here -->
                     </div>
                 </div>
 
@@ -1109,42 +1244,70 @@
             container.innerHTML = '';
 
             if (!reportData.order_blocks_detail || Object.keys(reportData.order_blocks_detail).length === 0) {
-                container.innerHTML = '<p class="no-ob">No se encontraron Order Blocks en ningún timeframe</p>';
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <h3>No hay Order Blocks disponibles</h3>
+                        <p>No se encontraron Order Blocks en ningún timeframe en el momento actual.</p>
+                    </div>
+                `;
                 return;
             }
 
             Object.entries(reportData.order_blocks_detail).forEach(([timeframe, blocks]) => {
                 const section = document.createElement('div');
-                section.className = 'ob-section';
+                section.className = 'timeframe-section';
                 section.id = `ob-section-${timeframe}`;
                 
                 if (!blocks || blocks.length === 0) {
                     section.innerHTML = `
-                        <h3>🔸 ${timeframe}:</h3>
-                        <p class="no-ob">No encontrado</p>
+                        <div class="timeframe-header">
+                            <div class="timeframe-badge">
+                                <div class="status-dot"></div>
+                                ${timeframe}:
+                            </div>
+                        </div>
+                        <div class="empty-state">
+                            <div class="empty-icon">📊</div>
+                            <h3>No hay Order Blocks disponibles</h3>
+                            <p>No se encontraron Order Blocks para este timeframe en el momento actual.</p>
+                        </div>
                     `;
                 } else {
                     const blocksHtml = blocks.map(block => `
-                        <div class="ob-item">
-                            <div class="ob-price">${block.type} [${block.timeframe}]: ${block.price.toFixed(5)}</div>
-                            <div class="ob-meta">
-                                <span>📅 Fecha:</span>
-                                <span>${block.datetime.split(' ').slice(0,2).join(' ')}</span>
+                        <div class="block-card ${block.type.toLowerCase()}">
+                            <div class="block-header">
+                                <div class="block-type ${block.type.toLowerCase()}">${block.type}</div>
+                                <div class="block-price">${block.price.toFixed(5)}</div>
                             </div>
-                            <div class="ob-meta">
-                                <span>📊 Pips OC:</span>
-                                <span>${block.pips_open_close}p</span>
+                            <div class="block-details">
+                                <div class="detail-row">
+                                    <div class="detail-label">📅 Fecha:</div>
+                                    <div class="detail-value">${block.datetime.split(' ').slice(0,2).join(' ')}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">📊 Pips OC:</div>
+                                    <div class="detail-value">${block.pips_open_close}p</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">💪 % Cuerpo:</div>
+                                    <div class="detail-value">${block.body_percentage}%</div>
+                                </div>
                             </div>
-                            <div class="ob-meta">
-                                <span>📈 % Cuerpo:</span>
-                                <span>${block.body_percentage}%</span>
+                            <div class="percentage-bar">
+                                <div class="percentage-fill" style="width: ${block.body_percentage}%"></div>
                             </div>
                         </div>
                     `).join('');
                     
                     section.innerHTML = `
-                        <h3>🟢 ${timeframe}:</h3>
-                        <div class="ob-list">
+                        <div class="timeframe-header">
+                            <div class="timeframe-badge">
+                                <div class="status-dot"></div>
+                                ${timeframe}:
+                            </div>
+                        </div>
+                        <div class="blocks-grid">
                             ${blocksHtml}
                         </div>
                     `;
