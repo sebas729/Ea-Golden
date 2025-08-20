@@ -1199,21 +1199,33 @@
                 </div>
 
                 <div class="fibonacci-levels">
-                    <div class="fib-title">Niveles Fibonacci</div>
+                    <div class="fib-title">Niveles de activación</div>
                     <div class="fib-level">
-                        <span class="fib-label">50%</span>
+                        <span class="fib-label">Nivel 50%</span>
                         <span style="color: #fbbf24;">${timeframe.price_data.level_50_percent.toFixed(5)}</span>
                     </div>
                     ${timeframe.price_data.level_618_percent ? `
                     <div class="fib-level">
-                        <span class="fib-label">61.8%</span>
+                        <span class="fib-label">Nivel 61.8%</span>
                         <span style="color: #a855f7;">${timeframe.price_data.level_618_percent.toFixed(5)}</span>
                     </div>
                     ` : ''}
                     ${timeframe.price_data.level_786_percent ? `
                     <div class="fib-level">
-                        <span class="fib-label">78.6%</span>
+                        <span class="fib-label">Nivel 78.6%</span>
                         <span style="color: #f97316;">${timeframe.price_data.level_786_percent.toFixed(5)}</span>
+                    </div>
+                    ` : ''}
+                    ${hasOB ? `
+                    <div class="fib-level">
+                        <span class="fib-label">OB (${timeframe.timeframe})</span>
+                        <span style="color: #00d4aa;">${timeframe.order_block.price ? timeframe.order_block.price.toFixed(5) : 'N/A'}</span>
+                    </div>
+                    ` : ''}
+                    ${timeframe.stophunt_price ? `
+                    <div class="fib-level">
+                        <span class="fib-label">STOPHUNT</span>
+                        <span style="color: #ef4444;">${timeframe.stophunt_price.toFixed(5)}</span>
                     </div>
                     ` : ''}
                 </div>
@@ -1228,9 +1240,9 @@
                 </div>
 
                 <div class="volume-indicator">
-                    <span class="volume-label">Vencemos: ${timeframe.analysis_window.days} días</span>
+                    <span class="volume-label">Ventana: ${timeframe.analysis_window.days} días</span>
                     <span class="volume-value">
-                        ${hasOB ? `OB: ${timeframe.order_block.price ? timeframe.order_block.price.toFixed(5) : 'N/A'} 🟢` : 'OB: No encontrado ❌'}
+                        ${hasOB ? `✅ Order Block encontrado` : '❌ Order Block no encontrado'}
                     </span>
                 </div>
             `;
