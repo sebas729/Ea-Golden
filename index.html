@@ -999,6 +999,18 @@
                     <span class="data-label">🎯 Nivel 50%</span>
                     <span class="data-value warning">${timeframe.price_data.level_50_percent.toFixed(5)}</span>
                 </div>
+                ${timeframe.price_data.level_618_percent ? `
+                <div class="data-row">
+                    <span class="data-label">📊 Nivel 61.8%</span>
+                    <span class="data-value" style="color: #9c27b0">${timeframe.price_data.level_618_percent.toFixed(5)}</span>
+                </div>
+                ` : ''}
+                ${timeframe.price_data.level_786_percent ? `
+                <div class="data-row">
+                    <span class="data-label">📉 Nivel 78.6%</span>
+                    <span class="data-value" style="color: #ff5722">${timeframe.price_data.level_786_percent.toFixed(5)}</span>
+                </div>
+                ` : ''}
                 <div class="data-row">
                     <span class="data-label">📍 Posición</span>
                     <span class="data-value ${timeframe.position.direction === 'above' ? 'success' : 'warning'}">
