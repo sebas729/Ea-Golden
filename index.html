@@ -552,8 +552,11 @@
         }
 
         .ob-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            padding-left: 1rem;
             border-left: 3px solid var(--success);
-            padding-left: 1.5rem;
         }
 
         .ob-item {
@@ -561,19 +564,30 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 1rem;
-            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .ob-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            border-color: var(--border-hover);
         }
 
         .ob-price {
             font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            color: var(--accent);
         }
 
         .ob-meta {
             color: var(--text-muted);
-            font-size: 0.75rem;
-            margin-bottom: 0.25rem;
+            font-size: 0.7rem;
+            margin-bottom: 0.4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .no-ob {
@@ -1026,10 +1040,19 @@
                 } else {
                     const blocksHtml = blocks.map(block => `
                         <div class="ob-item">
-                            <div class="ob-price">${block.type} [${timeframe}]: ${block.price.toFixed(5)}</div>
-                            <div class="ob-meta">📅 Fecha: ${block.datetime}</div>
-                            <div class="ob-meta">📊 Pips Open-Close: ${block.pips_open_close}p</div>
-                            <div class="ob-meta">📈 % Cuerpo: ${block.body_percentage}%</div>
+                            <div class="ob-price">${block.type} [${block.timeframe}]: ${block.price.toFixed(5)}</div>
+                            <div class="ob-meta">
+                                <span>📅 Fecha:</span>
+                                <span>${block.datetime.split(' ').slice(0,2).join(' ')}</span>
+                            </div>
+                            <div class="ob-meta">
+                                <span>📊 Pips OC:</span>
+                                <span>${block.pips_open_close}p</span>
+                            </div>
+                            <div class="ob-meta">
+                                <span>📈 % Cuerpo:</span>
+                                <span>${block.body_percentage}%</span>
+                            </div>
                         </div>
                     `).join('');
                     
