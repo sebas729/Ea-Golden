@@ -351,29 +351,40 @@
         /* Cards Grid */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 16px;
         }
 
         .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.25rem;
-            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
             cursor: pointer;
         }
 
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00d4aa, #0099cc);
+        }
+
         .card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-hover);
-            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            border-color: rgba(0, 212, 170, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 212, 170, 0.1);
         }
 
         .card:active {
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
         .card.clickable-hint::after {
@@ -382,8 +393,8 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 212, 255, 0.1);
-            color: var(--accent);
+            background: rgba(0, 212, 170, 0.1);
+            color: #00d4aa;
             text-align: center;
             padding: 0.25rem;
             font-size: 0.65rem;
@@ -396,131 +407,170 @@
             opacity: 1;
         }
 
-        .card.highlight {
-            border-color: var(--success);
-            box-shadow: 0 0 20px rgba(76, 175, 80, 0.1);
-        }
-
-        .card.highlight::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--success);
-        }
 
         .card-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 20px;
         }
 
-        .card-header h2 {
-            font-size: 1rem;
-            margin: 0;
+        .timeframe {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
         }
 
-        .trend-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-        }
-
-        .trend-dot.bearish {
-            background: var(--error);
-        }
 
         .trend-badge {
-            background: rgba(76, 175, 80, 0.2);
-            color: var(--success);
-            padding: 0.25rem 0.6rem;
-            border-radius: 12px;
-            font-size: 0.7rem;
+            background: linear-gradient(135deg, #00d4aa, #00b894);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
         }
 
         .trend-badge.bearish {
-            background: rgba(244, 67, 54, 0.2);
-            color: var(--error);
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: #fff;
         }
 
-        .data-row {
+        /* Price Levels */
+        .price-levels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .level {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .level-label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .level-value {
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .high-value {
+            color: #00d4aa;
+        }
+
+        .low-value {
+            color: #ff6b6b;
+        }
+
+        .level-datetime {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* Metrics */
+        .metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .metric-value {
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Fibonacci Levels */
+        .fibonacci-levels {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .fib-title {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .fib-level {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .fib-label {
+            color: #94a3b8;
+        }
+
+        /* Position Info */
+        .position-info {
+            background: rgba(0, 212, 170, 0.05);
+            border: 1px solid rgba(0, 212, 170, 0.2);
+            border-radius: 8px;
+            padding: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.4rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 12px;
         }
 
-        .data-row:last-child {
-            border-bottom: none;
+        .position-label {
+            font-size: 12px;
+            color: #00d4aa;
+            text-transform: uppercase;
         }
 
-        .data-label {
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-        }
-
-        .data-value {
-            font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+        .position-value {
+            font-size: 14px;
             font-weight: 600;
-            text-align: right;
-            font-size: 0.9rem;
-            letter-spacing: -0.3px;
+            color: #00d4aa;
         }
 
-        .data-value.success { 
-            color: var(--success);
-            background: none;
-            padding: 0;
-        }
-        .data-value.warning { 
-            color: var(--warning);
-            background: none;
-            padding: 0;
-        }
-        .data-value.error { 
-            color: var(--error);
-            background: none;
-            padding: 0;
-        }
-
-        .card-footer {
-            margin-top: 0.75rem;
-            padding-top: 0.75rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        /* Volume Indicator */
+        .volume-indicator {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            padding: 8px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.65rem;
+            font-size: 12px;
         }
 
-        .window-info {
-            color: var(--text-muted);
+        .volume-label {
+            color: #94a3b8;
         }
 
-        .ob-status {
+        .volume-value {
+            color: #00d4aa;
             font-weight: 600;
-            background: none !important;
-            border: none !important;
-            padding: 0 !important;
-        }
-
-        .ob-status.success { 
-            color: var(--success);
-            background: none !important;
-            border: none !important;
-        }
-        .ob-status.error { 
-            color: var(--error);
-            background: none !important;
-            border: none !important;
         }
 
         /* Order Blocks Tab */
@@ -967,7 +1017,7 @@
             const hasOB = timeframe.order_block.found;
             
             const card = document.createElement('div');
-            card.className = `card clickable-hint ${hasOB ? 'highlight' : ''}`;
+            card.className = 'card clickable-hint';
             
             // Add click event to navigate to order blocks
             card.addEventListener('click', () => {
@@ -976,66 +1026,76 @@
             
             card.innerHTML = `
                 <div class="card-header">
-                    <div class="trend-dot ${!isBullish ? 'bearish' : ''}"></div>
-                    <h2>${timeframe.timeframe}</h2>
+                    <div class="timeframe">${timeframe.timeframe}</div>
                     <div class="trend-badge ${!isBullish ? 'bearish' : ''}">
-                        Tendencia ${timeframe.trend}
+                        TENDENCIA ${timeframe.trend.toUpperCase()}
                     </div>
                 </div>
                 
-                <div class="data-row">
-                    <span class="data-label">📈 High</span>
-                    <span class="data-value">${timeframe.price_data.high.value.toFixed(5)}</span>
+                <div class="price-levels">
+                    <div class="level">
+                        <div class="level-label">HIGH</div>
+                        <div class="level-value high-value">${timeframe.price_data.high.value.toFixed(5)}</div>
+                        <div class="level-datetime">${timeframe.price_data.high.datetime}</div>
+                    </div>
+                    <div class="level">
+                        <div class="level-label">LOW</div>
+                        <div class="level-value low-value">${timeframe.price_data.low.value.toFixed(5)}</div>
+                        <div class="level-datetime">${timeframe.price_data.low.datetime}</div>
+                    </div>
                 </div>
-                <div class="data-row" style="font-size: 0.7rem; color: var(--text-muted);">
-                    <span></span>
-                    <span>${timeframe.price_data.high.datetime}</span>
+
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-label">RANGO</div>
+                        <div class="metric-value">${Math.round(timeframe.price_data.range_pips)} pips</div>
+                    </div>
+                    ${timeframe.stophunt_price ? `
+                    <div class="metric">
+                        <div class="metric-label">STOPHUNT</div>
+                        <div class="metric-value" style="color: #ef4444;">${timeframe.stophunt_price.toFixed(5)}</div>
+                    </div>
+                    ` : `
+                    <div class="metric">
+                        <div class="metric-label">NIVEL 50%</div>
+                        <div class="metric-value" style="color: #fbbf24;">${timeframe.price_data.level_50_percent.toFixed(5)}</div>
+                    </div>
+                    `}
                 </div>
-                <div class="data-row">
-                    <span class="data-label">📉 Low</span>
-                    <span class="data-value">${timeframe.price_data.low.value.toFixed(5)}</span>
+
+                <div class="fibonacci-levels">
+                    <div class="fib-title">Niveles Fibonacci</div>
+                    <div class="fib-level">
+                        <span class="fib-label">50%</span>
+                        <span style="color: #fbbf24;">${timeframe.price_data.level_50_percent.toFixed(5)}</span>
+                    </div>
+                    ${timeframe.price_data.level_618_percent ? `
+                    <div class="fib-level">
+                        <span class="fib-label">61.8%</span>
+                        <span style="color: #a855f7;">${timeframe.price_data.level_618_percent.toFixed(5)}</span>
+                    </div>
+                    ` : ''}
+                    ${timeframe.price_data.level_786_percent ? `
+                    <div class="fib-level">
+                        <span class="fib-label">78.6%</span>
+                        <span style="color: #f97316;">${timeframe.price_data.level_786_percent.toFixed(5)}</span>
+                    </div>
+                    ` : ''}
                 </div>
-                <div class="data-row" style="font-size: 0.7rem; color: var(--text-muted);">
-                    <span></span>
-                    <span>${timeframe.price_data.low.datetime}</span>
+
+                <div class="position-info">
+                    <div>
+                        <div class="position-label">POSICIÓN</div>
+                        <div class="position-value">
+                            ${timeframe.position.status} (${timeframe.position.direction === 'above' ? '+' : ''}${Math.round(timeframe.position.pips)} pips)
+                        </div>
+                    </div>
                 </div>
-                <div class="data-row">
-                    <span class="data-label">🔧 Rango</span>
-                    <span class="data-value">${Math.round(timeframe.price_data.range_pips)} pips</span>
-                </div>
-                <div class="data-row">
-                    <span class="data-label">🎯 Nivel 50%</span>
-                    <span class="data-value warning">${timeframe.price_data.level_50_percent.toFixed(5)}</span>
-                </div>
-                ${timeframe.price_data.level_618_percent ? `
-                <div class="data-row">
-                    <span class="data-label">📊 Nivel 61.8%</span>
-                    <span class="data-value" style="color: #9c27b0">${timeframe.price_data.level_618_percent.toFixed(5)}</span>
-                </div>
-                ` : ''}
-                ${timeframe.price_data.level_786_percent ? `
-                <div class="data-row">
-                    <span class="data-label">📉 Nivel 78.6%</span>
-                    <span class="data-value" style="color: #ff5722">${timeframe.price_data.level_786_percent.toFixed(5)}</span>
-                </div>
-                ` : ''}
-                ${timeframe.stophunt_price ? `
-                <div class="data-row">
-                    <span class="data-label">🔥 StopHunt</span>
-                    <span class="data-value" style="color: #e91e63">${timeframe.stophunt_price.toFixed(5)}</span>
-                </div>
-                ` : ''}
-                <div class="data-row">
-                    <span class="data-label">📍 Posición</span>
-                    <span class="data-value ${timeframe.position.direction === 'above' ? 'success' : 'warning'}">
-                        ${timeframe.position.status} (${timeframe.position.direction === 'above' ? '+' : '-'}${Math.abs(Math.round(timeframe.position.pips))} pips)
-                    </span>
-                </div>
-                
-                <div class="card-footer">
-                    <span class="window-info">🔍 Ventana: ${timeframe.analysis_window.days} días</span>
-                    <span class="ob-status ${hasOB ? 'success' : 'error'}">
-                        ${hasOB ? `OB: ${timeframe.order_block.price ? timeframe.order_block.price.toFixed(5) : 'N/A'} ✅` : 'No Encontrado ❌'}
+
+                <div class="volume-indicator">
+                    <span class="volume-label">Vencemos: ${timeframe.analysis_window.days} días</span>
+                    <span class="volume-value">
+                        ${hasOB ? `OB: ${timeframe.order_block.price ? timeframe.order_block.price.toFixed(5) : 'N/A'} 🟢` : 'OB: No encontrado ❌'}
                     </span>
                 </div>
             `;
