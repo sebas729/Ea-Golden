@@ -987,9 +987,17 @@
                     <span class="data-label">📈 High</span>
                     <span class="data-value">${timeframe.price_data.high.value.toFixed(5)}</span>
                 </div>
+                <div class="data-row" style="font-size: 0.7rem; color: var(--text-muted);">
+                    <span></span>
+                    <span>${timeframe.price_data.high.datetime}</span>
+                </div>
                 <div class="data-row">
                     <span class="data-label">📉 Low</span>
                     <span class="data-value">${timeframe.price_data.low.value.toFixed(5)}</span>
+                </div>
+                <div class="data-row" style="font-size: 0.7rem; color: var(--text-muted);">
+                    <span></span>
+                    <span>${timeframe.price_data.low.datetime}</span>
                 </div>
                 <div class="data-row">
                     <span class="data-label">🔧 Rango</span>
