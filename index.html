@@ -433,7 +433,7 @@
         }
 
         .trend-badge.bearish {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            background: linear-gradient(135deg, #00d4aa, #00b894);
             color: #fff;
         }
 
@@ -469,7 +469,7 @@
         }
 
         .low-value {
-            color: #ff6b6b;
+            color: #00d4aa;
         }
 
         .level-datetime {
@@ -646,8 +646,8 @@
         .block-card.bajista:hover,
         .block-card.bearish:hover {
             transform: translateY(-2px);
-            border-color: rgba(186, 54, 49, 0.4);
-            box-shadow: 0 8px 32px rgba(186, 54, 49, 0.15);
+            border-color: rgba(0, 212, 170, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 212, 170, 0.15);
         }
 
         .block-card.alcista:hover,
@@ -668,7 +668,7 @@
 
         .block-card.bajista::before,
         .block-card.bearish::before {
-            background: linear-gradient(90deg, #BA3631, #9a2b26);
+            background: linear-gradient(90deg, #00d4aa, #00b894);
         }
 
         .block-card.alcista::before,
@@ -693,7 +693,7 @@
         }
 
         .block-type.bajista {
-            background: linear-gradient(135deg, #BA3631, #9a2b26);
+            background: linear-gradient(135deg, #00d4aa, #00b894);
         }
 
         .block-type.alcista {
@@ -705,7 +705,7 @@
         }
 
         .block-type.bearish {
-            background: linear-gradient(135deg, #BA3631, #9a2b26);
+            background: linear-gradient(135deg, #00d4aa, #00b894);
         }
 
         .block-price {
@@ -763,12 +763,61 @@
 
         .block-card.bajista .percentage-fill,
         .block-card.bearish .percentage-fill {
-            background: linear-gradient(90deg, #BA3631, #9a2b26);
+            background: linear-gradient(90deg, #00d4aa, #00b894);
         }
 
         .block-card.alcista .percentage-fill,
         .block-card.bullish .percentage-fill {
             background: linear-gradient(90deg, #00d4aa, #00b894);
+        }
+
+        .block-card.selected-ob {
+            border: 2px solid rgba(255, 215, 0, 0.7);
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.15);
+        }
+
+        .block-card.selected-ob::before {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.8), rgba(255, 237, 78, 0.8));
+            height: 4px;
+        }
+
+        .scoring-info {
+            background: rgba(255, 215, 0, 0.04);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            margin-bottom: 16px;
+        }
+
+        .score-title {
+            font-size: 12px;
+            color: rgba(255, 215, 0, 0.9);
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .score-breakdown {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+        }
+
+        .score-component {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+        }
+
+        .score-label {
+            color: #94a3b8;
+            text-transform: capitalize;
+        }
+
+        .score-value {
+            color: rgba(255, 215, 0, 0.85);
+            font-weight: 600;
         }
 
         .empty-state {
@@ -1033,7 +1082,8 @@
                     "timestamp": new Date().toISOString(),
                     "symbol": "XAUUSD",
                     "current_price": 3333.2,
-                    "next_report": "17:39"
+                    "next_report": "17:39",
+                    "algorithm": "Sistema OB Óptimo v1.0"
                 },
                 "timeframes": [],
                 "order_blocks_detail": {},
@@ -1119,11 +1169,11 @@
             if (!reportData) return;
 
             // Header and main info
-            document.getElementById('version').textContent = reportData.metadata.version;
+            document.getElementById('version').textContent = reportData.metadata.version || reportData.metadata.algorithm || 'N/A';
             document.getElementById('symbol').textContent = reportData.metadata.symbol;
             document.getElementById('current-price').textContent = reportData.metadata.current_price.toFixed(5);
             document.getElementById('last-update').textContent = formatDateTime(reportData.metadata.timestamp);
-            document.getElementById('next-report').textContent = reportData.metadata.next_report;
+            document.getElementById('next-report').textContent = reportData.metadata.next_report || 'N/A';
 
             // Populate timeframes
             populateTimeframes();
@@ -1148,8 +1198,59 @@
 
         // Create timeframe card
         function createTimeframeCard(timeframe) {
-            const isBullish = timeframe.trend_status === 'bullish';
-            const hasOB = timeframe.order_block.found;
+            // Support both old and new JSON structure
+            const isBullish = (timeframe.trend_status === 'bullish') || (timeframe.trend === 'BUY');
+            
+            // Check for order block in both structures
+            let hasOB = false;
+            let obPrice = null;
+            let obStatus = '';
+            
+            if (timeframe.order_block && timeframe.order_block.found) {
+                // Old structure
+                hasOB = timeframe.order_block.found;
+                obPrice = timeframe.order_block.price;
+                obStatus = '✅ Order Block encontrado';
+            } else if (timeframe.optimal_order_block && timeframe.optimal_order_block.status) {
+                // New structure
+                hasOB = timeframe.optimal_order_block.status.includes('encontrado');
+                obPrice = timeframe.optimal_order_block.price;
+                obStatus = timeframe.optimal_order_block.status;
+            }
+            
+            // Market structure handling
+            const marketData = timeframe.market_structure || timeframe.price_data;
+            const highValue = marketData.high.value || marketData.high.price;
+            const lowValue = marketData.low.value || marketData.low.price;
+            const highDateTime = marketData.high.datetime;
+            const lowDateTime = marketData.low.datetime;
+            
+            // Range calculation
+            const range = marketData.range || (marketData.range_pips ? Math.round(marketData.range_pips) : Math.round((highValue - lowValue) * 10000));
+            
+            // Fibonacci levels
+            const fibLevels = timeframe.fibonacci_levels || timeframe.price_data || {};
+            const fib50 = fibLevels.level_50_percent || fibLevels['50_percent'];
+            const fib618 = fibLevels.level_618_percent || fibLevels['618_percent'];
+            const fib786 = fibLevels.level_786_percent || fibLevels['786_percent'];
+            
+            // Position info
+            const positionData = timeframe.position || timeframe.price_position || {};
+            const positionStatus = positionData.status;
+            const positionDistance = positionData.distance || positionData.pips;
+            const positionDirection = positionData.direction || positionData.location;
+            
+            // Analysis window
+            let windowDays = 'N/A';
+            if (timeframe.market_structure && timeframe.market_structure.analysis_window) {
+                windowDays = timeframe.market_structure.analysis_window;
+            } else if (timeframe.analysis_window && timeframe.analysis_window.days) {
+                windowDays = timeframe.analysis_window.days;
+            } else if (timeframe.analysis_window) {
+                windowDays = timeframe.analysis_window;
+            } else if (marketData.analysis_window) {
+                windowDays = marketData.analysis_window;
+            }
             
             const card = document.createElement('div');
             card.className = 'card clickable-hint';
@@ -1170,79 +1271,95 @@
                 <div class="price-levels">
                     <div class="level">
                         <div class="level-label">HIGH</div>
-                        <div class="level-value high-value">${timeframe.price_data.high.value.toFixed(5)}</div>
-                        <div class="level-datetime">${timeframe.price_data.high.datetime}</div>
+                        <div class="level-value high-value">${highValue.toFixed(5)}</div>
+                        <div class="level-datetime">${highDateTime}</div>
                     </div>
                     <div class="level">
                         <div class="level-label">LOW</div>
-                        <div class="level-value low-value">${timeframe.price_data.low.value.toFixed(5)}</div>
-                        <div class="level-datetime">${timeframe.price_data.low.datetime}</div>
+                        <div class="level-value low-value">${lowValue.toFixed(5)}</div>
+                        <div class="level-datetime">${lowDateTime}</div>
                     </div>
                 </div>
 
                 <div class="metrics">
                     <div class="metric">
                         <div class="metric-label">RANGO</div>
-                        <div class="metric-value">${Math.round(timeframe.price_data.range_pips)} pips</div>
+                        <div class="metric-value">${range} pips</div>
                     </div>
                     ${timeframe.stophunt_price ? `
                     <div class="metric">
                         <div class="metric-label">STOPHUNT</div>
-                        <div class="metric-value" style="color: #ef4444;">${timeframe.stophunt_price.toFixed(5)}</div>
+                        <div class="metric-value" style="color: #00d4aa;">${timeframe.stophunt_price.toFixed(5)}</div>
                     </div>
                     ` : `
                     <div class="metric">
                         <div class="metric-label">NIVEL 50%</div>
-                        <div class="metric-value" style="color: #fbbf24;">${timeframe.price_data.level_50_percent.toFixed(5)}</div>
+                        <div class="metric-value" style="color: #fbbf24;">${fib50 ? fib50.toFixed(5) : 'N/A'}</div>
                     </div>
                     `}
                 </div>
 
                 <div class="fibonacci-levels">
                     <div class="fib-title">Niveles de activación</div>
+                    ${fib50 ? `
                     <div class="fib-level">
                         <span class="fib-label">Nivel 50%</span>
-                        <span style="color: #fbbf24;">${timeframe.price_data.level_50_percent.toFixed(5)}</span>
+                        <span style="color: #fbbf24;">${fib50.toFixed(5)}</span>
                     </div>
-                    ${timeframe.price_data.level_618_percent ? `
+                    ` : ''}
+                    ${fib618 ? `
                     <div class="fib-level">
                         <span class="fib-label">Nivel 61.8%</span>
-                        <span style="color: #a855f7;">${timeframe.price_data.level_618_percent.toFixed(5)}</span>
+                        <span style="color: #a855f7;">${fib618.toFixed(5)}</span>
                     </div>
                     ` : ''}
-                    ${timeframe.price_data.level_786_percent ? `
+                    ${fib786 ? `
                     <div class="fib-level">
                         <span class="fib-label">Nivel 78.6%</span>
-                        <span style="color: #f97316;">${timeframe.price_data.level_786_percent.toFixed(5)}</span>
+                        <span style="color: #f97316;">${fib786.toFixed(5)}</span>
                     </div>
                     ` : ''}
-                    ${hasOB ? `
+                    ${hasOB && obPrice ? `
                     <div class="fib-level">
-                        <span class="fib-label">OB (${timeframe.timeframe})</span>
-                        <span style="color: #00d4aa;">${timeframe.order_block.price ? timeframe.order_block.price.toFixed(5) : 'N/A'}</span>
+                        <span class="fib-label">OB Óptimo</span>
+                        <span style="color: #00d4aa;">${obPrice.toFixed(5)}</span>
                     </div>
                     ` : ''}
                     ${timeframe.stophunt_price ? `
                     <div class="fib-level">
                         <span class="fib-label">STOPHUNT</span>
-                        <span style="color: #ef4444;">${timeframe.stophunt_price.toFixed(5)}</span>
+                        <span style="color: #00d4aa;">${timeframe.stophunt_price.toFixed(5)}</span>
                     </div>
                     ` : ''}
                 </div>
+
+                ${timeframe.optimal_order_block && timeframe.optimal_order_block.scoring_result ? `
+                <div class="scoring-info">
+                    <div class="score-title">Score del OB Óptimo [${timeframe.optimal_order_block.origin_timeframe || timeframe.optimal_order_block.timeframe || 'N/A'}]: ${timeframe.optimal_order_block.scoring_result.final_score.toFixed(3)}</div>
+                    <div class="score-breakdown">
+                        ${Object.entries(timeframe.optimal_order_block.scoring_result.components).map(([key, component]) => `
+                            <div class="score-component">
+                                <span class="score-label">${key}:</span>
+                                <span class="score-value">${component.weighted.toFixed(3)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
 
                 <div class="position-info">
                     <div>
                         <div class="position-label">POSICIÓN</div>
                         <div class="position-value">
-                            ${timeframe.position.status} (${timeframe.position.direction === 'above' ? '+' : ''}${Math.round(timeframe.position.pips)} pips)
+                            ${positionStatus} ${typeof positionDistance === 'string' ? positionDistance : ((positionDirection === 'above' || positionDirection === 'ABOVE') ? '+' : '') + Math.round(positionDistance) + ' pips'}
                         </div>
                     </div>
                 </div>
 
                 <div class="volume-indicator">
-                    <span class="volume-label">Ventana: ${timeframe.analysis_window.days} días</span>
+                    <span class="volume-label">Ventana: ${windowDays} ${typeof windowDays === 'number' || (typeof windowDays === 'string' && !windowDays.includes('días')) ? 'días' : ''}</span>
                     <span class="volume-value">
-                        ${hasOB ? `✅ Order Block encontrado` : '❌ Order Block no encontrado'}
+                        ${obStatus || (hasOB ? '✅ Order Block encontrado' : '❌ Order Block no encontrado')}
                     </span>
                 </div>
             `;
@@ -1255,7 +1372,32 @@
             const container = document.getElementById('order-blocks-content');
             container.innerHTML = '';
 
-            if (!reportData.order_blocks_detail || Object.keys(reportData.order_blocks_detail).length === 0) {
+            // Check for both old and new structure
+            let blocksData = null;
+            
+            if (reportData.order_blocks_detail && Object.keys(reportData.order_blocks_detail).length > 0) {
+                // Old structure
+                blocksData = reportData.order_blocks_detail;
+            } else {
+                // New structure - extract from timeframes
+                blocksData = {};
+                reportData.timeframes.forEach(tf => {
+                    if (tf.order_blocks_analyzed && tf.order_blocks_analyzed.length > 0) {
+                        blocksData[tf.timeframe] = tf.order_blocks_analyzed.map(block => ({
+                            type: block.type,
+                            timeframe: block.timeframe,
+                            price: block.price,
+                            datetime: block.datetime,
+                            pips_open_close: block.pips_oc,
+                            body_percentage: block.body_percent,
+                            score: block.score,
+                            selected: block.selected
+                        }));
+                    }
+                });
+            }
+
+            if (!blocksData || Object.keys(blocksData).length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">📊</div>
@@ -1266,7 +1408,7 @@
                 return;
             }
 
-            Object.entries(reportData.order_blocks_detail).forEach(([timeframe, blocks]) => {
+            Object.entries(blocksData).forEach(([timeframe, blocks]) => {
                 const section = document.createElement('div');
                 section.className = 'timeframe-section';
                 section.id = `ob-section-${timeframe}`;
@@ -1286,10 +1428,15 @@
                         </div>
                     `;
                 } else {
-                    const blocksHtml = blocks.map(block => `
-                        <div class="block-card ${block.type.toLowerCase()}">
+                    const blocksHtml = blocks.map(block => {
+                        const isSelected = block.selected;
+                        const scoreText = block.score ? ` (Score: ${block.score.toFixed(3)})` : '';
+                        const selectedBadge = isSelected ? ' ⭐ ÓPTIMO' : '';
+                        
+                        return `
+                        <div class="block-card ${block.type.toLowerCase()} ${isSelected ? 'selected-ob' : ''}">
                             <div class="block-header">
-                                <div class="block-type ${block.type.toLowerCase()}">${block.type} [${block.timeframe}]</div>
+                                <div class="block-type ${block.type.toLowerCase()}">${block.type} [${block.timeframe}]${selectedBadge}</div>
                                 <div class="block-price">${block.price.toFixed(5)}</div>
                             </div>
                             <div class="block-details">
@@ -1305,18 +1452,25 @@
                                     <div class="detail-label">💪 % Cuerpo:</div>
                                     <div class="detail-value">${block.body_percentage}%</div>
                                 </div>
+                                ${block.score ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">🎯 Score:</div>
+                                    <div class="detail-value">${block.score.toFixed(3)}</div>
+                                </div>
+                                ` : ''}
                             </div>
                             <div class="percentage-bar">
                                 <div class="percentage-fill" style="width: ${block.body_percentage}%"></div>
                             </div>
                         </div>
-                    `).join('');
+                    `;
+                    }).join('');
                     
                     section.innerHTML = `
                         <div class="timeframe-header">
                             <div class="timeframe-badge">
                                 <div class="status-dot"></div>
-                                ${timeframe}:
+                                ${timeframe}: ${blocks.length} Order Block${blocks.length !== 1 ? 's' : ''}
                             </div>
                         </div>
                         <div class="blocks-grid">
@@ -1334,73 +1488,135 @@
             const configContainer = document.getElementById('config-content');
             const legendContainer = document.getElementById('legend-content');
             
-            // Check if configuration exists
-            if (!reportData.configuration) {
+            // Configuration for both old and new structure
+            if (!reportData.configuration && !reportData.trading_summary) {
                 configContainer.innerHTML = '<p>Configuración no disponible en este reporte</p>';
             } else {
-                // Configuration
-                const activationLevels = reportData.configuration.activation_levels ? 
-                    Object.entries(reportData.configuration.activation_levels)
-                        .map(([tf, level]) => `
-                            <div class="config-item">
-                                <span>${tf}</span>
-                                <span class="config-value">${level}%</span>
-                            </div>
-                        `).join('') : '';
+                let configHtml = '';
                 
-                configContainer.innerHTML = `
-                    ${activationLevels ? `
+                // Old structure configuration
+                if (reportData.configuration) {
+                    const activationLevels = reportData.configuration.activation_levels ? 
+                        Object.entries(reportData.configuration.activation_levels)
+                            .map(([tf, level]) => `
+                                <div class="config-item">
+                                    <span>${tf}</span>
+                                    <span class="config-value">${level}%</span>
+                                </div>
+                            `).join('') : '';
+                    
+                    configHtml += `
+                        ${activationLevels ? `
+                            <div class="config-section">
+                                <h3>📋 Niveles de Activación:</h3>
+                                ${activationLevels}
+                            </div>
+                        ` : ''}
+                        ${reportData.configuration.order_blocks ? `
+                            <div class="config-section">
+                                <h3>🧩 Order Blocks:</h3>
+                                <p>${reportData.configuration.order_blocks.description}</p>
+                            </div>
+                        ` : ''}
+                        ${reportData.configuration.stophunt ? `
+                            <div class="config-section">
+                                <h3>🔥 Stophunt:</h3>
+                                <p>${reportData.configuration.stophunt.description}</p>
+                            </div>
+                        ` : ''}
+                    `;
+                }
+                
+                // New structure summary
+                if (reportData.trading_summary) {
+                    configHtml += `
                         <div class="config-section">
-                            <h3>📋 Niveles de Activación:</h3>
-                            ${activationLevels}
+                            <h3>📈 Resumen de Trading:</h3>
+                            <div class="config-item">
+                                <span>Tendencia Global:</span>
+                                <span class="config-value">${reportData.trading_summary.global_trend}</span>
+                            </div>
+                            <div class="config-item">
+                                <span>Confianza General:</span>
+                                <span class="config-value">${reportData.trading_summary.overall_confidence}</span>
+                            </div>
+                            ${reportData.trading_summary.best_institutional_ob ? `
+                                <div class="config-item">
+                                    <span>Mejor OB Institucional:</span>
+                                    <span class="config-value">${reportData.trading_summary.best_institutional_ob.timeframe} @ ${reportData.trading_summary.best_institutional_ob.entry}</span>
+                                </div>
+                                <div class="config-item">
+                                    <span>Score del Mejor OB:</span>
+                                    <span class="config-value">${reportData.trading_summary.best_institutional_ob.score.toFixed(3)}</span>
+                                </div>
+                                <div class="config-item">
+                                    <span>Confianza del OB:</span>
+                                    <span class="config-value">${reportData.trading_summary.best_institutional_ob.confidence}</span>
+                                </div>
+                            ` : ''}
                         </div>
-                    ` : ''}
-                    ${reportData.configuration.order_blocks ? `
+                    `;
+                }
+                
+                // Summary for old structure
+                if (reportData.summary && !reportData.trading_summary) {
+                    configHtml += `
                         <div class="config-section">
-                            <h3>🧩 Order Blocks:</h3>
-                            <p>${reportData.configuration.order_blocks.description}</p>
+                            <h3>📈 Resumen del Análisis:</h3>
+                            <div class="config-item">
+                                <span>Timeframes Analizados:</span>
+                                <span class="config-value">${reportData.summary.total_timeframes_analyzed}</span>
+                            </div>
+                            <div class="config-item">
+                                <span>Timeframes Alcistas:</span>
+                                <span class="config-value">${reportData.summary.bullish_timeframes}</span>
+                            </div>
+                            <div class="config-item">
+                                <span>Timeframes Bajistas:</span>
+                                <span class="config-value">${reportData.summary.bearish_timeframes}</span>
+                            </div>
+                            <div class="config-item">
+                                <span>Total Order Blocks:</span>
+                                <span class="config-value">${reportData.summary.order_blocks_found.total}</span>
+                            </div>
+                            <div class="config-item">
+                                <span>Tendencia Dominante:</span>
+                                <span class="config-value">${reportData.summary.overall_trend}</span>
+                            </div>
                         </div>
-                    ` : ''}
-                    ${reportData.configuration.stophunt ? `
-                        <div class="config-section">
-                            <h3>🔥 Stophunt:</h3>
-                            <p>${reportData.configuration.stophunt.description}</p>
-                        </div>
-                    ` : ''}
-                `;
+                    `;
+                }
+                
+                configContainer.innerHTML = configHtml;
             }
             
-            // Legend
-            if (!reportData.legend) {
-                legendContainer.innerHTML = `
-                    <div class="config-item">
-                        <span>Bullish:</span>
-                        <span>Tendencia alcista</span>
-                    </div>
-                    <div class="config-item">
-                        <span>Bearish:</span>
-                        <span>Tendencia bajista</span>
-                    </div>
-                    <div class="config-item">
-                        <span>Order Block:</span>
-                        <span>Zona de interés institucional</span>
-                    </div>
-                    <div class="config-item">
-                        <span>50% Level:</span>
-                        <span>Nivel de retroceso de Fibonacci</span>
-                    </div>
-                `;
-            } else {
-                const legendItems = Object.entries(reportData.legend)
-                    .map(([key, value]) => `
-                        <div class="config-item">
-                            <span>${key.charAt(0).toUpperCase() + key.slice(1)}:</span>
-                            <span>${value}</span>
-                        </div>
-                    `).join('');
-                
-                legendContainer.innerHTML = legendItems;
-            }
+            // Legend (enhanced for new structure)
+            legendContainer.innerHTML = `
+                <div class="config-item">
+                    <span>BUY/Bullish:</span>
+                    <span>Tendencia alcista</span>
+                </div>
+                <div class="config-item">
+                    <span>SELL/Bearish:</span>
+                    <span>Tendencia bajista</span>
+                </div>
+                <div class="config-item">
+                    <span>Order Block Óptimo:</span>
+                    <span>OB seleccionado por algoritmo de scoring</span>
+                </div>
+                <div class="config-item">
+                    <span>Score:</span>
+                    <span>Puntuación de calidad del Order Block</span>
+                </div>
+                <div class="config-item">
+                    <span>Confluence:</span>
+                    <span>Confluencia entre diferentes timeframes</span>
+                </div>
+                <div class="config-item">
+                    <span>50% Level:</span>
+                    <span>Nivel de retroceso de Fibonacci</span>
+                </div>
+            `;
         }
 
         // Navigate to specific order block section
