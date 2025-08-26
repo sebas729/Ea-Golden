@@ -1358,6 +1358,18 @@
                             </div>
                         `).join('')}
                     </div>
+                    ${timeframe.optimal_order_block.selection_summary ? `
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255, 215, 0, 0.2);">
+                        <div class="score-component">
+                            <span class="score-label">Total OBs Analizados:</span>
+                            <span class="score-value">${timeframe.optimal_order_block.selection_summary.total_obs_analyzed}</span>
+                        </div>
+                        <div class="score-component" style="grid-column: 1 / -1;">
+                            <span class="score-label">Razón de Selección:</span>
+                            <span class="score-value" style="font-size: 10px;">${timeframe.optimal_order_block.selection_summary.selection_reason}</span>
+                        </div>
+                    </div>
+                    ` : ''}
                 </div>
                 ` : ''}
 
@@ -1405,7 +1417,11 @@
                             pips_open_close: block.pips_oc,
                             body_percentage: block.body_percent,
                             score: block.score,
-                            selected: block.selected
+                            selected: block.selected,
+                            vela: block.vela,
+                            closeness_order: block.closeness_order,
+                            distance_to_extreme: block.distance_to_extreme,
+                            passed_prefilter: block.passed_prefilter
                         }));
                     }
                 });
@@ -1466,10 +1482,34 @@
                                     <div class="detail-label">💪 % Cuerpo:</div>
                                     <div class="detail-value">${block.body_percentage}%</div>
                                 </div>
-                                ${block.score ? `
+                                ${block.score !== undefined ? `
                                 <div class="detail-row">
                                     <div class="detail-label">🎯 Score:</div>
                                     <div class="detail-value">${block.score.toFixed(3)}</div>
+                                </div>
+                                ` : ''}
+                                ${block.vela ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">🕯️ Vela:</div>
+                                    <div class="detail-value">${block.vela}</div>
+                                </div>
+                                ` : ''}
+                                ${block.closeness_order ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">📍 Orden Cercanía:</div>
+                                    <div class="detail-value">#${block.closeness_order}</div>
+                                </div>
+                                ` : ''}
+                                ${block.distance_to_extreme !== undefined ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">📏 Dist. a Extremo:</div>
+                                    <div class="detail-value">${block.distance_to_extreme.toFixed(1)}p</div>
+                                </div>
+                                ` : ''}
+                                ${block.passed_prefilter !== undefined ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">✅ Pre-filtro:</div>
+                                    <div class="detail-value" style="color: ${block.passed_prefilter ? '#00d4aa' : '#f44336'}">${block.passed_prefilter ? 'Aprobado' : 'Rechazado'}</div>
                                 </div>
                                 ` : ''}
                             </div>
