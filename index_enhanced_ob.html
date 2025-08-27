@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Fibonacci Strategy Report - Enhanced OB</title>
+    <style>
+        /* Mantener todos los estilos originales */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f1419;
+            --bg-secondary: #1a1f2e;
+            --bg-card: #212738;
+            --bg-hover: #2a3441;
+            
+            --text-primary: #ffffff;
+            --text-secondary: #b0bec5;
+            --text-muted: #78909c;
+            
+            --accent: #00d4ff;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --error: #f44336;
+            
+            --border: rgba(255, 255, 255, 0.1);
+            --border-hover: rgba(255, 255, 255, 0.2);
+            
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.25);
+            
+            --radius: 12px;
+            --space: 1rem;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space);
+        }
+
+        /* Loading States */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+            padding: 1rem;
+            border-radius: var(--radius);
+            text-align: center;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem 0;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent), #7c3aed);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .refresh-button-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+            font-size: 0.875rem;
+            margin-right: 1rem;
+        }
+
+        .refresh-button-header:hover {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            transform: translateY(-1px);
+        }
+
+        .refresh-button-header:disabled {
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Nuevo botón para generar OB dinámicos */
+        .generate-ob-button {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+            font-size: 0.875rem;
+        }
+
+        .generate-ob-button:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-1px);
+        }
+
+        .generate-ob-button:disabled {
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Tabs */
+        .tabs {
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-nav {
+            display: flex;
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 0.5rem;
+            margin-bottom: 1.5rem;
+            gap: 0.5rem;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: calc(var(--radius) - 4px);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .tab-button:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .tab-button.active {
+            background: var(--accent);
+            color: var(--bg-primary);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* OB Dinámicos Tab */
+        .ob-charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-header {
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .chart-title {
+            color: var(--accent);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .chart-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .chart-container {
+            height: 500px;
+            width: 100%;
+        }
+
+        /* Status indicators */
+        .status-success {
+            color: var(--success);
+        }
+
+        .status-warning {
+            color: var(--warning);
+        }
+
+        .status-error {
+            color: var(--error);
+        }
+
+        /* Mantener el resto de estilos originales */
+        .main-info {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .info-item h3 {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .info-item .value {
+            font-size: 1.75rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(0, 212, 170, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 212, 170, 0.1);
+        }
+    </style>
+    
+    <!-- Plotly.js para mostrar gráficos -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>
+                <span>📊</span>Fibonacci Strategy Report - Enhanced OB
+            </h1>
+            <button class="refresh-button-header" onclick="loadData()">
+                <span>🔄</span> Actualizar Datos
+            </button>
+            <button class="generate-ob-button" onclick="generateObCharts()" id="generateObBtn">
+                <span>📈</span> Generar OB Dinámicos
+            </button>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Cargando datos del reporte...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="error" style="display: none;">
+            <h3>❌ Error al cargar los datos</h3>
+            <p id="error-message">No se pudieron obtener los datos del servidor.</p>
+            <button class="refresh-button-header" onclick="loadData()">🔄 Reintentar</button>
+        </div>
+
+        <!-- Main Content -->
+        <div id="main-content" style="display: none;">
+            <!-- Main Info -->
+            <div class="main-info">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <h3>🎯 Símbolo</h3>
+                        <div class="value" id="symbol">-</div>
+                    </div>
+                    <div class="info-item">
+                        <h3>💹 Precio Actual</h3>
+                        <div class="value" id="current-price">-</div>
+                    </div>
+                    <div class="info-item">
+                        <h3>⏰ Última Actualización</h3>
+                        <div class="value" id="last-update" style="font-size: 1rem;">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <nav class="tab-nav">
+                    <button class="tab-button active" onclick="showTab('analysis')">
+                        📈 Análisis por TF
+                    </button>
+                    <button class="tab-button" onclick="showTab('ob-dynamic')" id="obDynamicTab">
+                        🎯 OB Dinámicos
+                    </button>
+                    <button class="tab-button" onclick="showTab('order-blocks')">
+                        📊 Order Blocks
+                    </button>
+                </nav>
+
+                <!-- Analysis Tab (original) -->
+                <div id="analysis" class="tab-content active">
+                    <div class="cards-grid" id="timeframes-grid">
+                        <!-- Timeframes will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Nueva Tab para OB Dinámicos -->
+                <div id="ob-dynamic" class="tab-content">
+                    <div id="ob-loading" class="loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>Generando gráficos OB dinámicos...</p>
+                    </div>
+                    
+                    <div id="ob-error" class="error" style="display: none;">
+                        <h3>❌ Error generando OB dinámicos</h3>
+                        <p id="ob-error-message"></p>
+                    </div>
+
+                    <div id="ob-charts-container" class="ob-charts-container">
+                        <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                            <h3>📈 Gráficos OB Dinámicos</h3>
+                            <p>Haz clic en "Generar OB Dinámicos" para visualizar los gráficos interactivos con Order Blocks.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Blocks Tab (original) -->
+                <div id="order-blocks" class="tab-content">
+                    <div id="order-blocks-content">
+                        <!-- Order blocks will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let reportData = null;
+        let obChartsData = null;
+
+        // API URLs
+        const API_URL = 'https://eagolden.online/api/fibonacci-report';
+        const OB_PROCESS_URL = 'https://eagolden.online/api/process-ob-report'; // Tu nuevo endpoint
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+        });
+
+        // Function to load data from API
+        async function loadData() {
+            showLoading();
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                reportData = data; // Guardar el JSON completo
+                
+                populateUI();
+                showMainContent();
+                
+                // Habilitar botón de OB dinámicos
+                document.getElementById('generateObBtn').disabled = false;
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('Error cargando datos: ' + error.message);
+            }
+        }
+
+        // Nueva función para generar gráficos OB dinámicos
+        async function generateObCharts() {
+            if (!reportData) {
+                showObError('No hay datos del fibonacci-report cargados');
+                return;
+            }
+
+            showObLoading();
+            
+            try {
+                const response = await fetch(OB_PROCESS_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(reportData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.error || 'Error procesando OB dinámicos');
+                }
+                
+                obChartsData = result.data;
+                renderObCharts();
+                hideObLoading();
+                
+                // Actualizar tab indicator
+                const obTab = document.getElementById('obDynamicTab');
+                obTab.innerHTML = '🎯 OB Dinámicos ✅';
+                obTab.style.color = '#4caf50';
+                
+            } catch (error) {
+                console.error('Error generating OB charts:', error);
+                showObError('Error generando OB dinámicos: ' + error.message);
+            }
+        }
+
+        // Función para renderizar los gráficos OB
+        function renderObCharts() {
+            const container = document.getElementById('ob-charts-container');
+            container.innerHTML = '';
+
+            if (!obChartsData || !obChartsData.timeframes) {
+                container.innerHTML = `
+                    <div class="card" style="grid-column: 1 / -1;">
+                        <h3>❌ No hay datos de OB dinámicos</h3>
+                    </div>
+                `;
+                return;
+            }
+
+            let totalCharts = 0;
+
+            Object.entries(obChartsData.timeframes).forEach(([mainTf, tfData]) => {
+                if (!tfData.charts || Object.keys(tfData.charts).length === 0) {
+                    return; // Skip si no hay gráficos
+                }
+
+                Object.entries(tfData.charts).forEach(([obTf, chartData]) => {
+                    const chartCard = document.createElement('div');
+                    chartCard.className = 'chart-card';
+                    
+                    const chartId = `chart-${mainTf}-${obTf}`.replace(/[^a-zA-Z0-9]/g, '-');
+                    
+                    chartCard.innerHTML = `
+                        <div class="chart-header">
+                            <div class="chart-title">Tab ${mainTf} - Gráfico ${obTf}</div>
+                            <div class="chart-subtitle">
+                                📊 ${chartData.metadata.ob_count} Order Blocks | 
+                                📈 ${chartData.metadata.bars_count} barras | 
+                                HIGH: ${chartData.metadata.high_price} | 
+                                LOW: ${chartData.metadata.low_price}
+                            </div>
+                        </div>
+                        <div class="chart-container" id="${chartId}"></div>
+                    `;
+
+                    container.appendChild(chartCard);
+
+                    // Renderizar el gráfico de Plotly
+                    setTimeout(() => {
+                        try {
+                            const plotlyData = JSON.parse(chartData.chart_json);
+                            Plotly.newPlot(chartId, plotlyData.data, plotlyData.layout, {
+                                responsive: true,
+                                displayModeBar: true,
+                                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'autoScale2d', 'hoverClosestCartesian', 'hoverCompareCartesian', 'toggleSpikelines']
+                            });
+                        } catch (e) {
+                            console.error(`Error rendering chart ${chartId}:`, e);
+                            document.getElementById(chartId).innerHTML = `
+                                <div style="text-align: center; color: var(--error); padding: 2rem;">
+                                    ❌ Error renderizando gráfico
+                                </div>
+                            `;
+                        }
+                    }, 100);
+
+                    totalCharts++;
+                });
+            });
+
+            if (totalCharts === 0) {
+                container.innerHTML = `
+                    <div class="card" style="grid-column: 1 / -1; text-align: center;">
+                        <h3>📊 No hay gráficos disponibles</h3>
+                        <p>No se encontraron Order Blocks para generar gráficos dinámicos.</p>
+                    </div>
+                `;
+            } else {
+                // Agregar resumen al final
+                const summaryCard = document.createElement('div');
+                summaryCard.className = 'card';
+                summaryCard.style.gridColumn = '1 / -1';
+                summaryCard.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))';
+                summaryCard.innerHTML = `
+                    <div style="text-align: center;">
+                        <h3 style="color: #10b981;">✅ Gráficos OB Dinámicos Generados</h3>
+                        <p>📊 ${totalCharts} gráficos generados exitosamente</p>
+                        <p>🔄 ${obChartsData.summary.mt5_calls_made} llamadas MT5 optimizadas</p>
+                    </div>
+                `;
+                container.appendChild(summaryCard);
+            }
+        }
+
+        // Show loading states for OB
+        function showObLoading() {
+            document.getElementById('ob-loading').style.display = 'flex';
+            document.getElementById('ob-error').style.display = 'none';
+            document.getElementById('generateObBtn').disabled = true;
+        }
+
+        function hideObLoading() {
+            document.getElementById('ob-loading').style.display = 'none';
+            document.getElementById('generateObBtn').disabled = false;
+        }
+
+        function showObError(message) {
+            document.getElementById('ob-loading').style.display = 'none';
+            document.getElementById('ob-error').style.display = 'block';
+            document.getElementById('ob-error-message').textContent = message;
+            document.getElementById('generateObBtn').disabled = false;
+        }
+
+        // Show loading state
+        function showLoading() {
+            document.getElementById('loading').style.display = 'flex';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('main-content').style.display = 'none';
+        }
+
+        // Show error state
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('error-message').textContent = message;
+        }
+
+        // Show main content
+        function showMainContent() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+        }
+
+        // Populate UI with data (versión simplificada)
+        function populateUI() {
+            if (!reportData) return;
+
+            const fibData = reportData.fibonacci_strategy_report;
+            
+            // Header and main info
+            document.getElementById('symbol').textContent = fibData.metadata.symbol;
+            document.getElementById('current-price').textContent = fibData.metadata.current_price.toFixed(5);
+            document.getElementById('last-update').textContent = new Date(fibData.metadata.timestamp).toLocaleString();
+
+            // Populate timeframes (versión simplificada)
+            populateTimeframes();
+            populateOrderBlocks();
+        }
+
+        // Simplificar populateTimeframes para mostrar solo información básica
+        function populateTimeframes() {
+            const grid = document.getElementById('timeframes-grid');
+            grid.innerHTML = '';
+
+            if (!reportData.fibonacci_strategy_report.timeframes) return;
+
+            reportData.fibonacci_strategy_report.timeframes.forEach(tf => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                const market = tf.market_structure;
+                const highValue = market.high.value || market.high.price;
+                const lowValue = market.low.value || market.low.price;
+                
+                card.innerHTML = `
+                    <div style="text-align: center;">
+                        <h3 style="color: var(--accent); margin-bottom: 1rem;">${tf.timeframe_general}</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">HIGH</div>
+                                <div style="font-weight: 600; color: var(--success);">${highValue.toFixed(5)}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">LOW</div>
+                                <div style="font-weight: 600; color: var(--error);">${lowValue.toFixed(5)}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 1rem; padding: 0.5rem; background: rgba(0, 212, 255, 0.1); border-radius: 6px;">
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">TREND</div>
+                            <div style="font-weight: 600; color: var(--accent);">${tf.trend}</div>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // Simplificar populateOrderBlocks
+        function populateOrderBlocks() {
+            const container = document.getElementById('order-blocks-content');
+            container.innerHTML = `
+                <div class="card" style="text-align: center; padding: 3rem;">
+                    <h3>📊 Order Blocks</h3>
+                    <p>Los Order Blocks detallados están disponibles en la tab "OB Dinámicos".</p>
+                    <p>Haz clic en "Generar OB Dinámicos" para ver los gráficos interactivos.</p>
+                </div>
+            `;
+        }
+
+        // Tab functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => button.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to corresponding button
+            const targetButton = Array.from(buttons).find(button => {
+                if (tabName === 'analysis') return button.textContent.includes('Análisis');
+                if (tabName === 'ob-dynamic') return button.textContent.includes('OB Dinámicos');
+                if (tabName === 'order-blocks') return button.textContent.includes('Order Blocks');
+                return false;
+            });
+            
+            if (targetButton) {
+                targetButton.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
