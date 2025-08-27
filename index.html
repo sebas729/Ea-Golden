@@ -1543,9 +1543,9 @@
             const card = document.createElement('div');
             card.className = 'card clickable-hint';
             
-            // Add click event to navigate to order blocks
+            // Add click event to navigate to OB Dinámicos
             card.addEventListener('click', () => {
-                navigateToOrderBlock(timeframe.timeframe_general);
+                navigateToObDynamics(timeframe.timeframe_general);
             });
             
             card.innerHTML = `
@@ -1973,6 +1973,36 @@
             }, 100);
         }
 
+        // Navigate to OB Dinámicos and select specific timeframe
+        function navigateToObDynamics(timeframe) {
+            // Switch to OB Dinámicos tab
+            showTab('ob-dynamics');
+            
+            // Si ya hay datos OB dinámicos, cambiar al timeframe seleccionado
+            if (obDynamicsData && obDynamicsData.timeframes[timeframe]) {
+                setTimeout(() => {
+                    switchObTimeframe(timeframe);
+                }, 100);
+            } else {
+                // Si no hay datos, generar OB dinámicos y luego seleccionar timeframe
+                if (reportData) {
+                    // Establecer el timeframe que queremos seleccionar después de generar
+                    currentObTimeframe = timeframe;
+                    document.getElementById('current-tf-label').textContent = timeframe + ':';
+                    
+                    // Generar automáticamente los OB dinámicos
+                    setTimeout(() => {
+                        generateObDynamics().then(() => {
+                            // Después de generar, cambiar al timeframe deseado
+                            if (obDynamicsData && obDynamicsData.timeframes[timeframe]) {
+                                switchObTimeframe(timeframe);
+                            }
+                        });
+                    }, 100);
+                }
+            }
+        }
+
         // Tab functionality
         function showTab(tabName) {
             // Hide all tab contents
@@ -2101,6 +2131,15 @@
 
             // Renderizar selector de timeframes
             renderUnifiedTimeframeSelector();
+
+            // Verificar que el currentObTimeframe existe en los datos
+            if (!obDynamicsData.timeframes[currentObTimeframe]) {
+                // Si el timeframe seleccionado no existe, usar el primero disponible
+                currentObTimeframe = Object.keys(obDynamicsData.timeframes)[0] || 'H1';
+            }
+
+            // Actualizar label del timeframe actual
+            document.getElementById('current-tf-label').textContent = currentObTimeframe + ':';
 
             // Mostrar gráfico del timeframe actual
             renderObChart(currentObTimeframe);
