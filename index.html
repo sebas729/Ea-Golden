@@ -248,7 +248,6 @@
 
         .refresh-button-header:hover {
             background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-            transform: translateY(-1px);
         }
 
         .refresh-button-header:disabled {
@@ -277,7 +276,6 @@
 
         .generate-ob-button:hover {
             background: linear-gradient(135deg, #059669 0%, #047857 100%);
-            transform: translateY(-1px);
         }
 
         .generate-ob-button:disabled {
@@ -346,8 +344,7 @@
             border-color: var(--accent);
             color: var(--bg-primary);
             font-weight: 600;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 212, 255, 0.3);
+            box-shadow: 0 2px 4px rgba(0, 212, 255, 0.2);
         }
 
         .ob-charts-container {
@@ -397,16 +394,104 @@
             font-weight: 600;
         }
 
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(800px, 1fr));
-            gap: 2rem;
-            margin-top: 1rem;
+        /* Diseño unificado para OB Dinámicos */
+        .ob-unified-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0;
+            box-shadow: var(--shadow);
+            overflow: hidden;
         }
 
-        @media (max-width: 900px) {
-            .charts-grid {
-                grid-template-columns: 1fr;
+        .unified-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+            border-bottom: 1px solid var(--border);
+        }
+
+        .unified-header h2 {
+            color: var(--text-primary);
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .unified-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .controls-left, .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .controls-label {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .timeframe-buttons-inline, .chart-buttons-inline {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+
+        .timeframe-buttons-inline .timeframe-btn,
+        .chart-buttons-inline .chart-btn {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            margin: 0;
+            min-width: 45px;
+        }
+
+        .ob-charts-container-unified {
+            padding: 2rem;
+            min-height: 200px;
+        }
+
+        .initial-message {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .initial-message h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .unified-chart-container {
+            margin-top: 1.5rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        /* Responsive para controles */
+        @media (max-width: 768px) {
+            .unified-controls {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .controls-left, .controls-right {
+                width: 100%;
+                justify-content: flex-start;
             }
         }
 
@@ -1193,24 +1278,34 @@
 
                 <!-- OB Dinámicos Tab -->
                 <div id="ob-dynamics" class="tab-content">
-                    <div class="section-header">
-                        <h2>🎯 Order Blocks Dinámicos</h2>
-                        <button id="generate-ob-btn" onclick="generateObDynamics()" class="generate-ob-button">
-                            Generar OB Dinámicos
-                        </button>
-                    </div>
+                    <!-- Container principal unificado -->
+                    <div id="ob-unified-container" class="ob-unified-container card">
+                        <!-- Header con título y botón -->
+                        <div class="unified-header">
+                            <h2>🎯 Order Blocks Dinámicos</h2>
+                            <button id="generate-ob-btn" onclick="generateObDynamics()" class="generate-ob-button">
+                                Generar OB Dinámicos
+                            </button>
+                        </div>
 
-                    <!-- Timeframe selector dinámico -->
-                    <div id="timeframe-selector" class="timeframe-selector" style="display: none;">
-                        <h3>Cambiar Timeframe de Análisis:</h3>
-                        <div id="timeframe-buttons" class="timeframe-buttons"></div>
-                    </div>
+                        <!-- Fila de controles compacta -->
+                        <div id="unified-controls" class="unified-controls" style="display: none;">
+                            <div class="controls-left">
+                                <span class="controls-label">Timeframe:</span>
+                                <div id="timeframe-buttons" class="timeframe-buttons-inline"></div>
+                            </div>
+                            <div class="controls-right">
+                                <span id="current-tf-label" class="controls-label">H1:</span>
+                                <div id="chart-buttons" class="chart-buttons-inline"></div>
+                            </div>
+                        </div>
 
-                    <!-- Container para los gráficos -->
-                    <div id="ob-charts-container" class="ob-charts-container">
-                        <div class="card" style="text-align: center; padding: 3rem;">
-                            <h3>📈 Gráficos OB Dinámicos</h3>
-                            <p>Haz clic en "Generar OB Dinámicos" para visualizar los gráficos interactivos con Order Blocks.</p>
+                        <!-- Container para los gráficos -->
+                        <div id="ob-charts-container" class="ob-charts-container-unified">
+                            <div class="initial-message">
+                                <h3>📈 Gráficos OB Dinámicos</h3>
+                                <p>Haz clic en "Generar OB Dinámicos" para visualizar los gráficos interactivos con Order Blocks.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2001,18 +2096,19 @@
         function renderObDynamics() {
             if (!obDynamicsData) return;
 
-            // Mostrar selector de timeframes
-            renderTimeframeSelector();
+            // Mostrar controles unificados
+            document.getElementById('unified-controls').style.display = 'flex';
+
+            // Renderizar selector de timeframes
+            renderUnifiedTimeframeSelector();
 
             // Mostrar gráfico del timeframe actual
             renderObChart(currentObTimeframe);
         }
 
-        // Crear botones de timeframe dinámicos
-        function renderTimeframeSelector() {
+        // Crear botones de timeframe dinámicos en el diseño unificado
+        function renderUnifiedTimeframeSelector() {
             const container = document.getElementById('timeframe-buttons');
-            const selector = document.getElementById('timeframe-selector');
-
             container.innerHTML = '';
 
             // Crear botón para cada timeframe que tenga datos
@@ -2023,18 +2119,19 @@
                 button.onclick = () => switchObTimeframe(tf);
                 container.appendChild(button);
             });
-
-            selector.style.display = 'block';
         }
 
         // Cambiar timeframe de OB
         function switchObTimeframe(timeframe) {
             currentObTimeframe = timeframe;
 
-            // Actualizar botones activos
+            // Actualizar botones activos de timeframe
             document.querySelectorAll('.timeframe-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.textContent === timeframe);
             });
+
+            // Actualizar label del timeframe actual
+            document.getElementById('current-tf-label').textContent = timeframe + ':';
 
             // Renderizar gráfico del nuevo timeframe
             renderObChart(timeframe);
@@ -2046,23 +2143,24 @@
             const tfData = obDynamicsData.timeframes[timeframe];
 
             if (!tfData || !tfData.charts) {
-                container.innerHTML = '<div class="card"><p>No hay gráficos disponibles para ' + timeframe + '</p></div>';
+                container.innerHTML = '<div class="initial-message"><p>No hay gráficos disponibles para ' + timeframe + '</p></div>';
                 return;
             }
 
-            container.innerHTML = '';
-
             const chartKeys = Object.keys(tfData.charts);
 
-            // Siempre mostrar selector de gráficos
-            const subSelector = document.createElement('div');
-            subSelector.className = 'sub-timeframe-selector';
-            subSelector.innerHTML = '<h4>Gráficos disponibles para ' + timeframe + ':</h4>';
+            // Actualizar selector de gráficos en la barra de controles
+            renderChartSelector(chartKeys, timeframe);
 
-            const buttonContainer = document.createElement('div');
-            buttonContainer.style.display = 'flex';
-            buttonContainer.style.gap = '0.5rem';
-            buttonContainer.style.flexWrap = 'wrap';
+            // Limpiar container y mostrar primer gráfico
+            container.innerHTML = '';
+            renderSingleChart(timeframe, chartKeys[0], true);
+        }
+
+        // Crear selector de gráficos en la barra unificada
+        function renderChartSelector(chartKeys, timeframe) {
+            const container = document.getElementById('chart-buttons');
+            container.innerHTML = '';
 
             chartKeys.forEach((chartTf, index) => {
                 const btn = document.createElement('button');
@@ -2070,97 +2168,56 @@
                 btn.className = index === 0 ? 'chart-btn active' : 'chart-btn';
                 btn.onclick = () => {
                     // Actualizar botones activos
-                    buttonContainer.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+                    container.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     // Renderizar solo el gráfico seleccionado
-                    renderSingleChart(timeframe, chartTf, false, true);
+                    const chartContainer = document.getElementById('ob-charts-container');
+                    chartContainer.innerHTML = '';
+                    renderSingleChart(timeframe, chartTf, true);
                 };
-                buttonContainer.appendChild(btn);
+                container.appendChild(btn);
             });
-
-            subSelector.appendChild(buttonContainer);
-            container.appendChild(subSelector);
-
-            // Crear contenedor para los gráficos
-            const chartsContainer = document.createElement('div');
-            chartsContainer.id = 'single-chart-container';
-            container.appendChild(chartsContainer);
-
-            // Mostrar primer gráfico por defecto
-            renderSingleChart(timeframe, chartKeys[0], false, true);
         }
 
         // Renderizar gráfico individual con Plotly
-        function renderSingleChart(mainTf, chartTf, isGridMode = false, isSingleMode = false) {
+        function renderSingleChart(mainTf, chartTf, directRender = false) {
             const tfData = obDynamicsData.timeframes[mainTf];
             const chartData = tfData.charts[chartTf];
 
             if (!chartData || !chartData.chart_json) return;
 
-            let container;
-            
-            if (isSingleMode) {
-                // Para modo single (con selector), usar el contenedor específico
-                container = document.getElementById('single-chart-container');
-                if (!container) {
-                    container = document.getElementById('ob-charts-container');
-                }
-                // Limpiar contenido anterior
-                container.innerHTML = '';
-            } else {
-                // Para modo grid (sin selector), usar el contenedor principal
-                container = document.querySelector('.charts-grid') || document.getElementById('ob-charts-container');
-            }
+            const container = document.getElementById('ob-charts-container');
 
             // Crear contenedor principal del gráfico
             const chartWrapper = document.createElement('div');
-            chartWrapper.className = 'chart-container card';
-            
-            if (isSingleMode) {
-                chartWrapper.style.marginBottom = '1rem';
-            } else {
-                chartWrapper.style.marginBottom = '2rem';
-            }
+            chartWrapper.className = 'unified-chart-container';
 
-            // Crear header del gráfico
-            const chartHeader = document.createElement('div');
-            chartHeader.style.marginBottom = '1rem';
-            chartHeader.style.textAlign = 'center';
-            chartHeader.innerHTML = `
-                <h3 style="color: var(--accent); margin-bottom: 0.5rem;">
-                    ${chartData.metadata.title || `Tab ${mainTf} - Gráfico ${chartTf}`}
-                </h3>
-            `;
-
-            // Crear div para el gráfico
+            // Crear div para el gráfico directamente
             const chartDiv = document.createElement('div');
             chartDiv.id = `chart-${mainTf}-${chartTf}`.replace(/[^a-zA-Z0-9]/g, '-');
             chartDiv.style.height = '600px';
-            chartDiv.style.marginBottom = '1rem';
+            chartDiv.style.width = '100%';
 
-            chartWrapper.appendChild(chartHeader);
             chartWrapper.appendChild(chartDiv);
 
-            // Mostrar metadata
+            // Mostrar metadata compacta
             if (chartData.metadata) {
                 const metadata = document.createElement('div');
                 metadata.className = 'chart-metadata';
+                metadata.style.marginTop = '1rem';
                 
                 let metadataHTML = `
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                        <div><strong>Order Blocks:</strong> ${chartData.metadata.ob_count}</div>
-                        <div><strong>Barras:</strong> ${chartData.metadata.bars_count}</div>
-                        <div><strong>HIGH:</strong> ${chartData.metadata.high_price}</div>
-                        <div><strong>LOW:</strong> ${chartData.metadata.low_price}</div>
+                    <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; font-size: 0.85rem;">
+                        <span><strong>OBs:</strong> ${chartData.metadata.ob_count}</span>
+                        <span><strong>Barras:</strong> ${chartData.metadata.bars_count}</span>
+                        <span><strong>HIGH:</strong> ${chartData.metadata.high_price}</span>
+                        <span><strong>LOW:</strong> ${chartData.metadata.low_price}</span>
                 `;
 
                 // Agregar información de zoom si existe
                 if (chartData.metadata.zoom_info) {
                     const zoom = chartData.metadata.zoom_info;
-                    metadataHTML += `
-                        <div><strong>Zoom:</strong> ${zoom.reduction_factor.toFixed(1)}x</div>
-                        <div><strong>Barras originales:</strong> ${zoom.original_bars}</div>
-                    `;
+                    metadataHTML += `<span><strong>Zoom:</strong> ${zoom.reduction_factor.toFixed(1)}x</span>`;
                 }
 
                 metadataHTML += '</div>';
@@ -2173,10 +2230,17 @@
             // Renderizar con Plotly
             try {
                 const plotlyData = JSON.parse(chartData.chart_json);
+                
+                // Ajustar layout para el diseño unificado
+                if (plotlyData.layout) {
+                    plotlyData.layout.height = 600;
+                    plotlyData.layout.margin = { l: 60, r: 60, t: 60, b: 60 };
+                }
+
                 Plotly.newPlot(chartDiv.id, plotlyData.data, plotlyData.layout, {
                     responsive: true,
                     displayModeBar: true,
-                    modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'autoScale2d']
+                    modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'autoScale2d', 'select2d', 'hoverClosestCartesian', 'hoverCompareCartesian']
                 });
 
                 console.log(`Gráfico ${mainTf}-${chartTf} renderizado exitosamente`);
