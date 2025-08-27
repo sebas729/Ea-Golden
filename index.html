@@ -167,9 +167,9 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1600px;
             margin: 0 auto;
-            padding: var(--space);
+            padding: var(--space) 0.5rem;
         }
 
         /* Loading States */
@@ -248,7 +248,6 @@
 
         .refresh-button-header:hover {
             background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-            transform: translateY(-1px);
         }
 
         .refresh-button-header:disabled {
@@ -256,6 +255,244 @@
             color: var(--text-secondary);
             cursor: not-allowed;
             transform: none;
+        }
+
+        /* Estilos para OB Dinámicos */
+        .generate-ob-button {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+            font-size: 0.875rem;
+        }
+
+        .generate-ob-button:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }
+
+        .generate-ob-button:disabled {
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .section-header h2 {
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .timeframe-selector {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .timeframe-selector h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .timeframe-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .timeframe-btn, .chart-btn {
+            padding: 8px 16px;
+            margin: 4px;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .timeframe-btn:hover, .chart-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-hover);
+        }
+
+        .timeframe-btn.active, .chart-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg-primary);
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 212, 255, 0.2);
+        }
+
+        .ob-charts-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .chart-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-metadata {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .chart-metadata p {
+            margin: 0.25rem 0;
+            color: var(--text-secondary);
+        }
+
+        .chart-metadata strong {
+            color: var(--text-primary);
+        }
+
+        .sub-timeframe-selector {
+            margin-bottom: 1rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .sub-timeframe-selector h4 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Diseño unificado para OB Dinámicos */
+        .ob-unified-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .unified-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+            border-bottom: 1px solid var(--border);
+        }
+
+        .unified-header h2 {
+            color: var(--text-primary);
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .unified-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .controls-left, .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .controls-label {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .timeframe-buttons-inline, .chart-buttons-inline {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+
+        .timeframe-buttons-inline .timeframe-btn,
+        .chart-buttons-inline .chart-btn {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            margin: 0;
+            min-width: 45px;
+        }
+
+        .ob-charts-container-unified {
+            padding: 2rem;
+            min-height: 200px;
+        }
+
+        .initial-message {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .initial-message h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .unified-chart-container {
+            margin-top: 1.5rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        /* Responsive para controles */
+        @media (max-width: 768px) {
+            .unified-controls {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .controls-left, .controls-right {
+                width: 100%;
+                justify-content: flex-start;
+            }
         }
 
         /* Main Info */
@@ -378,13 +615,8 @@
         }
 
         .card:hover {
-            transform: translateY(-2px);
             border-color: rgba(0, 212, 170, 0.3);
             box-shadow: 0 8px 32px rgba(0, 212, 170, 0.1);
-        }
-
-        .card:active {
-            transform: translateY(-1px);
         }
 
         .card.clickable-hint::after {
@@ -630,7 +862,7 @@
             display: grid;
             grid-template-columns: repeat(3, minmax(320px, 1fr));
             gap: 20px;
-            max-width: 1200px;
+            max-width: 1600px;
             margin: 0 auto;
         }
         
@@ -974,7 +1206,7 @@
         <!-- Header -->
         <header class="header">
             <h1>
-                <span class="header-icon">📊</span>Fibonacci Strategy Report
+                Fibonacci Strategy Report
             </h1>
             <button class="refresh-button-header" onclick="loadData()">
                 <span>🔄</span> Actualizar Datos
@@ -1021,8 +1253,11 @@
                     <button class="tab-button active" onclick="showTab('analysis')">
                         📈 Análisis por TF
                     </button>
+                    <button class="tab-button" onclick="showTab('ob-dynamics')">
+                        🎯 OB Dinámicos
+                    </button>
                     <button class="tab-button" onclick="showTab('order-blocks')">
-                        🎯 Order Blocks
+                        📈 Order Blocks
                     </button>
                     <button class="tab-button" onclick="showTab('config')">
                         ⚙️ Configuración
@@ -1033,6 +1268,40 @@
                 <div id="analysis" class="tab-content active">
                     <div class="cards-grid" id="timeframes-grid">
                         <!-- Timeframes will be populated here -->
+                    </div>
+                </div>
+
+                <!-- OB Dinámicos Tab -->
+                <div id="ob-dynamics" class="tab-content">
+                    <!-- Container principal unificado -->
+                    <div id="ob-unified-container" class="ob-unified-container card">
+                        <!-- Header con título y botón -->
+                        <div class="unified-header">
+                            <h2>🎯 Order Blocks Dinámicos</h2>
+                            <button id="generate-ob-btn" onclick="generateObDynamics()" class="generate-ob-button">
+                                Generar OB Dinámicos
+                            </button>
+                        </div>
+
+                        <!-- Fila de controles compacta -->
+                        <div id="unified-controls" class="unified-controls" style="display: none;">
+                            <div class="controls-left">
+                                <span class="controls-label">Timeframe:</span>
+                                <div id="timeframe-buttons" class="timeframe-buttons-inline"></div>
+                            </div>
+                            <div class="controls-right">
+                                <span id="current-tf-label" class="controls-label">H1:</span>
+                                <div id="chart-buttons" class="chart-buttons-inline"></div>
+                            </div>
+                        </div>
+
+                        <!-- Container para los gráficos -->
+                        <div id="ob-charts-container" class="ob-charts-container-unified">
+                            <div class="initial-message">
+                                <h3>📈 Gráficos OB Dinámicos</h3>
+                                <p>Haz clic en "Generar OB Dinámicos" para visualizar los gráficos interactivos con Order Blocks.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1269,9 +1538,9 @@
             const card = document.createElement('div');
             card.className = 'card clickable-hint';
             
-            // Add click event to navigate to order blocks
+            // Add click event to navigate to OB Dinámicos
             card.addEventListener('click', () => {
-                navigateToOrderBlock(timeframe.timeframe_general);
+                navigateToObDynamics(timeframe.timeframe_general);
             });
             
             card.innerHTML = `
@@ -1460,13 +1729,12 @@
                 } else {
                     const blocksHtml = blocks.map(block => {
                         const isSelected = block.selected;
-                        const scoreText = block.score ? ` (Score: ${block.score.toFixed(3)})` : '';
                         const selectedBadge = isSelected ? ' ⭐ ÓPTIMO' : '';
                         
                         return `
-                        <div class="block-card ${block.type.toLowerCase()} ${isSelected ? 'selected-ob' : ''}">
+                        <div class="block-card ${block.type.toLowerCase()} ${isSelected ? 'selected-ob' : ''} clickable-hint" onclick="navigateToObDynamicsWithChart('${timeframe}', '${block.timeframe}')">
                             <div class="block-header">
-                                <div class="block-type ${block.type.toLowerCase()}">${block.type} [${block.timeframe_ob}]${selectedBadge}</div>
+                                <div class="block-type ${block.type.toLowerCase()}">${block.type} [${block.timeframe}]${selectedBadge}</div>
                                 <div class="block-price">${block.price.toFixed(5)}</div>
                             </div>
                             <div class="block-details">
@@ -1699,6 +1967,92 @@
             }, 100);
         }
 
+        // Navigate to OB Dinámicos and select specific timeframe
+        function navigateToObDynamics(timeframe) {
+            // Switch to OB Dinámicos tab
+            showTab('ob-dynamics');
+            
+            // Si ya hay datos OB dinámicos, cambiar al timeframe seleccionado
+            if (obDynamicsData && obDynamicsData.timeframes[timeframe]) {
+                setTimeout(() => {
+                    switchObTimeframe(timeframe);
+                }, 100);
+            } else {
+                // Si no hay datos, generar OB dinámicos y luego seleccionar timeframe
+                if (reportData) {
+                    // Establecer el timeframe que queremos seleccionar después de generar
+                    currentObTimeframe = timeframe;
+                    document.getElementById('current-tf-label').textContent = timeframe + ':';
+                    
+                    // Generar automáticamente los OB dinámicos
+                    setTimeout(() => {
+                        generateObDynamics().then(() => {
+                            // Después de generar, cambiar al timeframe deseado
+                            if (obDynamicsData && obDynamicsData.timeframes[timeframe]) {
+                                switchObTimeframe(timeframe);
+                            }
+                        });
+                    }, 100);
+                }
+            }
+        }
+
+        // Navigate to OB Dinámicos with specific timeframe and chart
+        function navigateToObDynamicsWithChart(mainTimeframe, chartTimeframe) {
+            // Switch to OB Dinámicos tab
+            showTab('ob-dynamics');
+            
+            // Si ya hay datos OB dinámicos
+            if (obDynamicsData && obDynamicsData.timeframes[mainTimeframe]) {
+                setTimeout(() => {
+                    // Cambiar al timeframe principal
+                    switchObTimeframe(mainTimeframe);
+                    
+                    // Después de cambiar timeframe, seleccionar el gráfico específico
+                    setTimeout(() => {
+                        selectSpecificChart(chartTimeframe);
+                    }, 200);
+                }, 100);
+            } else {
+                // Si no hay datos, generar OB dinámicos primero
+                if (reportData) {
+                    // Establecer los timeframes que queremos seleccionar
+                    currentObTimeframe = mainTimeframe;
+                    document.getElementById('current-tf-label').textContent = mainTimeframe + ':';
+                    
+                    // Generar automáticamente los OB dinámicos
+                    setTimeout(() => {
+                        generateObDynamics().then(() => {
+                            // Después de generar, cambiar al timeframe y gráfico deseados
+                            if (obDynamicsData && obDynamicsData.timeframes[mainTimeframe]) {
+                                switchObTimeframe(mainTimeframe);
+                                setTimeout(() => {
+                                    selectSpecificChart(chartTimeframe);
+                                }, 200);
+                            }
+                        });
+                    }, 100);
+                }
+            }
+        }
+
+        // Seleccionar un gráfico específico en la barra de controles
+        function selectSpecificChart(chartTimeframe) {
+            const chartButtons = document.querySelectorAll('#chart-buttons .chart-btn');
+            
+            chartButtons.forEach(btn => {
+                // Verificar si el botón corresponde al gráfico que buscamos
+                if (btn.textContent.includes(chartTimeframe)) {
+                    // Remover active de todos los botones
+                    chartButtons.forEach(b => b.classList.remove('active'));
+                    // Activar el botón correcto
+                    btn.classList.add('active');
+                    // Hacer clic en el botón para mostrar el gráfico
+                    btn.click();
+                }
+            });
+        }
+
         // Tab functionality
         function showTab(tabName) {
             // Hide all tab contents
@@ -1738,6 +2092,272 @@
             });
         }
 
+        // Variables globales para OB dinámicos
+        let obDynamicsData = null;
+        let currentObTimeframe = 'H1';
+
+        // Función para generar OB dinámicos
+        async function generateObDynamics() {
+            if (!reportData) {
+                alert('Primero carga el reporte Fibonacci');
+                return;
+            }
+
+            const button = document.getElementById('generate-ob-btn');
+            button.textContent = 'Generando...';
+            button.disabled = true;
+
+            try {
+                // Verificar estructura de datos y preparar el payload correcto
+                let payload;
+                if (reportData.fibonacci_strategy_report) {
+                    // Si ya tiene la estructura completa, usar tal como está
+                    payload = reportData;
+                } else {
+                    // Si solo tenemos los datos internos, envolver en la estructura esperada
+                    payload = {
+                        fibonacci_strategy_report: reportData
+                    };
+                }
+                
+                console.log('Datos enviados al endpoint:', payload);
+                
+                // Llamar al endpoint
+                const response = await fetch('https://eagolden.online/api/process-ob-report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                console.log('Status de respuesta:', response.status);
+                
+                const result = await response.json();
+                console.log('Respuesta completa del servidor:', result);
+
+                if (result.success) {
+                    obDynamicsData = result.data;
+                    renderObDynamics();
+                } else {
+                    // Mostrar más detalles del error
+                    const errorMsg = result.error || result.message || 'Error procesando OB';
+                    let validationDetails = '';
+                    
+                    if (result.errors && Array.isArray(result.errors)) {
+                        validationDetails = '\nErrores de validación:\n' + result.errors.map(err => 
+                            `- ${err.field || 'Campo'}: ${err.message || err.error || err}`
+                        ).join('\n');
+                    } else if (result.details) {
+                        validationDetails = '\nDetalles: ' + JSON.stringify(result.details);
+                    }
+                    
+                    throw new Error(errorMsg + validationDetails);
+                }
+
+            } catch (error) {
+                console.error('Error completo:', error);
+                
+                // Mostrar error más detallado
+                let errorMessage = 'Error generando OB dinámicos: ' + error.message;
+                
+                if (error.message.includes('Failed to fetch')) {
+                    errorMessage += '\n\nProblema de conexión con el servidor.';
+                }
+                
+                alert(errorMessage);
+            } finally {
+                button.textContent = 'Generar OB Dinámicos';
+                button.disabled = false;
+            }
+        }
+
+        // Renderizar los gráficos OB dinámicos
+        function renderObDynamics() {
+            if (!obDynamicsData) return;
+
+            // Mostrar controles unificados
+            document.getElementById('unified-controls').style.display = 'flex';
+
+            // Renderizar selector de timeframes
+            renderUnifiedTimeframeSelector();
+
+            // Verificar que el currentObTimeframe existe en los datos
+            if (!obDynamicsData.timeframes[currentObTimeframe]) {
+                // Si el timeframe seleccionado no existe, usar el primero disponible
+                currentObTimeframe = Object.keys(obDynamicsData.timeframes)[0] || 'H1';
+            }
+
+            // Actualizar label del timeframe actual
+            document.getElementById('current-tf-label').textContent = currentObTimeframe + ':';
+
+            // Mostrar gráfico del timeframe actual
+            renderObChart(currentObTimeframe);
+        }
+
+        // Crear botones de timeframe dinámicos en el diseño unificado
+        function renderUnifiedTimeframeSelector() {
+            const container = document.getElementById('timeframe-buttons');
+            container.innerHTML = '';
+
+            // Crear botón para cada timeframe que tenga datos
+            Object.keys(obDynamicsData.timeframes).forEach(tf => {
+                const button = document.createElement('button');
+                button.textContent = tf;
+                button.className = tf === currentObTimeframe ? 'timeframe-btn active' : 'timeframe-btn';
+                button.onclick = () => switchObTimeframe(tf);
+                container.appendChild(button);
+            });
+        }
+
+        // Cambiar timeframe de OB
+        function switchObTimeframe(timeframe) {
+            currentObTimeframe = timeframe;
+
+            // Actualizar botones activos de timeframe
+            document.querySelectorAll('.timeframe-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent === timeframe);
+            });
+
+            // Actualizar label del timeframe actual
+            document.getElementById('current-tf-label').textContent = timeframe + ':';
+
+            // Renderizar gráfico del nuevo timeframe
+            renderObChart(timeframe);
+        }
+
+        // Renderizar gráfico específico usando Plotly
+        function renderObChart(timeframe) {
+            const container = document.getElementById('ob-charts-container');
+            const tfData = obDynamicsData.timeframes[timeframe];
+
+            if (!tfData || !tfData.charts) {
+                container.innerHTML = '<div class="initial-message"><p>No hay gráficos disponibles para ' + timeframe + '</p></div>';
+                return;
+            }
+
+            const chartKeys = Object.keys(tfData.charts);
+
+            // Actualizar selector de gráficos en la barra de controles
+            renderChartSelector(chartKeys, timeframe);
+
+            // Limpiar container y mostrar primer gráfico
+            container.innerHTML = '';
+            renderSingleChart(timeframe, chartKeys[0], true);
+        }
+
+        // Crear selector de gráficos en la barra unificada
+        function renderChartSelector(chartKeys, timeframe) {
+            const container = document.getElementById('chart-buttons');
+            container.innerHTML = '';
+
+            chartKeys.forEach((chartTf, index) => {
+                const btn = document.createElement('button');
+                btn.textContent = `Gráfico ${chartTf}`;
+                btn.className = index === 0 ? 'chart-btn active' : 'chart-btn';
+                btn.onclick = () => {
+                    // Actualizar botones activos
+                    container.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    // Renderizar solo el gráfico seleccionado
+                    const chartContainer = document.getElementById('ob-charts-container');
+                    chartContainer.innerHTML = '';
+                    renderSingleChart(timeframe, chartTf, true);
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        // Renderizar gráfico individual con Plotly
+        function renderSingleChart(mainTf, chartTf, directRender = false) {
+            const tfData = obDynamicsData.timeframes[mainTf];
+            const chartData = tfData.charts[chartTf];
+
+            if (!chartData || !chartData.chart_json) return;
+
+            const container = document.getElementById('ob-charts-container');
+
+            // Crear contenedor principal del gráfico
+            const chartWrapper = document.createElement('div');
+            chartWrapper.className = 'unified-chart-container';
+
+            // Crear div para el gráfico directamente
+            const chartDiv = document.createElement('div');
+            chartDiv.id = `chart-${mainTf}-${chartTf}`.replace(/[^a-zA-Z0-9]/g, '-');
+            chartDiv.style.height = '650px';
+            chartDiv.style.width = '100%';
+
+            chartWrapper.appendChild(chartDiv);
+
+            // Mostrar metadata compacta
+            if (chartData.metadata) {
+                const metadata = document.createElement('div');
+                metadata.className = 'chart-metadata';
+                metadata.style.marginTop = '1rem';
+                
+                let metadataHTML = `
+                    <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; font-size: 0.85rem;">
+                        <span><strong>OBs:</strong> ${chartData.metadata.ob_count}</span>
+                        <span><strong>Barras:</strong> ${chartData.metadata.bars_count}</span>
+                        <span><strong>HIGH:</strong> ${chartData.metadata.high_price}</span>
+                        <span><strong>LOW:</strong> ${chartData.metadata.low_price}</span>
+                `;
+
+                // Agregar información de zoom si existe
+                if (chartData.metadata.zoom_info) {
+                    const zoom = chartData.metadata.zoom_info;
+                    metadataHTML += `<span><strong>Zoom:</strong> ${zoom.reduction_factor.toFixed(1)}x</span>`;
+                }
+
+                metadataHTML += '</div>';
+                metadata.innerHTML = metadataHTML;
+                chartWrapper.appendChild(metadata);
+            }
+
+            container.appendChild(chartWrapper);
+
+            // Renderizar con Plotly
+            try {
+                const plotlyData = JSON.parse(chartData.chart_json);
+                
+                // Ajustar layout para el diseño unificado
+                if (plotlyData.layout) {
+                    plotlyData.layout.height = 650;
+                    plotlyData.layout.margin = { l: 80, r: 80, t: 80, b: 80 };
+                    plotlyData.layout.font = { size: 12 };
+                    plotlyData.layout.xaxis.tickfont = { size: 11 };
+                    plotlyData.layout.yaxis.tickfont = { size: 11 };
+                }
+
+                Plotly.newPlot(chartDiv.id, plotlyData.data, plotlyData.layout, {
+                    responsive: true,
+                    displayModeBar: true,
+                    displaylogo: false,
+                    modeBarButtonsToRemove: ['select2d', 'lasso2d'],
+                    toImageButtonOptions: {
+                        format: 'png',
+                        filename: `OB_Chart_${mainTf}_${chartTf}`,
+                        height: 650,
+                        width: 1400,
+                        scale: 2
+                    }
+                });
+
+                console.log(`Gráfico ${mainTf}-${chartTf} renderizado exitosamente`);
+
+            } catch (error) {
+                console.error('Error rendering chart:', error);
+                chartDiv.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--error);">
+                        ❌ Error renderizando gráfico: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
     </script>
+    
+    <!-- Plotly.js para gráficos dinámicos -->
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 </body>
 </html>
