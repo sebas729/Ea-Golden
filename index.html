@@ -167,9 +167,9 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1600px;
             margin: 0 auto;
-            padding: var(--space);
+            padding: var(--space) 0.5rem;
         }
 
         /* Loading States */
@@ -867,7 +867,7 @@
             display: grid;
             grid-template-columns: repeat(3, minmax(320px, 1fr));
             gap: 20px;
-            max-width: 1200px;
+            max-width: 1600px;
             margin: 0 auto;
         }
         
@@ -1740,7 +1740,7 @@
                         return `
                         <div class="block-card ${block.type.toLowerCase()} ${isSelected ? 'selected-ob' : ''}">
                             <div class="block-header">
-                                <div class="block-type ${block.type.toLowerCase()}">${block.type} [${block.timeframe_ob}]${selectedBadge}</div>
+                                <div class="block-type ${block.type.toLowerCase()}">${block.type} [${block.timeframe}]${selectedBadge}</div>
                                 <div class="block-price">${block.price.toFixed(5)}</div>
                             </div>
                             <div class="block-details">
@@ -2234,7 +2234,7 @@
             // Crear div para el gráfico directamente
             const chartDiv = document.createElement('div');
             chartDiv.id = `chart-${mainTf}-${chartTf}`.replace(/[^a-zA-Z0-9]/g, '-');
-            chartDiv.style.height = '600px';
+            chartDiv.style.height = '650px';
             chartDiv.style.width = '100%';
 
             chartWrapper.appendChild(chartDiv);
@@ -2272,14 +2272,25 @@
                 
                 // Ajustar layout para el diseño unificado
                 if (plotlyData.layout) {
-                    plotlyData.layout.height = 600;
-                    plotlyData.layout.margin = { l: 60, r: 60, t: 60, b: 60 };
+                    plotlyData.layout.height = 650;
+                    plotlyData.layout.margin = { l: 80, r: 80, t: 80, b: 80 };
+                    plotlyData.layout.font = { size: 12 };
+                    plotlyData.layout.xaxis.tickfont = { size: 11 };
+                    plotlyData.layout.yaxis.tickfont = { size: 11 };
                 }
 
                 Plotly.newPlot(chartDiv.id, plotlyData.data, plotlyData.layout, {
                     responsive: true,
                     displayModeBar: true,
-                    modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'autoScale2d', 'select2d', 'hoverClosestCartesian', 'hoverCompareCartesian']
+                    displaylogo: false,
+                    modeBarButtonsToRemove: ['select2d', 'lasso2d'],
+                    toImageButtonOptions: {
+                        format: 'png',
+                        filename: `OB_Chart_${mainTf}_${chartTf}`,
+                        height: 650,
+                        width: 1400,
+                        scale: 2
+                    }
                 });
 
                 console.log(`Gráfico ${mainTf}-${chartTf} renderizado exitosamente`);
