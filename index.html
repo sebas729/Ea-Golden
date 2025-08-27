@@ -1271,12 +1271,12 @@
             
             // Add click event to navigate to order blocks
             card.addEventListener('click', () => {
-                navigateToOrderBlock(timeframe.timeframe);
+                navigateToOrderBlock(timeframe.timeframe_general);
             });
             
             card.innerHTML = `
                 <div class="card-header">
-                    <div class="timeframe">${timeframe.timeframe}</div>
+                    <div class="timeframe">${timeframe.timeframe_general}</div>
                     <div class="trend-badge ${!isBullish ? 'bearish' : ''}">
                         TENDENCIA ${timeframe.trend.toUpperCase()}
                     </div>
@@ -1409,9 +1409,9 @@
                 blocksData = {};
                 reportData.timeframes.forEach(tf => {
                     if (tf.order_blocks_analyzed && tf.order_blocks_analyzed.length > 0) {
-                        blocksData[tf.timeframe] = tf.order_blocks_analyzed.map(block => ({
+                        blocksData[tf.timeframe_general] = tf.order_blocks_analyzed.map(block => ({
                             type: block.type,
-                            timeframe: block.timeframe,
+                            timeframe: block.timeframe_ob,
                             price: block.price,
                             datetime: block.datetime,
                             pips_open_close: block.pips_oc,
@@ -1466,7 +1466,7 @@
                         return `
                         <div class="block-card ${block.type.toLowerCase()} ${isSelected ? 'selected-ob' : ''}">
                             <div class="block-header">
-                                <div class="block-type ${block.type.toLowerCase()}">${block.type} [${block.timeframe}]${selectedBadge}</div>
+                                <div class="block-type ${block.type.toLowerCase()}">${block.type} [${block.timeframe_ob}]${selectedBadge}</div>
                                 <div class="block-price">${block.price.toFixed(5)}</div>
                             </div>
                             <div class="block-details">
@@ -1597,7 +1597,7 @@
                             ${reportData.trading_summary.best_institutional_ob ? `
                                 <div class="config-item">
                                     <span>Mejor OB Institucional:</span>
-                                    <span class="config-value">${reportData.trading_summary.best_institutional_ob.timeframe} @ ${reportData.trading_summary.best_institutional_ob.entry}</span>
+                                    <span class="config-value">${reportData.trading_summary.best_institutional_ob.timeframe_resume} @ ${reportData.trading_summary.best_institutional_ob.entry}</span>
                                 </div>
                                 <div class="config-item">
                                     <span>Score del Mejor OB:</span>
