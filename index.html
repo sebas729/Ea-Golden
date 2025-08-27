@@ -1734,11 +1734,10 @@
                 } else {
                     const blocksHtml = blocks.map(block => {
                         const isSelected = block.selected;
-                        const scoreText = block.score ? ` (Score: ${block.score.toFixed(3)})` : '';
                         const selectedBadge = isSelected ? ' ⭐ ÓPTIMO' : '';
                         
                         return `
-                        <div class="block-card ${block.type.toLowerCase()} ${isSelected ? 'selected-ob' : ''}">
+                        <div class="block-card ${block.type.toLowerCase()} ${isSelected ? 'selected-ob' : ''} clickable-hint" onclick="navigateToObDynamicsWithChart('${timeframe}', '${block.timeframe}')">
                             <div class="block-header">
                                 <div class="block-type ${block.type.toLowerCase()}">${block.type} [${block.timeframe}]${selectedBadge}</div>
                                 <div class="block-price">${block.price.toFixed(5)}</div>
@@ -2001,6 +2000,62 @@
                     }, 100);
                 }
             }
+        }
+
+        // Navigate to OB Dinámicos with specific timeframe and chart
+        function navigateToObDynamicsWithChart(mainTimeframe, chartTimeframe) {
+            // Switch to OB Dinámicos tab
+            showTab('ob-dynamics');
+            
+            // Si ya hay datos OB dinámicos
+            if (obDynamicsData && obDynamicsData.timeframes[mainTimeframe]) {
+                setTimeout(() => {
+                    // Cambiar al timeframe principal
+                    switchObTimeframe(mainTimeframe);
+                    
+                    // Después de cambiar timeframe, seleccionar el gráfico específico
+                    setTimeout(() => {
+                        selectSpecificChart(chartTimeframe);
+                    }, 200);
+                }, 100);
+            } else {
+                // Si no hay datos, generar OB dinámicos primero
+                if (reportData) {
+                    // Establecer los timeframes que queremos seleccionar
+                    currentObTimeframe = mainTimeframe;
+                    document.getElementById('current-tf-label').textContent = mainTimeframe + ':';
+                    
+                    // Generar automáticamente los OB dinámicos
+                    setTimeout(() => {
+                        generateObDynamics().then(() => {
+                            // Después de generar, cambiar al timeframe y gráfico deseados
+                            if (obDynamicsData && obDynamicsData.timeframes[mainTimeframe]) {
+                                switchObTimeframe(mainTimeframe);
+                                setTimeout(() => {
+                                    selectSpecificChart(chartTimeframe);
+                                }, 200);
+                            }
+                        });
+                    }, 100);
+                }
+            }
+        }
+
+        // Seleccionar un gráfico específico en la barra de controles
+        function selectSpecificChart(chartTimeframe) {
+            const chartButtons = document.querySelectorAll('#chart-buttons .chart-btn');
+            
+            chartButtons.forEach(btn => {
+                // Verificar si el botón corresponde al gráfico que buscamos
+                if (btn.textContent.includes(chartTimeframe)) {
+                    // Remover active de todos los botones
+                    chartButtons.forEach(b => b.classList.remove('active'));
+                    // Activar el botón correcto
+                    btn.classList.add('active');
+                    // Hacer clic en el botón para mostrar el gráfico
+                    btn.click();
+                }
+            });
         }
 
         // Tab functionality
