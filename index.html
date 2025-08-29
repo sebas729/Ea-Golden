@@ -1277,12 +1277,9 @@
                 <div id="ob-dynamics" class="tab-content">
                     <!-- Container principal unificado -->
                     <div id="ob-unified-container" class="ob-unified-container card">
-                        <!-- Header con título y botón -->
+                        <!-- Header con título -->
                         <div class="unified-header">
                             <h2>🎯 Order Blocks Dinámicos</h2>
-                            <button id="generate-ob-btn" onclick="generateObDynamics()" class="generate-ob-button">
-                                Generar OB Dinámicos
-                            </button>
                         </div>
 
                         <!-- Fila de controles compacta -->
@@ -1300,8 +1297,9 @@
                         <!-- Container para los gráficos -->
                         <div id="ob-charts-container" class="ob-charts-container-unified">
                             <div class="initial-message">
-                                <h3>📈 Gráficos OB Dinámicos</h3>
-                                <p>Haz clic en "Generar OB Dinámicos" para visualizar los gráficos interactivos con Order Blocks.</p>
+                                <div class="spinner"></div>
+                                <h3>📈 Generando Gráficos OB Dinámicos</h3>
+                                <p>Los gráficos interactivos se están generando automáticamente...</p>
                             </div>
                         </div>
                     </div>
@@ -1413,6 +1411,11 @@
                 
                 populateUI();
                 showMainContent();
+                
+                // Generar automáticamente OB dinámicos después de cargar los datos
+                setTimeout(() => {
+                    generateObDynamics();
+                }, 500);
                 
             } catch (error) {
                 console.error('Error loading data:', error);
@@ -2101,13 +2104,14 @@
         // Función para generar OB dinámicos
         async function generateObDynamics() {
             if (!reportData) {
-                alert('Primero carga el reporte Fibonacci');
-                return;
+                return Promise.reject(new Error('No hay datos de reporte disponibles'));
             }
 
-            const button = document.getElementById('generate-ob-btn');
-            button.textContent = 'Generando...';
-            button.disabled = true;
+            // Actualizar mensaje inicial si existe
+            const initialMessage = document.querySelector('#ob-charts-container .initial-message h3');
+            if (initialMessage) {
+                initialMessage.textContent = '⚙️ Procesando datos...';
+            }
 
             try {
                 // Verificar estructura de datos y preparar el payload correcto
@@ -2169,8 +2173,7 @@
                 
                 alert(errorMessage);
             } finally {
-                button.textContent = 'Generar OB Dinámicos';
-                button.disabled = false;
+                // No hay botón que resetear
             }
         }
 
