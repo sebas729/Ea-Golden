@@ -588,16 +588,16 @@
         /* Cards Grid */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
         }
 
         .card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 14px;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -644,11 +644,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
         }
 
         .timeframe {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: #fff;
         }
@@ -657,9 +657,9 @@
         .trend-badge {
             background: linear-gradient(135deg, #00d4aa, #00b894);
             color: #fff;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 16px;
+            font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
         }
@@ -673,8 +673,8 @@
         .price-levels {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .level {
@@ -691,7 +691,7 @@
         }
 
         .level-value {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             font-family: 'JetBrains Mono', monospace;
         }
@@ -713,8 +713,8 @@
         .metrics {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .metric {
@@ -730,7 +730,7 @@
         }
 
         .metric-value {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             font-family: 'JetBrains Mono', monospace;
         }
@@ -738,9 +738,9 @@
         /* Fibonacci Levels */
         .fibonacci-levels {
             background: rgba(255, 255, 255, 0.02);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 16px;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 14px;
         }
 
         .fib-title {
@@ -753,8 +753,8 @@
         .fib-level {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 4px;
-            font-size: 13px;
+            margin-bottom: 3px;
+            font-size: 12px;
         }
 
         .fib-label {
@@ -765,12 +765,12 @@
         .position-info {
             background: rgba(0, 212, 170, 0.05);
             border: 1px solid rgba(0, 212, 170, 0.2);
-            border-radius: 8px;
-            padding: 12px;
+            border-radius: 6px;
+            padding: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .position-label {
@@ -780,7 +780,7 @@
         }
 
         .position-value {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: #00d4aa;
         }
@@ -788,12 +788,12 @@
         /* Volume Indicator */
         .volume-indicator {
             background: rgba(255, 255, 255, 0.02);
-            border-radius: 8px;
-            padding: 8px 12px;
+            border-radius: 6px;
+            padding: 6px 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .volume-label {
@@ -1030,10 +1030,10 @@
         .scoring-info {
             background: rgba(255, 215, 0, 0.04);
             border: 1px solid rgba(255, 215, 0, 0.15);
-            border-radius: 8px;
-            padding: 12px;
-            margin-top: 12px;
-            margin-bottom: 16px;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 12px;
         }
 
         .score-title {
@@ -1143,13 +1143,15 @@
         /* Responsive para cards más compactas */
         @media (min-width: 1200px) {
             .cards-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
             }
         }
         
         @media (min-width: 900px) and (max-width: 1199px) {
             .cards-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
             }
         }
 
@@ -1567,7 +1569,7 @@
                 <div class="metrics">
                     <div class="metric">
                         <div class="metric-label">RANGO</div>
-                        <div class="metric-value">${range} pips</div>
+                        <div class="metric-value">${range}</div>
                     </div>
                     ${timeframe.stophunt_price ? `
                     <div class="metric">
