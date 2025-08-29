@@ -1732,7 +1732,16 @@
                         </div>
                     `;
                 } else {
-                    const blocksHtml = blocks.map(block => {
+                    // Sort blocks by distance_to_extreme (ascending order - smaller values first)
+                    const sortedBlocks = [...blocks].sort((a, b) => {
+                        // Handle undefined/null values - put them at the end
+                        if (a.distance_to_extreme === undefined || a.distance_to_extreme === null) return 1;
+                        if (b.distance_to_extreme === undefined || b.distance_to_extreme === null) return -1;
+                        // Sort ascending (smaller values first)
+                        return a.distance_to_extreme - b.distance_to_extreme;
+                    });
+                    
+                    const blocksHtml = sortedBlocks.map(block => {
                         const isSelected = block.selected;
                         const selectedBadge = isSelected ? ' ⭐ ÓPTIMO' : '';
                         
