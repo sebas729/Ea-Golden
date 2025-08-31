@@ -2002,8 +2002,31 @@
                                 <div style="margin-bottom: 0.5rem;">
                                     <strong>Razón de Unificación:</strong> <span class="config-value">${group.unification_reason}</span>
                                 </div>
+                                ${group.confluence_score !== undefined ? `
+                                    <div style="margin-bottom: 0.5rem;">
+                                        <strong>Score de Confluencia:</strong> <span class="config-value" style="color: ${group.confluence_score >= 70 ? '#00d4aa' : group.confluence_score >= 50 ? '#fbbf24' : '#f97316'};">${group.confluence_score.toFixed(1)}%</span>
+                                    </div>
+                                ` : ''}
+                                ${group.suggested_action ? `
+                                    <div style="margin-bottom: 0.5rem;">
+                                        <strong>Acción Sugerida:</strong> <span class="config-value" style="color: ${group.suggested_action === 'BUY' ? '#00d4aa' : group.suggested_action === 'SELL' ? '#f44336' : '#fbbf24'};">${group.suggested_action}</span>
+                                    </div>
+                                ` : ''}
+                                ${group.fibonacci_levels && Object.keys(group.fibonacci_levels).length > 0 ? `
+                                    <div style="margin-bottom: 0.5rem;">
+                                        <strong>Niveles Fibonacci:</strong>
+                                        <div style="margin-left: 1rem; margin-top: 0.25rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem;">
+                                            ${Object.entries(group.fibonacci_levels).map(([level, price]) => `
+                                                <div style="font-size: 0.8rem;">
+                                                    <span style="color: var(--text-secondary);">${level}%:</span> 
+                                                    <span class="config-value">${price.toFixed(5)}</span>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
                                 ${group.order_blocks && group.order_blocks.length > 0 ? `
-                                    <div>
+                                    <div style="margin-bottom: 0.5rem;">
                                         <strong>Order Blocks (${group.order_blocks.length}):</strong>
                                         <div style="margin-left: 1rem; margin-top: 0.5rem;">
                                             ${group.order_blocks.map(ob => `
@@ -2011,6 +2034,61 @@
                                                     • ${ob.type} @ ${ob.price} (Score: ${ob.score.toFixed(3)})
                                                 </div>
                                             `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                ${group.recommended_entry_levels && group.recommended_entry_levels.length > 0 ? `
+                                    <div style="margin-bottom: 0.5rem;">
+                                        <strong>Niveles de Entrada Recomendados:</strong>
+                                        <div style="margin-left: 1rem; margin-top: 0.5rem;">
+                                            ${group.recommended_entry_levels.map(level => `
+                                                <div style="font-size: 0.85rem; margin: 0.25rem 0; color: var(--success);">
+                                                    • ${level}
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                ${group.risk_levels ? `
+                                    <div style="margin-top: 1rem; padding: 1rem; background: rgba(0, 212, 170, 0.05); border: 1px solid rgba(0, 212, 170, 0.2); border-radius: 6px;">
+                                        <strong style="color: var(--accent); margin-bottom: 0.5rem; display: block;">📊 Gestión de Riesgo</strong>
+                                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem; font-size: 0.85rem;">
+                                            ${group.risk_levels.stop_loss ? `
+                                                <div>
+                                                    <span style="color: var(--text-secondary);">Stop Loss:</span><br>
+                                                    <span class="config-value" style="color: #f44336;">${group.risk_levels.stop_loss.toFixed(5)}</span>
+                                                </div>
+                                            ` : ''}
+                                            ${group.risk_levels.take_profit_1 ? `
+                                                <div>
+                                                    <span style="color: var(--text-secondary);">TP1:</span><br>
+                                                    <span class="config-value" style="color: #00d4aa;">${group.risk_levels.take_profit_1.toFixed(5)}</span>
+                                                </div>
+                                            ` : ''}
+                                            ${group.risk_levels.take_profit_2 ? `
+                                                <div>
+                                                    <span style="color: var(--text-secondary);">TP2:</span><br>
+                                                    <span class="config-value" style="color: #00d4aa;">${group.risk_levels.take_profit_2.toFixed(5)}</span>
+                                                </div>
+                                            ` : ''}
+                                            ${group.risk_levels.take_profit_3 ? `
+                                                <div>
+                                                    <span style="color: var(--text-secondary);">TP3:</span><br>
+                                                    <span class="config-value" style="color: #00d4aa;">${group.risk_levels.take_profit_3.toFixed(5)}</span>
+                                                </div>
+                                            ` : ''}
+                                            ${group.risk_levels.risk_reward_ratio !== undefined ? `
+                                                <div>
+                                                    <span style="color: var(--text-secondary);">R:R Ratio:</span><br>
+                                                    <span class="config-value" style="color: ${group.risk_levels.risk_reward_ratio >= 1 ? '#00d4aa' : '#fbbf24'};">1:${group.risk_levels.risk_reward_ratio.toFixed(2)}</span>
+                                                </div>
+                                            ` : ''}
+                                            ${group.risk_levels.suggested_position_size_percent !== undefined ? `
+                                                <div>
+                                                    <span style="color: var(--text-secondary);">Tamaño Posición:</span><br>
+                                                    <span class="config-value" style="color: var(--accent);">${group.risk_levels.suggested_position_size_percent.toFixed(1)}%</span>
+                                                </div>
+                                            ` : ''}
                                         </div>
                                     </div>
                                 ` : ''}
