@@ -1314,6 +1314,15 @@
 
                 <!-- Configuration Tab -->
                 <div id="config" class="tab-content">
+                    <!-- Notas box - full width -->
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <h2>📝 Notas</h2>
+                        <div id="notes-content">
+                            <!-- Notes content will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Existing configuration boxes in two columns -->
                     <div class="config-grid">
                         <div class="card">
                             <h2>🔧 Configuración</h2>
@@ -1823,6 +1832,10 @@
         function populateConfiguration() {
             const configContainer = document.getElementById('config-content');
             const legendContainer = document.getElementById('legend-content');
+            const notesContainer = document.getElementById('notes-content');
+            
+            // Populate notes section with unified_trends data
+            populateNotesSection(notesContainer);
             
             // Configuration for both old and new structure
             if (!reportData.configuration && !reportData.trading_summary) {
@@ -1953,6 +1966,144 @@
                     <span>Nivel de retroceso de Fibonacci</span>
                 </div>
             `;
+        }
+
+        // Populate notes section with unified_trends data
+        function populateNotesSection(container) {
+            if (!reportData.unified_trends) {
+                container.innerHTML = '<p style="color: var(--text-muted); font-style: italic;">No hay datos de tendencias unificadas disponibles</p>';
+                return;
+            }
+
+            const unifiedData = reportData.unified_trends;
+            let notesHtml = '';
+
+            // Unified Analysis Section
+            if (unifiedData.unified_analysis && unifiedData.unified_analysis.length > 0) {
+                notesHtml += `
+                    <div class="config-section">
+                        <h3>🔄 Análisis Unificado</h3>
+                        ${unifiedData.unified_analysis.map(group => `
+                            <div class="config-item" style="flex-direction: column; align-items: flex-start; margin-bottom: 1rem; padding: 1rem; background: rgba(255, 255, 255, 0.02); border-radius: 8px;">
+                                <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 0.5rem;">
+                                    <span style="font-weight: 600; color: var(--accent);">Grupo: ${group.unified_id.replace('UNIFIED_', '')}</span>
+                                    <span style="color: var(--success);">Dominante: ${group.dominant_timeframe}</span>
+                                </div>
+                                <div style="margin-bottom: 0.5rem;">
+                                    <strong>Timeframes:</strong> <span class="config-value">${group.unified_timeframes.join(', ')}</span>
+                                </div>
+                                <div style="margin-bottom: 0.5rem;">
+                                    <strong>Rango:</strong> <span class="config-value">${group.range_pips.toFixed(1)} pips</span> 
+                                    (${group.high} - ${group.low})
+                                </div>
+                                <div style="margin-bottom: 0.5rem;">
+                                    <strong>Dirección:</strong> <span class="config-value">${group.trend_direction}</span>
+                                </div>
+                                <div style="margin-bottom: 0.5rem;">
+                                    <strong>Razón de Unificación:</strong> <span class="config-value">${group.unification_reason}</span>
+                                </div>
+                                ${group.order_blocks && group.order_blocks.length > 0 ? `
+                                    <div>
+                                        <strong>Order Blocks (${group.order_blocks.length}):</strong>
+                                        <div style="margin-left: 1rem; margin-top: 0.5rem;">
+                                            ${group.order_blocks.map(ob => `
+                                                <div style="font-size: 0.85rem; margin: 0.25rem 0;">
+                                                    • ${ob.type} @ ${ob.price} (Score: ${ob.score.toFixed(3)})
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            // Excluded Trends Section
+            if (unifiedData.excluded_trends && unifiedData.excluded_trends.length > 0) {
+                notesHtml += `
+                    <div class="config-section">
+                        <h3>❌ Tendencias Excluidas</h3>
+                        ${unifiedData.excluded_trends.map(excluded => `
+                            <div class="config-item" style="flex-direction: column; align-items: flex-start; margin-bottom: 0.5rem; padding: 0.75rem; background: rgba(244, 67, 54, 0.05); border-left: 3px solid var(--error); border-radius: 4px;">
+                                <div style="display: flex; justify-content: space-between; width: 100%;">
+                                    <span style="font-weight: 600;">${excluded.timeframe}</span>
+                                    <span style="color: var(--error); font-size: 0.85rem;">${excluded.reason}</span>
+                                </div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                                    Rango: ${excluded.range_pips.toFixed(1)} pips 
+                                    ${excluded.required_minimum ? `(Mín. requerido: ${excluded.required_minimum})` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            // Unification Summary
+            if (unifiedData.unification_summary) {
+                const summary = unifiedData.unification_summary;
+                notesHtml += `
+                    <div class="config-section">
+                        <h3>📊 Resumen de Unificación</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                            <div class="config-item">
+                                <span>Tendencias Originales:</span>
+                                <span class="config-value">${summary.total_original_trends}</span>
+                            </div>
+                            <div class="config-item">
+                                <span>Grupos Unificados:</span>
+                                <span class="config-value">${summary.total_unified_groups}</span>
+                            </div>
+                            <div class="config-item">
+                                <span>Tendencias Excluidas:</span>
+                                <span class="config-value">${summary.excluded_count}</span>
+                            </div>
+                            ${summary.stophunt_substitutions ? `
+                                <div class="config-item">
+                                    <span>Sustituciones Stophunt:</span>
+                                    <span class="config-value">${summary.stophunt_substitutions}</span>
+                                </div>
+                            ` : ''}
+                            ${summary.proximity_unifications ? `
+                                <div class="config-item">
+                                    <span>Unificaciones por Proximidad:</span>
+                                    <span class="config-value">${summary.proximity_unifications}</span>
+                                </div>
+                            ` : ''}
+                            ${summary.identical_unifications ? `
+                                <div class="config-item">
+                                    <span>Unificaciones Idénticas:</span>
+                                    <span class="config-value">${summary.identical_unifications}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Process Notes
+            if (unifiedData.notes && unifiedData.notes.length > 0) {
+                notesHtml += `
+                    <div class="config-section">
+                        <h3>📝 Notas del Proceso</h3>
+                        <div style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; background: rgba(255, 255, 255, 0.02);">
+                            ${unifiedData.notes.map(note => `
+                                <div style="font-size: 0.85rem; margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 3px solid var(--accent);">
+                                    ${note}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (notesHtml === '') {
+                container.innerHTML = '<p style="color: var(--text-muted); font-style: italic;">No hay información de tendencias unificadas para mostrar</p>';
+            } else {
+                container.innerHTML = notesHtml;
+            }
         }
 
         // Navigate to specific order block section
