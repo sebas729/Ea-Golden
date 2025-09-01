@@ -1261,6 +1261,9 @@
                     <button class="tab-button" onclick="showTab('order-blocks')">
                         📈 Order Blocks
                     </button>
+                    <button class="tab-button" onclick="showTab('notes')">
+                        📝 Notas
+                    </button>
                     <button class="tab-button" onclick="showTab('config')">
                         ⚙️ Configuración
                     </button>
@@ -1312,17 +1315,18 @@
                     </div>
                 </div>
 
-                <!-- Configuration Tab -->
-                <div id="config" class="tab-content">
-                    <!-- Notas box - full width -->
+                <!-- Notes Tab -->
+                <div id="notes" class="tab-content">
                     <div class="card" style="margin-bottom: 2rem;">
                         <h2>📝 Notas</h2>
                         <div id="notes-content">
                             <!-- Notes content will be populated here -->
                         </div>
                     </div>
+                </div>
 
-                    <!-- Existing configuration boxes in two columns -->
+                <!-- Configuration Tab -->
+                <div id="config" class="tab-content">
                     <div class="config-grid">
                         <div class="card">
                             <h2>🔧 Configuración</h2>
@@ -2235,6 +2239,7 @@
             const targetButton = Array.from(buttons).find(button => {
                 if (tabName === 'analysis') return button.textContent.includes('Análisis');
                 if (tabName === 'order-blocks') return button.textContent.includes('Order Blocks');
+                if (tabName === 'notes') return button.textContent.includes('Notas');
                 if (tabName === 'config') return button.textContent.includes('Configuración');
                 return false;
             });
