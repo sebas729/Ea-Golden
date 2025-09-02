@@ -1997,8 +1997,15 @@
                                     <strong>Timeframes:</strong> <span class="config-value">${group.unified_timeframes.join(', ')}</span>
                                 </div>
                                 <div style="margin-bottom: 0.5rem;">
-                                    <strong>Rango:</strong> <span class="config-value">${group.range_pips.toFixed(1)} pips</span> 
-                                    (${group.high} - ${group.low})
+                                    <strong>HIGH:</strong> <span class="config-value">${group.high}</span>
+                                    ${group.high_datetime ? `<span style="color: var(--text-secondary); font-size: 0.85rem;"> (${group.high_datetime})</span>` : ''}
+                                </div>
+                                <div style="margin-bottom: 0.5rem;">
+                                    <strong>LOW:</strong> <span class="config-value">${group.low}</span>
+                                    ${group.low_datetime ? `<span style="color: var(--text-secondary); font-size: 0.85rem;"> (${group.low_datetime})</span>` : ''}
+                                </div>
+                                <div style="margin-bottom: 0.5rem;">
+                                    <strong>Rango:</strong> <span class="config-value">${group.range_pips.toFixed(1)} pips</span>
                                 </div>
                                 <div style="margin-bottom: 0.5rem;">
                                     <strong>Dirección:</strong> <span class="config-value">${group.trend_direction}</span>
@@ -2006,6 +2013,50 @@
                                 <div style="margin-bottom: 0.5rem;">
                                     <strong>Razón de Unificación:</strong> <span class="config-value">${group.unification_reason}</span>
                                 </div>
+                                ${group.activation_levels ? `
+                                    <div style="margin-bottom: 1rem;">
+                                        <strong>🎯 Niveles de Activación:</strong>
+                                        ${group.activation_levels.summary ? `
+                                            <div style="margin-left: 1rem; margin-top: 0.5rem; background: rgba(255, 255, 255, 0.03); border-radius: 6px; padding: 0.75rem;">
+                                                <div style="font-size: 0.85rem; font-weight: 600; color: var(--accent); margin-bottom: 0.5rem;">Resumen Ordenado:</div>
+                                                ${group.activation_levels.summary.map((level, index) => `
+                                                    <div style="display: flex; justify-content: space-between; align-items: center; margin: 0.25rem 0; padding: 0.25rem 0.5rem; border-radius: 4px; background: ${level.type === 'FIBONACCI' ? 'rgba(251, 191, 36, 0.1)' : level.type === 'ORDER_BLOCK' ? 'rgba(0, 212, 170, 0.1)' : 'rgba(244, 67, 54, 0.1)'};">
+                                                        <span style="font-size: 0.8rem; color: var(--text-secondary);">#${index + 1} ${level.level}:</span>
+                                                        <span style="font-size: 0.85rem; font-weight: 600; color: ${level.type === 'FIBONACCI' ? '#fbbf24' : level.type === 'ORDER_BLOCK' ? '#00d4aa' : '#f44336'};">${level.price.toFixed(2)}</span>
+                                                        <span style="font-size: 0.75rem; color: var(--text-muted);">${level.type}</span>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        ` : `
+                                            <div style="margin-left: 1rem; margin-top: 0.5rem;">
+                                                ${group.activation_levels.fibonacci ? `
+                                                    <div style="margin-bottom: 0.5rem;">
+                                                        <span style="color: #fbbf24; font-size: 0.85rem; font-weight: 600;">Fibonacci:</span>
+                                                        <div style="margin-left: 1rem; font-size: 0.8rem;">
+                                                            ${Object.entries(group.activation_levels.fibonacci).map(([level, price]) => 
+                                                                `<div>• ${level}: ${price.toFixed(2)}</div>`
+                                                            ).join('')}
+                                                        </div>
+                                                    </div>
+                                                ` : ''}
+                                                ${group.activation_levels.order_block ? `
+                                                    <div style="margin-bottom: 0.5rem;">
+                                                        <span style="color: #00d4aa; font-size: 0.85rem; font-weight: 600;">Order Block:</span>
+                                                        <div style="margin-left: 1rem; font-size: 0.8rem;">
+                                                            • ${group.activation_levels.order_block.type} @ ${group.activation_levels.order_block.price} (Score: ${group.activation_levels.order_block.score.toFixed(3)})
+                                                        </div>
+                                                    </div>
+                                                ` : ''}
+                                                ${group.activation_levels.stophunt ? `
+                                                    <div style="margin-bottom: 0.5rem;">
+                                                        <span style="color: #f44336; font-size: 0.85rem; font-weight: 600;">Stophunt:</span>
+                                                        <div style="margin-left: 1rem; font-size: 0.8rem;">• ${group.activation_levels.stophunt}</div>
+                                                    </div>
+                                                ` : ''}
+                                            </div>
+                                        `}
+                                    </div>
+                                ` : ''}
                                 ${group.order_blocks && group.order_blocks.length > 0 ? `
                                     <div>
                                         <strong>Order Blocks (${group.order_blocks.length}):</strong>
