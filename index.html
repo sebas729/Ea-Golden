@@ -2077,7 +2077,7 @@
                                     <div style="margin-bottom: 1rem;">
                                         <strong>🎯 Niveles de Activación:</strong>
                                         ${group.activation_levels.summary ? `
-                                            <div style="margin-left: -1rem; margin-right: -1rem; margin-top: 0.5rem; background: rgba(255, 255, 255, 0.02); border-radius: 8px; padding: 1rem; border: 1px solid rgba(255, 255, 255, 0.08);">
+                                            <div style="margin-left: -1rem; margin-right: -1rem; margin-top: 0.5rem; background: rgba(0, 212, 255, 0.05); border-radius: 8px; padding: 1rem; border: 2px solid rgba(0, 212, 255, 0.2); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
                                                 <div style="font-size: 0.85rem; font-weight: 600; color: var(--accent); margin-bottom: 0.5rem;">Resumen Ordenado:</div>
                                                 ${group.activation_levels.summary.map((level, index) => `
                                                     <div style="display: flex; justify-content: space-between; align-items: center; margin: 0.25rem 0; padding: 0.25rem 0.5rem; border-radius: 4px; background: ${level.type === 'FIBONACCI' ? 'rgba(251, 191, 36, 0.1)' : level.type === 'ORDER_BLOCK' ? 'rgba(0, 212, 170, 0.1)' : 'rgba(244, 67, 54, 0.1)'};">
