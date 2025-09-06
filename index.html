@@ -1284,6 +1284,9 @@
                     <button class="tab-button" onclick="showTab('notes')">
                         📝 Notas
                     </button>
+                    <button class="tab-button" onclick="showTab('niveles-d')">
+                        ⚠️ Niveles D
+                    </button>
                     <button class="tab-button" onclick="showTab('config')">
                         ⚙️ Configuración
                     </button>
@@ -1341,6 +1344,16 @@
                         <h2>📝 Notas</h2>
                         <div id="notes-content">
                             <!-- Notes content will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Niveles D Tab -->
+                <div id="niveles-d" class="tab-content">
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <h2>⚠️ Registro de Desactivación de Niveles</h2>
+                        <div id="niveles-d-content">
+                            <!-- Deactivation events will be populated here -->
                         </div>
                     </div>
                 </div>
@@ -1880,9 +1893,13 @@
             const configContainer = document.getElementById('config-content');
             const legendContainer = document.getElementById('legend-content');
             const notesContainer = document.getElementById('notes-content');
+            const nivelesDContainer = document.getElementById('niveles-d-content');
             
             // Populate notes section with unified_trends data
             populateNotesSection(notesContainer);
+            
+            // Populate niveles D section with deactivation events
+            populateNivelesDSection(nivelesDContainer);
             
             // Configuration for both old and new structure
             if (!reportData.configuration && !reportData.trading_summary) {
@@ -2325,27 +2342,91 @@
                 `;
             }
 
-            // Notes Desactivacion Niveles Section
-            if (reportData.notes_desactivacion_niveles && reportData.notes_desactivacion_niveles.length > 0) {
-                notesHtml += `
-                    <div class="config-section">
-                        <h3>⚠️ Notas de Desactivación de Niveles</h3>
-                        <div style="max-height: 250px; overflow-y: auto; border: 1px solid var(--error); border-radius: 6px; padding: 1rem; background: rgba(244, 67, 54, 0.05);">
-                            ${reportData.notes_desactivacion_niveles.map(note => `
-                                <div style="font-size: 0.85rem; margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(244, 67, 54, 0.1); border-radius: 4px; border-left: 3px solid #f44336;">
-                                    ${note}
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }
 
             if (notesHtml === '') {
                 container.innerHTML = '<p style="color: var(--text-muted); font-style: italic;">No hay información de tendencias unificadas para mostrar</p>';
             } else {
                 container.innerHTML = notesHtml;
             }
+        }
+
+        // Populate niveles D section with deactivation events
+        function populateNivelesDSection(container) {
+            let nivelesDHtml = '';
+            
+            // Check for deactivation events from multiple sources
+            const deactivationEvents = [];
+            
+            // From dynamic_deactivation.deactivation_notes
+            if (reportData.dynamic_deactivation && reportData.dynamic_deactivation.deactivation_notes && reportData.dynamic_deactivation.deactivation_notes.length > 0) {
+                deactivationEvents.push(...reportData.dynamic_deactivation.deactivation_notes);
+            }
+            
+            // From dynamic_deactivation.recent_events
+            if (reportData.dynamic_deactivation && reportData.dynamic_deactivation.recent_events && reportData.dynamic_deactivation.recent_events.length > 0) {
+                deactivationEvents.push(...reportData.dynamic_deactivation.recent_events);
+            }
+            
+            // From notes_desactivacion_niveles (legacy)
+            if (reportData.notes_desactivacion_niveles && reportData.notes_desactivacion_niveles.length > 0) {
+                deactivationEvents.push(...reportData.notes_desactivacion_niveles);
+            }
+            
+            if (deactivationEvents.length > 0) {
+                nivelesDHtml = `
+                    <div class="config-section">
+                        <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255, 193, 7, 0.1); border: 1px solid #ffc107; border-radius: 6px;">
+                            <div style="font-size: 0.9rem; color: var(--warning); font-weight: 600; margin-bottom: 0.5rem;">
+                                📊 Total de eventos: ${deactivationEvents.length}
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                                Formato: YYYY-MM-DD HH:MM:SS — Nivel &lt;TIPO&gt; [&lt;GRUPO_DESTINO&gt;] desactivado por LOW [&lt;GRUPO_ORIGEN&gt;]
+                            </div>
+                        </div>
+                        <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--error); border-radius: 6px; padding: 1rem; background: rgba(244, 67, 54, 0.05);">
+                            ${deactivationEvents.map(event => {
+                                // Format event according to document specification
+                                const formattedEvent = formatDeactivationEvent(event);
+                                return `
+                                    <div style="font-size: 0.85rem; margin-bottom: 0.75rem; padding: 0.75rem; background: rgba(244, 67, 54, 0.1); border-radius: 4px; border-left: 3px solid #f44336; font-family: 'Courier New', monospace;">
+                                        <div style="color: var(--error); font-weight: 600;">${formattedEvent}</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                nivelesDHtml = `
+                    <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+                        <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;">No hay eventos de desactivación</div>
+                        <div style="font-size: 0.9rem;">Todos los niveles se mantienen activos</div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = nivelesDHtml;
+        }
+
+        // Format deactivation event according to document specification
+        function formatDeactivationEvent(event) {
+            // If event is already a formatted string, return as is
+            if (typeof event === 'string') {
+                return event;
+            }
+            
+            // If event is an object, format it according to document spec
+            if (typeof event === 'object' && event !== null) {
+                const timestamp = event.timestamp || event.datetime || new Date().toISOString().replace('T', ' ').substring(0, 19);
+                const levelType = event.level_type || event.type || 'N/A';
+                const targetGroup = event.target_group || event.grupo_destino || 'N/A';
+                const sourceGroup = event.source_group || event.grupo_origen || 'N/A';
+                
+                return `${timestamp} — Nivel ${levelType} [${targetGroup}] desactivado por LOW [${sourceGroup}]`;
+            }
+            
+            return event.toString();
         }
 
         // Navigate to specific order block section
