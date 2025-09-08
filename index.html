@@ -2388,6 +2388,9 @@
             const timeframes = group.unified_timeframes.join(', ');
             const direction = group.trend_direction || 'BUY';
             
+            // Calculate range_pips if not provided
+            const rangePips = group.range_pips || (Math.abs(group.high - group.low) * 10);
+            
             // Format dates
             const highDate = formatDateTime(group.high_datetime);
             const lowDate = formatDateTime(group.low_datetime);
@@ -2406,6 +2409,7 @@
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; font-size: 0.85rem;">
                             <div><strong>TFs Grupo:</strong> ${timeframes}</div>
                             <div><strong>TF Dominante:</strong> ${dominantTf}</div>
+                            <div><strong>Rango:</strong> ${rangePips.toFixed(1)} pips</div>
                             <div><strong>Dirección:</strong> <span style="color: var(--success); font-weight: 600;">${direction}</span></div>
                         </div>
                         <div style="margin-top: 0.75rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.85rem;">
