@@ -181,7 +181,7 @@
 }
 
 .timeframe-card .timeframe {
-    font-size: 1.8em;
+    font-size: 1.6em;
     font-weight: 600;
     color: #00f5ff;
 }
@@ -189,7 +189,7 @@
 .timeframe-card .trend-badge {
     padding: 8px 16px;
     border-radius: 20px;
-    font-size: 0.8em;
+    font-size: 0.7em;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -213,7 +213,7 @@
 }
 
 .price-label {
-    font-size: 0.8em;
+    font-size: 0.7em;
     color: #888;
     margin-bottom: 5px;
     text-transform: uppercase;
@@ -221,13 +221,13 @@
 }
 
 .price-value {
-    font-size: 1.3em;
+    font-size: 1.1em;
     font-weight: 600;
     color: #fff;
 }
 
 .price-date {
-    font-size: 0.7em;
+    font-size: 0.6em;
     color: #888;
     margin-top: 5px;
     font-style: italic;
@@ -255,13 +255,13 @@
 }
 
 .range-label {
-    font-size: 0.7em;
+    font-size: 0.6em;
     color: #888;
     text-transform: uppercase;
 }
 
 .range-value {
-    font-size: 1.1em;
+    font-size: 1.0em;
     font-weight: 600;
     color: #00d4aa;
 }
@@ -281,13 +281,13 @@
 }
 
 .status-label {
-    font-size: 0.7em;
+    font-size: 0.6em;
     color: #888;
     margin-bottom: 5px;
 }
 
 .status-value {
-    font-size: 1.1em;
+    font-size: 1.0em;
     font-weight: 600;
 }
 
@@ -314,7 +314,7 @@
 }
 
 .section-title {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #00f5ff;
     margin-bottom: 12px;
     text-transform: uppercase;
@@ -344,18 +344,18 @@
 }
 
 .level-name {
-    font-size: 0.85em;
+    font-size: 0.75em;
     color: #ccc;
 }
 
 .level-value {
-    font-size: 0.9em;
+    font-size: 0.8em;
     font-weight: 600;
     color: #fff;
 }
 
 .level-status {
-    font-size: 0.7em;
+    font-size: 0.6em;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -382,13 +382,13 @@
 }
 
 .score-title {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #00f5ff;
     margin-bottom: 5px;
 }
 
 .score-value {
-    font-size: 1.8em;
+    font-size: 1.6em;
     font-weight: 700;
     color: #00d4aa;
 }
@@ -405,13 +405,13 @@
 }
 
 .score-item-label {
-    font-size: 0.7em;
+    font-size: 0.6em;
     color: #888;
     margin-bottom: 3px;
 }
 
 .score-item-value {
-    font-size: 0.9em;
+    font-size: 0.8em;
     font-weight: 600;
     color: #fff;
 }
@@ -428,10 +428,11 @@
     color: #00d4aa;
     font-weight: 600;
     margin-bottom: 5px;
+    font-size: 0.8em;
 }
 
 .position-value {
-    font-size: 1.2em;
+    font-size: 1.0em;
     font-weight: 600;
     color: #fff;
 }
@@ -440,7 +441,7 @@
     display: flex;
     justify-content: space-between;
     margin-top: 10px;
-    font-size: 0.8em;
+    font-size: 0.7em;
     color: #888;
 }
 
