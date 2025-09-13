@@ -139,8 +139,8 @@ export class NivelesDSection {
                             <span style="color: var(--text-primary);">${level.price}</span>
                             <span style="color: var(--text-secondary); font-size: 0.8rem;">${level.type}</span>
                         </div>
-                        <span style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; ${level.isActive ? 'background: var(--success); color: white;' : 'background: var(--error); color: white;'}">
-                            ${level.isActive ? 'Activo' : 'Desactivado'}
+                        <span style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; ${level.isActive ? 'background: #4caf50; color: white;' : 'background: #f44336; color: white;'}">
+                            ${level.isActive ? '✅ Activo' : '❌ Desactivado'}
                         </span>
                     </div>
                 `).join('')}
@@ -150,13 +150,27 @@ export class NivelesDSection {
 
     // Get level activation status for a group
     getLevelActivationForGroup(groupId, dominantTf) {
-        // Find corresponding timeframe data
+        // Find corresponding timeframe data with multiple matching strategies
         if (this.reportData.timeframes) {
-            const timeframeData = this.reportData.timeframes.find(tf =>
-                tf.timeframe_general === dominantTf ||
-                tf.timeframe_general === dominantTf.replace('_', '_I') ||
-                tf.timeframe_general === dominantTf.replace('_I', '')
-            );
+            const timeframeData = this.reportData.timeframes.find(tf => {
+                const tfGeneral = tf.timeframe_general;
+
+                // Direct match
+                if (tfGeneral === dominantTf) return true;
+
+                // Match with variations (M1, M1_I, etc.)
+                if (tfGeneral === dominantTf.replace('_I', '') ||
+                    tfGeneral === dominantTf.replace('_', '_I') ||
+                    tfGeneral === dominantTf + '_I' ||
+                    tfGeneral === dominantTf.replace('_I', '')) return true;
+
+                // Match by removing/adding underscores
+                const normalizedTf = tfGeneral.replace('_', '');
+                const normalizedDominant = dominantTf.replace('_', '');
+                if (normalizedTf === normalizedDominant) return true;
+
+                return false;
+            });
 
             if (timeframeData && timeframeData.level_activation_status) {
                 return timeframeData.level_activation_status;
@@ -168,21 +182,35 @@ export class NivelesDSection {
     // Check if a level is active based on activation status
     isLevelActive(level, levelActivationData) {
         if (!levelActivationData || !levelActivationData.active_level_details) {
-            return true; // Default to active if no deactivation data
+            return false; // Default to inactive if no activation data
         }
 
-        // Find matching level in activation data
+        // Find matching level in activation data by name first, then by price
         const activeLevels = levelActivationData.active_level_details;
         const matchingLevel = activeLevels.find(activeLevel => {
-            const levelPrice = parseFloat(level.price);
-            const activePrice = parseFloat(activeLevel.value);
+            // Primary match: by level name (50%, 61.8%, OB Óptimo, etc.)
+            if (activeLevel.name && level.level) {
+                const activeName = activeLevel.name.toLowerCase().trim();
+                const levelName = level.level.toLowerCase().trim();
+                if (activeName === levelName) {
+                    return true;
+                }
+            }
 
-            // Match by type or close price
-            return Math.abs(levelPrice - activePrice) < 0.1 ||
-                   level.type.toLowerCase().includes(activeLevel.type.toLowerCase());
+            // Secondary match: by price with tolerance
+            if (activeLevel.value && level.price) {
+                const levelPrice = parseFloat(level.price);
+                const activePrice = parseFloat(activeLevel.value);
+                if (!isNaN(levelPrice) && !isNaN(activePrice)) {
+                    return Math.abs(levelPrice - activePrice) < 0.01;
+                }
+            }
+
+            return false;
         });
 
-        return matchingLevel ? matchingLevel.is_active : true;
+        // Only return true if level is found AND is_active is true
+        return matchingLevel ? matchingLevel.is_active === true : false;
     }
 
     // Get display name for level type

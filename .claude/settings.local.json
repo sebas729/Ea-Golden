@@ -10,7 +10,8 @@
       "Read(//c/Users/pc/Desktop/**)",
       "Bash(curl:*)",
       "Bash(git mv:*)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": [],
