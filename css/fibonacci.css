@@ -1,0 +1,376 @@
+/* ================================
+   Fibonacci Report Specific Styles
+   ================================ */
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 2rem 0;
+    position: relative;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.header-icon {
+    font-size: 2.5rem;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+/* Main Info Section */
+.main-info {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    text-align: center;
+}
+
+.info-item h3 {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+.info-item .value {
+    font-size: 1.75rem;
+    font-weight: 600;
+    font-family: var(--font-mono);
+}
+
+.info-item .subvalue {
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+/* Tabs Navigation */
+.tabs {
+    margin-bottom: 1.5rem;
+}
+
+.tab-nav {
+    display: flex;
+    background: var(--bg-secondary);
+    border-radius: var(--radius);
+    padding: 0.5rem;
+    margin-bottom: 1.5rem;
+    gap: 0.5rem;
+    overflow-x: auto;
+}
+
+.tab-button {
+    background: none;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: calc(var(--radius) - 4px);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    white-space: nowrap;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.tab-button:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.tab-button.active {
+    background: var(--accent);
+    color: var(--bg-primary);
+    font-weight: 600;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Cards Grid for Timeframes */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+/* Individual Timeframe Cards */
+.card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 14px;
+    transition: var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #00d4aa, #0099cc);
+}
+
+.card:hover {
+    border-color: rgba(0, 212, 170, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 212, 170, 0.1);
+}
+
+.card.clickable-hint::after {
+    content: '👆 Click para ver Order Blocks';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 212, 170, 0.1);
+    color: #00d4aa;
+    text-align: center;
+    padding: 0.25rem;
+    font-size: 0.65rem;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.card:hover.clickable-hint::after {
+    opacity: 1;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.timeframe {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.trend-badge {
+    background: linear-gradient(135deg, #00d4aa, #00b894);
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.trend-badge.bearish {
+    background: linear-gradient(135deg, #00d4aa, #00b894);
+    color: #fff;
+}
+
+/* Price Levels */
+.price-levels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.level {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.level-label {
+    font-size: 12px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.level-value {
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+}
+
+.high-value, .low-value {
+    color: #00d4aa;
+}
+
+.level-datetime {
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* Metrics */
+.metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metric-label {
+    font-size: 11px;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.metric-value {
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+}
+
+/* Fibonacci Levels */
+.fibonacci-levels {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 14px;
+}
+
+.fib-title {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.fib-level {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3px;
+    font-size: 12px;
+}
+
+.fib-label {
+    color: #94a3b8;
+}
+
+/* Position Info */
+.position-info {
+    background: rgba(0, 212, 170, 0.05);
+    border: 1px solid rgba(0, 212, 170, 0.2);
+    border-radius: 6px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.position-label {
+    font-size: 12px;
+    color: #00d4aa;
+    text-transform: uppercase;
+}
+
+.position-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #00d4aa;
+}
+
+/* Volume Indicator */
+.volume-indicator {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
+    padding: 6px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+}
+
+.volume-label {
+    color: #94a3b8;
+}
+
+.volume-value {
+    color: #00d4aa;
+    font-weight: 600;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 2rem 0;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+}
+
+.next-update {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* Responsive Design for Cards */
+@media (min-width: 1200px) {
+    .cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+}
+
+@media (min-width: 900px) and (max-width: 1199px) {
+    .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2rem;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tab-nav {
+        flex-direction: column;
+    }
+}

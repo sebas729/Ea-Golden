@@ -1,0 +1,399 @@
+/* ================================
+   Order Blocks Specific Styles
+   ================================ */
+
+/* Order Blocks Tab Sections */
+.timeframe-section {
+    margin-bottom: 40px;
+    scroll-margin-top: 100px;
+}
+
+.timeframe-section.highlighted {
+    animation: highlightSection 2s ease;
+}
+
+@keyframes highlightSection {
+    0% {
+        background: rgba(0, 212, 255, 0.1);
+        border-radius: var(--radius);
+    }
+    100% {
+        background: transparent;
+    }
+}
+
+.timeframe-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.timeframe-badge {
+    background: linear-gradient(135deg, #00d4aa, #00b894);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: #00ff88;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+/* Order Blocks Grid */
+.blocks-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(320px, 1fr));
+    gap: 20px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+@media (max-width: 1024px) {
+    .blocks-grid {
+        grid-template-columns: repeat(2, minmax(320px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .blocks-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Block Cards */
+.block-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 20px;
+    transition: var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.block-card.bajista:hover,
+.block-card.bearish:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 212, 170, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 212, 170, 0.15);
+}
+
+.block-card.alcista:hover,
+.block-card.bullish:hover {
+    transform: translateY(-2px);
+    border-color: rgba(16, 185, 129, 0.4);
+    box-shadow: 0 8px 32px rgba(16, 185, 129, 0.15);
+}
+
+.block-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+}
+
+.block-card.bajista::before,
+.block-card.bearish::before {
+    background: linear-gradient(90deg, #00d4aa, #00b894);
+}
+
+.block-card.alcista::before,
+.block-card.bullish::before {
+    background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.block-type {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+}
+
+.block-type.bajista,
+.block-type.bearish {
+    background: linear-gradient(135deg, #00d4aa, #00b894);
+}
+
+.block-type.alcista,
+.block-type.bullish {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.block-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #00d4aa;
+    font-family: var(--font-mono);
+}
+
+.block-details {
+    display: grid;
+    gap: 12px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-size: 13px;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.detail-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+}
+
+/* Percentage Bar */
+.percentage-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.percentage-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width var(--transition-normal);
+    background: linear-gradient(90deg, #00d4aa, #00b894);
+}
+
+/* Selected Block Styles */
+.block-card.selected-ob {
+    border: 2px solid rgba(255, 215, 0, 0.7);
+    box-shadow: 0 8px 32px rgba(255, 215, 0, 0.15);
+}
+
+.block-card.selected-ob::before {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.8), rgba(255, 237, 78, 0.8));
+    height: 4px;
+}
+
+/* Scoring Information */
+.scoring-info {
+    background: rgba(255, 215, 0, 0.04);
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    border-radius: 6px;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 12px;
+}
+
+.score-title {
+    font-size: 12px;
+    color: rgba(255, 215, 0, 0.9);
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.score-breakdown {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+}
+
+.score-component {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+}
+
+.score-label {
+    color: #94a3b8;
+    text-transform: capitalize;
+}
+
+.score-value {
+    color: rgba(255, 215, 0, 0.85);
+    font-weight: 600;
+}
+
+/* OB Dynamics Styles */
+.ob-unified-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.unified-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+    border-bottom: 1px solid var(--border);
+}
+
+.unified-header h2 {
+    color: var(--text-primary);
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.unified-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.controls-left, .controls-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.controls-label {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.timeframe-buttons-inline, .chart-buttons-inline {
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+}
+
+.timeframe-btn, .chart-btn {
+    padding: 8px 16px;
+    margin: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: var(--transition-fast);
+}
+
+.timeframe-btn:hover, .chart-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-hover);
+}
+
+.timeframe-btn.active, .chart-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-primary);
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 212, 255, 0.2);
+}
+
+.timeframe-buttons-inline .timeframe-btn,
+.chart-buttons-inline .chart-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    margin: 0;
+    min-width: 45px;
+}
+
+.ob-charts-container-unified {
+    padding: 2rem;
+    min-height: 200px;
+}
+
+.initial-message {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-secondary);
+}
+
+.initial-message h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.unified-chart-container {
+    margin-top: 1.5rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.chart-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.chart-metadata {
+    background: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: 6px;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+}
+
+.chart-metadata p {
+    margin: 0.25rem 0;
+    color: var(--text-secondary);
+}
+
+.chart-metadata strong {
+    color: var(--text-primary);
+}
+
+/* Responsive Controls */
+@media (max-width: 768px) {
+    .unified-controls {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .controls-left, .controls-right {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}

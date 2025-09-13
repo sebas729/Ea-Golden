@@ -1,0 +1,187 @@
+/**
+ * Shared API Functions
+ * Common API handling functionality
+ */
+
+export class ApiClient {
+    constructor() {
+        this.baseUrl = 'https://eagolden.online/api';
+        this.defaultHeaders = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        };
+        this.timeout = 30000; // 30 seconds
+    }
+
+    /**
+     * Make HTTP request with timeout and error handling
+     * @param {string} url - Request URL
+     * @param {Object} options - Fetch options
+     * @returns {Promise<Object>} Response data
+     */
+    async request(url, options = {}) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+
+        try {
+            const response = await fetch(url, {
+                headers: { ...this.defaultHeaders, ...options.headers },
+                signal: controller.signal,
+                ...options
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return await response.json();
+            } else {
+                return await response.text();
+            }
+
+        } catch (error) {
+            clearTimeout(timeoutId);
+
+            if (error.name === 'AbortError') {
+                throw new Error('Request timeout - please try again');
+            }
+
+            if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                throw new Error('Network error - please check your connection');
+            }
+
+            throw error;
+        }
+    }
+
+    /**
+     * GET request
+     * @param {string} endpoint - API endpoint
+     * @param {Object} options - Additional options
+     * @returns {Promise<Object>} Response data
+     */
+    async get(endpoint, options = {}) {
+        const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
+        return this.request(url, { method: 'GET', ...options });
+    }
+
+    /**
+     * POST request
+     * @param {string} endpoint - API endpoint
+     * @param {Object} data - Request body data
+     * @param {Object} options - Additional options
+     * @returns {Promise<Object>} Response data
+     */
+    async post(endpoint, data = null, options = {}) {
+        const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
+        return this.request(url, {
+            method: 'POST',
+            body: data ? JSON.stringify(data) : null,
+            ...options
+        });
+    }
+
+    /**
+     * Fetch Fibonacci report data
+     * @returns {Promise<Object>} Fibonacci report data
+     */
+    async getFibonacciReport() {
+        try {
+            console.log('Fetching Fibonacci report...');
+            const data = await this.get('/fibonacci-report');
+            console.log('Fibonacci report loaded successfully');
+            return data;
+        } catch (error) {
+            console.error('Error fetching Fibonacci report:', error);
+            throw new Error(`Failed to load Fibonacci report: ${error.message}`);
+        }
+    }
+
+    /**
+     * Fetch economic calendar data
+     * @returns {Promise<Object>} Economic calendar data
+     */
+    async getEconomicCalendar() {
+        try {
+            console.log('Fetching economic calendar...');
+            const data = await this.get('/economic-calendar');
+            console.log('Economic calendar loaded successfully');
+            return data;
+        } catch (error) {
+            console.error('Error fetching economic calendar:', error);
+            throw new Error(`Failed to load economic calendar: ${error.message}`);
+        }
+    }
+
+    /**
+     * Process OB report data
+     * @param {Object} reportData - Report data to process
+     * @returns {Promise<Object>} Processed OB data
+     */
+    async processObReport(reportData) {
+        try {
+            console.log('Processing OB report...');
+            const data = await this.post('/process-ob-report', {
+                report_data: reportData,
+                timestamp: new Date().toISOString()
+            });
+            console.log('OB report processed successfully');
+            return data;
+        } catch (error) {
+            console.error('Error processing OB report:', error);
+            throw new Error(`Failed to process OB report: ${error.message}`);
+        }
+    }
+
+    /**
+     * Check API health
+     * @returns {Promise<boolean>} API health status
+     */
+    async checkHealth() {
+        try {
+            await this.get('/health');
+            return true;
+        } catch (error) {
+            console.warn('API health check failed:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Retry mechanism for failed requests
+     * @param {Function} requestFn - Request function to retry
+     * @param {number} maxRetries - Maximum number of retries
+     * @param {number} delay - Delay between retries in ms
+     * @returns {Promise<*>} Request result
+     */
+    async withRetry(requestFn, maxRetries = 3, delay = 1000) {
+        let lastError;
+
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                return await requestFn();
+            } catch (error) {
+                lastError = error;
+                console.warn(`Request attempt ${attempt} failed:`, error.message);
+
+                if (attempt < maxRetries) {
+                    console.log(`Retrying in ${delay}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2; // Exponential backoff
+                }
+            }
+        }
+
+        throw lastError;
+    }
+}
+
+// Create singleton instance
+export const apiClient = new ApiClient();
+
+// Export for global access
+window.apiClient = apiClient;

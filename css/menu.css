@@ -1,0 +1,124 @@
+/* ================================
+   Navigation Menu Components
+   ================================ */
+
+/* Hamburger Menu Button */
+.hamburger-menu {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: var(--z-hamburger);
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    transition: var(--transition-normal);
+}
+
+.hamburger-menu:hover {
+    background: var(--bg-card);
+    transform: scale(1.05);
+}
+
+.hamburger-menu span {
+    width: 24px;
+    height: 2px;
+    background: var(--blue-accent);
+    transition: var(--transition-normal);
+}
+
+.hamburger-menu.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger-menu.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-menu.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Side Menu */
+.side-menu {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 280px;
+    height: 100vh;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border);
+    transition: left var(--transition-normal);
+    z-index: var(--z-menu);
+    padding: 80px 20px 20px;
+    overflow-y: auto;
+}
+
+.side-menu.active {
+    left: 0;
+}
+
+.side-menu h3 {
+    color: var(--blue-accent);
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* Menu Items */
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: var(--transition-fast);
+    cursor: pointer;
+}
+
+.menu-item:hover {
+    background: var(--bg-hover);
+    transform: translateX(5px);
+    border-color: var(--blue-accent);
+}
+
+.menu-item.active {
+    background: var(--blue-accent);
+    color: var(--bg-primary);
+    font-weight: 600;
+}
+
+.menu-item .icon {
+    font-size: 1.2rem;
+}
+
+/* Overlay */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition-normal);
+    z-index: var(--z-overlay);
+}
+
+.menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}

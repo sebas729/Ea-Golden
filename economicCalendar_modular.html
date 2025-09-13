@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario Económico</title>
+
+    <!-- Modular CSS -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/calendar.css">
+</head>
+<body>
+    <!-- Menú Hamburguesa -->
+    <div class="hamburger-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Menú Lateral -->
+    <nav class="side-menu" id="sideMenu">
+        <h3>📊 Navegación</h3>
+        <a href="index_modular.html" class="menu-item">
+            <span class="icon">📈</span>
+            <span>Fibonacci Report</span>
+        </a>
+        <a href="economicCalendar_modular.html" class="menu-item active">
+            <span class="icon">📅</span>
+            <span>Calendario Económico</span>
+        </a>
+    </nav>
+
+    <!-- Overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><span class="icon">📅</span><span>Calendario Económico</span></h1>
+        </header>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="update-info-inline">
+                <span class="label">Última actualización</span>
+                <span class="value" id="lastUpdate">-</span>
+            </div>
+            <button class="btn btn-primary" id="loadBtn">
+                <span>🔄</span>
+                Actualizar Datos
+            </button>
+        </div>
+
+        <!-- Filters Panel -->
+        <div class="filters-panel" id="filtersPanel">
+            <div class="filters-header" onclick="toggleFilters()">
+                <div class="filters-title">
+                    <span>🔍</span>
+                    Filtros
+                </div>
+                <div class="filters-toggle">
+                    <span>Expandir</span>
+                    <span class="filters-toggle-icon">▼</span>
+                </div>
+            </div>
+
+            <div class="filters-content" id="filtersContent">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label class="filter-label">País</label>
+                        <select id="countryFilter" class="filter-select">
+                            <option value="">Todos los países</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Impacto</label>
+                        <select id="impactFilter" class="filter-select">
+                            <option value="">Todos los impactos</option>
+                            <option value="Alto">🔴 Alto Impacto</option>
+                            <option value="Medio">🟡 Medio Impacto</option>
+                            <option value="Bajo">🟢 Bajo Impacto</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Hora (desde)</label>
+                        <input type="time" id="timeFromFilter" class="filter-input">
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Hora (hasta)</label>
+                        <input type="time" id="timeToFilter" class="filter-input">
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Buscar evento</label>
+                        <input type="text" id="searchFilter" class="filter-input" placeholder="Ej: Retail Sales">
+                    </div>
+                </div>
+
+                <div class="filter-buttons">
+                    <button class="filter-btn primary">
+                        <span>✅</span> Aplicar Filtros
+                    </button>
+                    <button class="filter-btn">
+                        <span>🗑️</span> Limpiar
+                    </button>
+                </div>
+
+                <div class="active-filters" id="activeFilters" style="display: none;">
+                    <div style="font-size: 0.875rem; color: var(--text-medium); margin-bottom: 0.5rem;">Filtros activos:</div>
+                    <div id="filterTags"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Cargando eventos económicos...</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message hidden">
+            <span>⚠️</span>
+            <span id="errorText">Error al cargar los datos</span>
+        </div>
+
+        <!-- Update Info -->
+        <div class="update-info">
+            <p class="label">⏰ Última Actualización</p>
+            <p class="value" id="lastUpdate2">-</p>
+        </div>
+
+        <!-- Tabs System -->
+        <div class="tabs-container">
+            <!-- Hidden radio buttons -->
+            <input type="radio" id="tab-high" name="tabs" class="tab-radio" checked>
+            <input type="radio" id="tab-medium" name="tabs" class="tab-radio">
+            <input type="radio" id="tab-low" name="tabs" class="tab-radio">
+            <input type="radio" id="tab-all" name="tabs" class="tab-radio">
+
+            <!-- Tabs Navigation -->
+            <div class="tabs-nav">
+                <nav>
+                    <label for="tab-high" class="tab-label">🔴 Alto Impacto</label>
+                    <label for="tab-medium" class="tab-label">🟡 Medio Impacto</label>
+                    <label for="tab-low" class="tab-label">🟢 Bajo Impacto</label>
+                    <label for="tab-all" class="tab-label">📊 Todos los Eventos</label>
+                </nav>
+            </div>
+
+            <!-- Tabs Content -->
+            <main>
+                <!-- High Impact Tab -->
+                <div id="high" class="tab-content">
+                    <section class="impact-section high">
+                        <h2>
+                            <span>🔴</span>
+                            EVENTOS DE ALTO IMPACTO
+                            <span class="event-count" id="highCount">0 eventos</span>
+                        </h2>
+                        <div id="highEvents">
+                            <p style="text-align: center; color: var(--text-medium); padding: 2rem;">
+                                Presiona "Cargar Datos" para obtener los eventos económicos.
+                            </p>
+                        </div>
+                    </section>
+
+                    <div class="warning-note">
+                        <span class="icon">⚠️</span>
+                        <span class="text">Nota: Estos eventos pueden causar alta volatilidad en el mercado.</span>
+                    </div>
+                </div>
+
+                <!-- Medium Impact Tab -->
+                <div id="medium" class="tab-content">
+                    <section class="impact-section medium">
+                        <h2>
+                            <span>🟡</span>
+                            EVENTOS DE MEDIO IMPACTO
+                            <span class="event-count" id="mediumCount">0 eventos</span>
+                        </h2>
+                        <div id="mediumEvents">
+                            <p style="text-align: center; color: var(--text-medium); padding: 2rem;">
+                                Presiona "Cargar Datos" para obtener los eventos económicos.
+                            </p>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Low Impact Tab -->
+                <div id="low" class="tab-content">
+                    <section class="impact-section low">
+                        <h2>
+                            <span>🟢</span>
+                            EVENTOS DE BAJO IMPACTO
+                            <span class="event-count" id="lowCount">0 eventos</span>
+                        </h2>
+                        <div id="lowEvents">
+                            <p style="text-align: center; color: var(--text-medium); padding: 2rem;">
+                                Presiona "Cargar Datos" para obtener los eventos económicos.
+                            </p>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- All Events Tab -->
+                <div id="all" class="tab-content">
+                    <div id="allEvents">
+                        <p style="text-align: center; color: var(--text-medium); padding: 2rem;">
+                            Presiona "Cargar Datos" para obtener todos los eventos económicos.
+                        </p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modular JavaScript -->
+    <script type="module" src="js/shared/menu.js"></script>
+    <script type="module" src="js/calendar/main.js"></script>
+</body>
+</html>
