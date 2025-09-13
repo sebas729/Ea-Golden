@@ -20,7 +20,15 @@ export class ObDynamics {
     }
 
     async generateObDynamics() {
-        if (!this.reportData || this.isGenerating) return;
+        if (!this.reportData || this.isGenerating) {
+            return Promise.reject(new Error('No hay datos de reporte disponibles o ya se está generando'));
+        }
+
+        // Actualizar mensaje inicial si existe
+        const initialMessage = document.querySelector('#ob-charts-container .initial-message h3');
+        if (initialMessage) {
+            initialMessage.textContent = '⚙️ Procesando datos...';
+        }
 
         this.isGenerating = true;
 
@@ -28,8 +36,15 @@ export class ObDynamics {
             const result = await apiClient.processObReport(this.reportData);
 
             if (result.success) {
-                this.obDynamicsData = result.ob_dynamics;
+                // Los datos están en result.data, no en result.ob_dynamics
+                this.obDynamicsData = result.data;
+
+                // Establecer variables globales para compatibilidad
+                window.obDynamicsData = this.obDynamicsData;
+                window.currentObTimeframe = this.currentObTimeframe;
+
                 this.renderObDynamics();
+                return Promise.resolve(this.obDynamicsData);
             } else {
                 throw new Error(result.error || result.message || 'Error procesando OB');
             }
@@ -37,6 +52,7 @@ export class ObDynamics {
         } catch (error) {
             console.error('Error generating OB dynamics:', error);
             this.showError(error.message);
+            return Promise.reject(error);
         } finally {
             this.isGenerating = false;
         }
@@ -68,6 +84,7 @@ export class ObDynamics {
 
     switchObTimeframe(timeframe) {
         this.currentObTimeframe = timeframe;
+        window.currentObTimeframe = timeframe;
         this.renderObChart(timeframe);
         this.updateActiveButtons();
     }
@@ -84,7 +101,11 @@ export class ObDynamics {
         if (!container) return;
 
         const tfData = this.obDynamicsData.timeframes[timeframe];
-        if (!tfData) return;
+
+        if (!tfData || !tfData.charts) {
+            container.innerHTML = '<div class="initial-message"><p>No hay gráficos disponibles para ' + timeframe + '</p></div>';
+            return;
+        }
 
         const chartKeys = Object.keys(tfData.charts);
         this.renderChartSelector(chartKeys, timeframe);
@@ -100,11 +121,19 @@ export class ObDynamics {
 
         container.innerHTML = '';
 
-        chartKeys.forEach(chartTf => {
+        chartKeys.forEach((chartTf, index) => {
             const btn = document.createElement('button');
-            btn.className = 'chart-btn';
-            btn.textContent = chartTf;
-            btn.onclick = () => this.renderSingleChart(timeframe, chartTf);
+            btn.textContent = `Gráfico ${chartTf}`;
+            btn.className = index === 0 ? 'chart-btn active' : 'chart-btn';
+            btn.onclick = () => {
+                // Actualizar botones activos
+                container.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                // Renderizar solo el gráfico seleccionado
+                const chartContainer = document.getElementById('ob-charts-container');
+                chartContainer.innerHTML = '';
+                this.renderSingleChart(timeframe, chartTf, true);
+            };
             container.appendChild(btn);
         });
     }
@@ -112,26 +141,33 @@ export class ObDynamics {
     renderSingleChart(mainTf, chartTf, directRender = false) {
         const tfData = this.obDynamicsData.timeframes[mainTf];
         const chartData = tfData.charts[chartTf];
-        if (!chartData) return;
+
+        if (!chartData || !chartData.chart_json) return;
 
         const container = document.getElementById('ob-charts-container');
+
+        // Crear contenedor principal del gráfico
         const chartWrapper = document.createElement('div');
         chartWrapper.className = 'unified-chart-container';
 
+        // Crear div para el gráfico directamente con ID específico
         const chartDiv = document.createElement('div');
-        chartDiv.id = Utils.generateId('chart');
+        chartDiv.id = `chart-${mainTf}-${chartTf}`.replace(/[^a-zA-Z0-9]/g, '-');
         chartDiv.style.width = '100%';
-        chartDiv.style.height = '500px';
+        chartDiv.style.height = '650px';
 
         chartWrapper.appendChild(chartDiv);
 
+        // Metadata opcional
         if (chartData.metadata) {
             const metadata = document.createElement('div');
             metadata.className = 'chart-metadata';
             metadata.innerHTML = `
-                <p><strong>Timeframe:</strong> ${chartTf}</p>
-                <p><strong>Generated:</strong> ${Utils.formatDateTime(chartData.metadata.generated_at)}</p>
-                ${chartData.metadata.zoom_info ? `<p><strong>Zoom:</strong> ${chartData.metadata.zoom_info.period} (${chartData.metadata.zoom_info.start} to ${chartData.metadata.zoom_info.end})</p>` : ''}
+                <div style="margin: 1rem 0; padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: 6px; font-size: 0.9rem;">
+                    <strong>📊 Información del Gráfico:</strong><br>
+                    <span style="color: var(--text-secondary);">TF: ${chartTf} | Generado: ${chartData.metadata.generated_at || 'N/A'}</span>
+                    ${chartData.metadata.zoom_info ? `<br><span style="color: var(--text-muted); font-size: 0.8rem;">Zoom: ${chartData.metadata.zoom_info.period} (${chartData.metadata.zoom_info.start} - ${chartData.metadata.zoom_info.end})</span>` : ''}
+                </div>
             `;
             chartWrapper.appendChild(metadata);
         }
@@ -141,13 +177,43 @@ export class ObDynamics {
         }
         container.appendChild(chartWrapper);
 
+        // Renderizar con Plotly
         try {
             const plotlyData = JSON.parse(chartData.chart_json);
+
+            // Ajustar layout para el diseño unificado
+            if (plotlyData.layout) {
+                plotlyData.layout.height = 650;
+                plotlyData.layout.margin = { l: 80, r: 80, t: 80, b: 80 };
+                plotlyData.layout.font = { size: 12 };
+                if (plotlyData.layout.xaxis) {
+                    plotlyData.layout.xaxis.tickfont = { size: 11 };
+                }
+                if (plotlyData.layout.yaxis) {
+                    plotlyData.layout.yaxis.tickfont = { size: 11 };
+                }
+            }
+
             if (window.Plotly) {
-                window.Plotly.newPlot(chartDiv.id, plotlyData.data, plotlyData.layout, {responsive: true});
+                window.Plotly.newPlot(chartDiv.id, plotlyData.data, plotlyData.layout, {
+                    responsive: true,
+                    displayModeBar: true,
+                    displaylogo: false,
+                    modeBarButtonsToRemove: ['select2d', 'lasso2d'],
+                    toImageButtonOptions: {
+                        format: 'png',
+                        filename: `OB_Chart_${mainTf}_${chartTf}`,
+                        height: 650,
+                        width: 1400,
+                        scale: 2
+                    }
+                });
+            } else {
+                chartDiv.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">❌ Plotly.js no está cargado</div>';
             }
         } catch (error) {
             console.error('Error rendering chart:', error);
+            chartDiv.innerHTML = `<div style="text-align: center; padding: 2rem; color: var(--error);">❌ Error al renderizar gráfico: ${error.message}</div>`;
         }
     }
 
@@ -198,18 +264,33 @@ export class ObDynamics {
 // Global functions for backward compatibility
 window.generateObDynamics = function() {
     if (window.fibonacciReport && window.fibonacciReport.obDynamics) {
-        window.fibonacciReport.obDynamics.generateObDynamics();
+        return window.fibonacciReport.obDynamics.generateObDynamics();
     }
+    return Promise.reject(new Error('OB Dynamics not initialized'));
 };
 
 window.switchObTimeframe = function(timeframe) {
     if (window.fibonacciReport && window.fibonacciReport.obDynamics) {
         window.fibonacciReport.obDynamics.switchObTimeframe(timeframe);
+        window.currentObTimeframe = timeframe;
     }
 };
 
 window.selectSpecificChart = function(chartTimeframe) {
     if (window.fibonacciReport && window.fibonacciReport.obDynamics) {
         window.fibonacciReport.obDynamics.selectSpecificChart(chartTimeframe);
+    }
+};
+
+// Function to navigate and switch with chart
+window.navigateToObDynamicsWithChart = function(mainTimeframe, chartTimeframe) {
+    if (window.fibonacciReport && window.fibonacciReport.obDynamics) {
+        window.fibonacciReport.navigateToObDynamicsWithChart(mainTimeframe, chartTimeframe);
+    }
+};
+
+window.navigateToObDynamics = function(timeframe) {
+    if (window.fibonacciReport && window.fibonacciReport.obDynamics) {
+        window.fibonacciReport.navigateToObDynamics(timeframe);
     }
 };
