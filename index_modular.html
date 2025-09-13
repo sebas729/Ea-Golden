@@ -41,8 +41,10 @@
     <div class="container">
         <!-- Header -->
         <header class="header">
-            <h1>Fibonacci Strategy Report</h1>
-            <button class="btn btn-primary refresh-button-header">
+            <h1>
+                Fibonacci Strategy Report
+            </h1>
+            <button class="refresh-button-header" onclick="loadData()">
                 <span>🔄</span> Actualizar Datos
             </button>
         </header>
@@ -57,7 +59,7 @@
         <div id="error" class="error" style="display: none;">
             <h3>❌ Error al cargar los datos</h3>
             <p id="error-message">No se pudieron obtener los datos del servidor.</p>
-            <button class="btn btn-primary refresh-button">🔄 Reintentar</button>
+            <button class="refresh-button" onclick="loadData()">🔄 Reintentar</button>
         </div>
 
         <!-- Main Content -->

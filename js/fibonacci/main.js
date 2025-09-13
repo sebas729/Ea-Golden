@@ -122,18 +122,24 @@ export class FibonacciReport {
         try {
             console.log('Populating UI with report data...');
 
+            // Extract the actual report data from the wrapper
+            const actualReportData = this.reportData.fibonacci_strategy_report || this.reportData;
+
             // Update main info
-            this.updateMainInfo();
+            this.updateMainInfo(actualReportData);
 
-            // Populate different sections
-            this.timeframeCards.populate(this.reportData);
-            this.orderBlocks.populate(this.reportData);
-            this.notesSection.populate(this.reportData);
-            this.nivelesDSection.populate(this.reportData);
-            this.configSection.populate(this.reportData);
+            // Populate different sections with the correct data structure
+            this.timeframeCards.populate(actualReportData);
+            this.orderBlocks.populate(actualReportData);
+            this.notesSection.populate(actualReportData);
+            this.nivelesDSection.populate(actualReportData);
+            this.configSection.populate(actualReportData);
 
-            // Start OB dynamics generation
-            this.obDynamics.initialize(this.reportData);
+            // Start OB dynamics generation automatically (like original)
+            // Pass the original data structure for correct API processing
+            setTimeout(() => {
+                this.obDynamics.initialize(this.reportData); // Use original, not actualReportData
+            }, 500);
 
             console.log('UI populated successfully');
 
@@ -143,36 +149,42 @@ export class FibonacciReport {
         }
     }
 
-    updateMainInfo() {
+    updateMainInfo(actualReportData) {
         try {
+            // Get metadata from the correct location
+            const metadata = actualReportData.metadata || {};
+
             // Update symbol
             const symbolElement = document.getElementById('symbol');
-            if (symbolElement && this.reportData.symbol) {
-                symbolElement.textContent = this.reportData.symbol;
+            if (symbolElement && metadata.symbol) {
+                symbolElement.textContent = metadata.symbol;
             }
 
             // Update current price
             const priceElement = document.getElementById('current-price');
-            if (priceElement && this.reportData.current_price) {
-                priceElement.textContent = Utils.formatNumber(this.reportData.current_price, 5);
+            if (priceElement && metadata.current_price) {
+                priceElement.textContent = Utils.formatNumber(metadata.current_price, 2);
             }
 
             // Update last update time
             const lastUpdateElement = document.getElementById('last-update');
-            if (lastUpdateElement && this.reportData.timestamp) {
-                lastUpdateElement.textContent = Utils.formatDateTime(this.reportData.timestamp);
+            if (lastUpdateElement && metadata.timestamp) {
+                lastUpdateElement.textContent = Utils.formatDateTime(metadata.timestamp);
             }
 
             // Update version
             const versionElement = document.getElementById('version');
-            if (versionElement && this.reportData.version) {
-                versionElement.textContent = `v${this.reportData.version}`;
+            if (versionElement && metadata.version) {
+                versionElement.textContent = metadata.version;
             }
 
-            // Update next report time
+            // Update next report time (if available)
             const nextReportElement = document.getElementById('next-report');
-            if (nextReportElement && this.reportData.next_update) {
-                nextReportElement.textContent = Utils.formatDateTime(this.reportData.next_update);
+            if (nextReportElement) {
+                // Calculate next report time (assuming 1 hour intervals)
+                const lastUpdate = new Date(metadata.timestamp);
+                const nextUpdate = new Date(lastUpdate.getTime() + 60 * 60 * 1000);
+                nextReportElement.textContent = Utils.formatDateTime(nextUpdate.toISOString());
             }
 
         } catch (error) {

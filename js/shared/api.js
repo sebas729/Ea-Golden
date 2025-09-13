@@ -125,10 +125,22 @@ export class ApiClient {
     async processObReport(reportData) {
         try {
             console.log('Processing OB report...');
-            const data = await this.post('/process-ob-report', {
-                report_data: reportData,
-                timestamp: new Date().toISOString()
-            });
+
+            // Use the same logic as the original
+            let payload;
+            if (reportData.fibonacci_strategy_report) {
+                // If already has the complete structure, use as is
+                payload = reportData;
+            } else {
+                // If we only have internal data, wrap in expected structure
+                payload = {
+                    fibonacci_strategy_report: reportData
+                };
+            }
+
+            console.log('Data sent to endpoint:', payload);
+
+            const data = await this.post('/process-ob-report', payload);
             console.log('OB report processed successfully');
             return data;
         } catch (error) {

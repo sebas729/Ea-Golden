@@ -13,27 +13,159 @@ export class OrderBlocks {
 
     populate(reportData) {
         this.reportData = reportData;
-        this.container = document.getElementById('order-blocks-content');
-
-        if (!this.container) {
+        const container = document.getElementById('order-blocks-content');
+        if (!container) {
             console.error('Order blocks container not found');
             return;
         }
 
-        if (!reportData.order_blocks) {
-            console.warn('No order blocks data available');
-            this.showEmptyState();
+        container.innerHTML = '';
+
+        // Check for both old and new structure
+        let blocksData = null;
+
+        if (reportData.order_blocks_detail && Object.keys(reportData.order_blocks_detail).length > 0) {
+            // Old structure
+            blocksData = reportData.order_blocks_detail;
+        } else {
+            // New structure - extract from timeframes
+            blocksData = {};
+            reportData.timeframes.forEach(tf => {
+                if (tf.order_blocks_analyzed && tf.order_blocks_analyzed.length > 0) {
+                    blocksData[tf.timeframe_general] = tf.order_blocks_analyzed.map(block => ({
+                        type: block.type,
+                        timeframe: block.timeframe_ob,
+                        price: block.price,
+                        datetime: block.datetime,
+                        pips_open_close: block.pips_oc,
+                        body_percentage: block.body_percent,
+                        score: block.score,
+                        selected: block.selected,
+                        vela: block.vela,
+                        closeness_order: block.closeness_order,
+                        distance_to_extreme: block.distance_to_extreme,
+                        passed_prefilter: block.passed_prefilter
+                    }));
+                }
+            });
+        }
+
+        if (!blocksData || Object.keys(blocksData).length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📊</div>
+                    <h3>No hay Order Blocks disponibles</h3>
+                    <p>No se encontraron Order Blocks en ningún timeframe en el momento actual.</p>
+                </div>
+            `;
             return;
         }
 
-        try {
-            this.clearContainer();
-            this.renderOrderBlocks();
-            console.log('Order blocks populated successfully');
-        } catch (error) {
-            console.error('Error populating order blocks:', error);
-            this.showErrorState(error.message);
-        }
+        Object.entries(blocksData).forEach(([timeframe, blocks]) => {
+            const section = document.createElement('div');
+            section.className = 'timeframe-section';
+            section.id = `ob-section-${timeframe}`;
+
+            if (!blocks || blocks.length === 0) {
+                section.innerHTML = `
+                    <div class="timeframe-header">
+                        <div class="timeframe-badge">
+                            <div class="status-dot"></div>
+                            ${timeframe}:
+                        </div>
+                    </div>
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <h3>No hay Order Blocks disponibles</h3>
+                        <p>No se encontraron Order Blocks para este timeframe en el momento actual.</p>
+                    </div>
+                `;
+            } else {
+                // Sort blocks by distance_to_extreme (ascending order - smaller values first)
+                const sortedBlocks = [...blocks].sort((a, b) => {
+                    // Handle undefined/null values - put them at the end
+                    if (a.distance_to_extreme === undefined || a.distance_to_extreme === null) return 1;
+                    if (b.distance_to_extreme === undefined || b.distance_to_extreme === null) return -1;
+                    // Sort ascending (smaller values first)
+                    return a.distance_to_extreme - b.distance_to_extreme;
+                });
+
+                const blocksHtml = sortedBlocks.map(block => {
+                    const isSelected = block.selected;
+                    const selectedBadge = isSelected ? ' ⭐ ÓPTIMO' : '';
+
+                    return `
+                    <div class="block-card ${block.type.toLowerCase()} ${isSelected ? 'selected-ob' : ''} clickable-hint" onclick="navigateToObDynamicsWithChart('${timeframe}', '${block.timeframe}')">
+                        <div class="block-header">
+                            <div class="block-type ${block.type.toLowerCase()}">${block.type} [${block.timeframe}]${selectedBadge}</div>
+                            <div class="block-price">${block.price.toFixed(5)}</div>
+                        </div>
+                        <div class="block-details">
+                            <div class="detail-row">
+                                <div class="detail-label">📅 Fecha:</div>
+                                <div class="detail-value">${block.datetime.split(' ').slice(0,2).join(' ')}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">📊 Pips OC:</div>
+                                <div class="detail-value">${block.pips_open_close}p</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">💪 % Cuerpo:</div>
+                                <div class="detail-value">${block.body_percentage}%</div>
+                            </div>
+                            ${block.score !== undefined ? `
+                            <div class="detail-row">
+                                <div class="detail-label">🎯 Score:</div>
+                                <div class="detail-value">${block.score.toFixed(3)}</div>
+                            </div>
+                            ` : ''}
+                            ${block.vela ? `
+                            <div class="detail-row">
+                                <div class="detail-label">🕯️ Vela:</div>
+                                <div class="detail-value">${block.vela}</div>
+                            </div>
+                            ` : ''}
+                            ${block.closeness_order ? `
+                            <div class="detail-row">
+                                <div class="detail-label">📍 Orden Cercanía:</div>
+                                <div class="detail-value">#${block.closeness_order}</div>
+                            </div>
+                            ` : ''}
+                            ${block.distance_to_extreme !== undefined ? `
+                            <div class="detail-row">
+                                <div class="detail-label">📏 Dist. a Extremo:</div>
+                                <div class="detail-value">${block.distance_to_extreme.toFixed(1)}p</div>
+                            </div>
+                            ` : ''}
+                            ${block.passed_prefilter !== undefined ? `
+                            <div class="detail-row">
+                                <div class="detail-label">✅ Pre-filtro:</div>
+                                <div class="detail-value" style="color: ${block.passed_prefilter ? '#00d4aa' : '#f44336'}">${block.passed_prefilter ? 'Aprobado' : 'Rechazado'}</div>
+                            </div>
+                            ` : ''}
+                        </div>
+                        <div class="percentage-bar">
+                            <div class="percentage-fill" style="width: ${block.body_percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+                }).join('');
+
+                section.innerHTML = `
+                    <div class="timeframe-header">
+                        <div class="timeframe-badge">
+                            <div class="status-dot"></div>
+                            ${timeframe}: ${blocks.length} Order Block${blocks.length !== 1 ? 's' : ''}
+                        </div>
+                    </div>
+                    <div class="blocks-grid">
+                        ${blocksHtml}
+                    </div>
+                `;
+            }
+
+            container.appendChild(section);
+        });
     }
 
     clearContainer() {
