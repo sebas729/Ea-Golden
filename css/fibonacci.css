@@ -139,6 +139,325 @@
     animation: fadeIn 0.3s ease;
 }
 
+/* ================================
+   Modern Timeframe Cards Styles
+   ================================ */
+
+/* Enhanced Timeframe Card Styles */
+.timeframe-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 25px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.timeframe-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #00f5ff, #00d4aa);
+}
+
+.timeframe-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0, 245, 255, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 245, 255, 0.1);
+}
+
+.timeframe-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.timeframe-card .timeframe {
+    font-size: 1.8em;
+    font-weight: 600;
+    color: #00f5ff;
+}
+
+.timeframe-card .trend-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #00d4aa, #00f5ff);
+    color: #000;
+}
+
+.price-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.price-box {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.price-label {
+    font-size: 0.8em;
+    color: #888;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.price-value {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #fff;
+}
+
+.price-date {
+    font-size: 0.7em;
+    color: #888;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.high-price {
+    color: #00f5ff;
+}
+
+.low-price {
+    color: #ff6b6b;
+}
+
+.range-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.range-item {
+    text-align: center;
+}
+
+.range-label {
+    font-size: 0.7em;
+    color: #888;
+    text-transform: uppercase;
+}
+
+.range-value {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #00d4aa;
+}
+
+.status-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.status-box {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+}
+
+.status-label {
+    font-size: 0.7em;
+    color: #888;
+    margin-bottom: 5px;
+}
+
+.status-value {
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+.active-levels {
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+.active-levels .status-value {
+    color: #00ff88;
+}
+
+.inactive-levels {
+    background: rgba(255, 100, 100, 0.1);
+    border: 1px solid rgba(255, 100, 100, 0.3);
+}
+
+.inactive-levels .status-value {
+    color: #ff6464;
+}
+
+.activation-levels {
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 0.9em;
+    color: #00f5ff;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.level-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    margin-bottom: 5px;
+}
+
+.level-item.active {
+    background: rgba(0, 255, 136, 0.1);
+    border-left: 3px solid #00ff88;
+}
+
+.level-item.inactive {
+    background: rgba(255, 100, 100, 0.1);
+    border-left: 3px solid #ff6464;
+}
+
+.level-name {
+    font-size: 0.85em;
+    color: #ccc;
+}
+
+.level-value {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #fff;
+}
+
+.level-status {
+    font-size: 0.7em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.active-indicator {
+    color: #00ff88;
+}
+
+.inactive-indicator {
+    color: #ff6464;
+}
+
+.score-section {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.score-header {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.score-title {
+    font-size: 0.9em;
+    color: #00f5ff;
+    margin-bottom: 5px;
+}
+
+.score-value {
+    font-size: 1.8em;
+    font-weight: 700;
+    color: #00d4aa;
+}
+
+.score-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.score-item {
+    text-align: center;
+}
+
+.score-item-label {
+    font-size: 0.7em;
+    color: #888;
+    margin-bottom: 3px;
+}
+
+.score-item-value {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #fff;
+}
+
+.position-section {
+    background: rgba(0, 212, 170, 0.1);
+    border: 1px solid rgba(0, 212, 170, 0.3);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.position-title {
+    color: #00d4aa;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.position-value {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #fff;
+}
+
+.position-details {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 0.8em;
+    color: #888;
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* ================================
+   Original Cards Grid Styles
+   ================================ */
+
 /* Cards Grid for Timeframes */
 .cards-grid {
     display: grid;
