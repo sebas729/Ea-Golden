@@ -323,9 +323,9 @@
 }
 
 .level-item {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    gap: 10px;
+    display: grid !important;
+    grid-template-columns: 120px 1fr 100px !important;
+    gap: 15px !important;
     align-items: center;
     padding: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -344,21 +344,24 @@
 }
 
 .level-name {
-    font-size: 0.75em;
+    font-size: 0.98em;
     color: #ccc;
 }
 
 .level-value {
-    font-size: 0.8em;
-    font-weight: 600;
+    font-size: 1.04em;
+    font-weight: 400;
     color: #fff;
+    margin-left: -20px;
 }
 
 .level-status {
-    font-size: 0.6em;
+    font-size: 0.78em;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    margin-right: -5px;
+    text-align: right;
 }
 
 .active-indicator {
