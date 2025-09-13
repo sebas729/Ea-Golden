@@ -27,7 +27,8 @@ export class EconomicCalendar {
         console.log('Initializing Economic Calendar...');
         this.bindEvents();
         this.loadFromAPI();
-        this.autoRefresh.start(() => this.loadFromAPI());
+        // Auto-refresh disabled
+        // this.autoRefresh.start(() => this.loadFromAPI());
     }
 
     bindEvents() {
@@ -58,7 +59,14 @@ export class EconomicCalendar {
             console.log('Datos recibidos:', data);
 
             if (data && data.eventos_economicos) {
-                this.allEvents = data.eventos_economicos;
+                // Combinar todos los arrays de eventos por impacto
+                const eventosEconomicos = data.eventos_economicos;
+                this.allEvents = [
+                    ...(eventosEconomicos.eventos_alto_impacto || []),
+                    ...(eventosEconomicos.eventos_medio_impacto || []),
+                    ...(eventosEconomicos.eventos_bajo_impacto || [])
+                ];
+                console.log(`Loaded ${this.allEvents.length} events`);
                 this.filteredEvents = [...this.allEvents];
                 this.filtersManager.populateCountryFilter(this.allEvents);
                 this.renderEvents();
@@ -88,9 +96,13 @@ export class EconomicCalendar {
         const impacts = { high: 0, medium: 0, low: 0 };
 
         this.filteredEvents.forEach(event => {
-            const impact = event.impact?.toLowerCase();
-            if (impacts.hasOwnProperty(impact)) {
-                impacts[impact]++;
+            const impact = event.impacto?.toLowerCase();
+            if (impact === 'alto') {
+                impacts.high++;
+            } else if (impact === 'medio') {
+                impacts.medium++;
+            } else if (impact === 'bajo') {
+                impacts.low++;
             }
         });
 

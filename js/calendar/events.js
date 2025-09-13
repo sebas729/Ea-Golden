@@ -17,21 +17,26 @@ export class EventsRenderer {
 
     renderEventsByImpact() {
         const impacts = ['high', 'medium', 'low'];
+        const impactTexts = { 'high': 'Alto', 'medium': 'Medio', 'low': 'Bajo' };
 
         impacts.forEach(impact => {
-            const impactEvents = this.events.filter(e => e.impact?.toLowerCase() === impact);
-            this.renderEventsForImpact(impact, impactEvents);
+            const impactEvents = this.events.filter(e => {
+                const eventImpact = e.impacto?.toLowerCase();
+                const targetImpact = impactTexts[impact]?.toLowerCase();
+                return eventImpact === targetImpact;
+            });
+            this.renderEventsForImpact(impact, impactEvents, impactTexts[impact]);
         });
     }
 
-    renderEventsForImpact(impact, events) {
+    renderEventsForImpact(impact, events, impactText) {
         const container = document.getElementById(`${impact}Events`);
         if (!container) return;
 
         if (events.length === 0) {
             container.innerHTML = `
                 <p style="text-align: center; color: var(--text-medium); padding: 2rem;">
-                    No hay eventos de ${impact} impacto para mostrar.
+                    No hay eventos de ${impactText.toLowerCase()} impacto para hoy.
                 </p>
             `;
             return;
@@ -55,9 +60,9 @@ export class EventsRenderer {
 
         // Group events by impact
         const grouped = {
-            high: this.events.filter(e => e.impact?.toLowerCase() === 'alto'),
-            medium: this.events.filter(e => e.impact?.toLowerCase() === 'medio'),
-            low: this.events.filter(e => e.impact?.toLowerCase() === 'bajo')
+            high: this.events.filter(e => e.impacto?.toLowerCase() === 'alto'),
+            medium: this.events.filter(e => e.impacto?.toLowerCase() === 'medio'),
+            low: this.events.filter(e => e.impacto?.toLowerCase() === 'bajo')
         };
 
         let html = '';
@@ -81,70 +86,88 @@ export class EventsRenderer {
     }
 
     createEventCard(event, impactType) {
-        const eventTime = new Date(event.datetime).toLocaleTimeString('es-ES', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        const impactIcons = {
+            'high': '🔴',
+            'medium': '🟡',
+            'low': '🟢'
+        };
 
-        const calendarButton = this.createCalendarButton(event);
+        const impactTexts = {
+            'high': 'Alto impacto',
+            'medium': 'Medio impacto',
+            'low': 'Bajo impacto'
+        };
+
+        let eventTitle = event.evento || 'Evento sin título';
+        if (event.periodo) eventTitle += ` (${event.periodo})`;
+        if (event.pais) eventTitle += ` (${event.pais})`;
+
+        let detailsHtml = '';
+        if (event.pronostico || event.anterior) {
+            detailsHtml = '<div class="event-details">';
+
+            if (event.pronostico) {
+                detailsHtml += `
+                    <div class="forecast-row">
+                        <span class="forecast-label">Pronóstico:</span>
+                        <span class="forecast-value">${event.pronostico}</span>
+                    </div>
+                `;
+            }
+
+            if (event.anterior) {
+                detailsHtml += `
+                    <div class="forecast-row">
+                        <span class="forecast-label">Anterior:</span>
+                        <span class="forecast-value">${event.anterior}</span>
+                    </div>
+                `;
+            }
+
+            detailsHtml += '</div>';
+        }
+
+        // Crear enlace de calendario
+        const calendarLink = this.createCalendarLink(event);
 
         return `
-            <div class="event-card">
+            <div class="event">
                 <div class="event-header">
-                    <div class="event-time">${eventTime}</div>
-                    <div class="event-country">
-                        <span>${event.country_flag || '🌍'}</span>
-                        <span>${event.country || 'Unknown'}</span>
-                    </div>
+                    <span class="event-time">${event.hora || '00:00'}</span>
+                    <span class="event-impact impact-${impactType}">${impactIcons[impactType]} ${impactTexts[impactType]}</span>
                 </div>
-
-                <h3 class="event-title">${Utils.escapeHtml(event.event || 'Unnamed Event')}</h3>
-
-                <div class="event-details">
-                    ${event.actual !== undefined ? `
-                        <div class="forecast-row">
-                            <span class="forecast-label">Actual:</span>
-                            <span class="forecast-value">${event.actual}</span>
-                        </div>
-                    ` : ''}
-
-                    ${event.forecast !== undefined ? `
-                        <div class="forecast-row">
-                            <span class="forecast-label">Pronóstico:</span>
-                            <span class="forecast-value">${event.forecast}</span>
-                        </div>
-                    ` : ''}
-
-                    ${event.previous !== undefined ? `
-                        <div class="forecast-row">
-                            <span class="forecast-label">Anterior:</span>
-                            <span class="forecast-value">${event.previous}</span>
-                        </div>
-                    ` : ''}
-
-                    ${event.importance ? `
-                        <div class="forecast-row full-width">
-                            <span class="forecast-label">Importancia:</span>
-                            <span class="forecast-value">${event.importance}</span>
-                        </div>
-                    ` : ''}
-                </div>
-
-                ${calendarButton}
+                <div class="event-title">${eventTitle}</div>
+                ${detailsHtml}
+                ${calendarLink}
             </div>
         `;
     }
 
-    createCalendarButton(event) {
-        const eventId = Utils.generateId('event');
-        const title = event.event || 'Economic Event';
-        const startTime = new Date(event.datetime);
-        const endTime = new Date(startTime.getTime() + 60 * 60 * 1000); // 1 hour duration
-        const description = `${event.country} - ${title}`;
-        const location = event.country || '';
+    createCalendarLink(event) {
+        // Get date from the calendar data
+        const fecha = window.economicCalendar?.allEvents?.length > 0 ?
+            new Date().toISOString().split('T')[0] :
+            new Date().toISOString().split('T')[0];
+
+        // Convert fecha y hora to ISO format
+        const eventDate = new Date(`${fecha}T${event.hora || '00:00'}:00`);
+        const endDate = new Date(eventDate.getTime() + 30 * 60000); // +30 minutos
+
+        let eventTitle = event.evento || 'Evento Económico';
+        if (event.pais) eventTitle += ` - ${event.pais}`;
+
+        let details = `📊 Evento: ${event.evento || 'N/A'}\n`;
+        if (event.periodo) details += `📅 Período: ${event.periodo}\n`;
+        if (event.pais) details += `🌐 País: ${event.pais}\n`;
+        if (event.pronostico) details += `📈 Pronóstico: ${event.pronostico}\n`;
+        if (event.anterior) details += `📉 Anterior: ${event.anterior}\n`;
+        details += `⚡ Impacto: ${event.impacto || 'N/A'}`;
+
+        // Create unique ID for event
+        const eventId = btoa(event.evento + event.hora).replace(/[^a-zA-Z0-9]/g, '').substring(0, 10);
 
         return `
-            <button class="add-calendar-btn" onclick="addToCalendar('${eventId}', '${Utils.escapeHtml(title)}', '${startTime.toISOString()}', '${endTime.toISOString()}', '${Utils.escapeHtml(description)}', '${Utils.escapeHtml(location)}')">
+            <button onclick="addToCalendar('${eventId}', '${eventTitle.replace(/'/g, "\\'")}', '${eventDate.toISOString()}', '${endDate.toISOString()}', '${details.replace(/'/g, "\\\'")}', '${event.pais || ''}')" class="add-calendar-btn">
                 <span class="calendar-icon">📅</span>
                 Agregar al Calendario
             </button>
@@ -152,9 +175,66 @@ export class EventsRenderer {
     }
 }
 
-// Global function for calendar integration
+// Global function for calendar integration - copied from original
 window.addToCalendar = function(eventId, title, startTime, endTime, description, location) {
-    if (window.economicCalendar && window.economicCalendar.calendarIntegration) {
-        window.economicCalendar.calendarIntegration.addToCalendar(eventId, title, startTime, endTime, description, location);
+    // Detectar si es un dispositivo Apple
+    const isApple = /Mac|iPhone|iPad|iPod/.test(navigator.userAgent);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+    if (isApple || isSafari) {
+        // Intentar crear archivo .ics para Apple Calendar
+        const icsContent = createICSFile(eventId, title, startTime, endTime, description, location);
+        downloadICSFile(icsContent, title);
+    } else {
+        // Usar Google Calendar para otros dispositivos
+        openGoogleCalendar(title, startTime, endTime, description, location);
     }
 };
+
+// Helper functions for calendar integration
+function createICSFile(eventId, title, startTime, endTime, description, location) {
+    const formatDate = (date) => {
+        return new Date(date).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+
+    const icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Economic Calendar//ES',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'BEGIN:VEVENT',
+        `UID:${eventId}@economiccalendar.com`,
+        `DTSTART:${formatDate(startTime)}`,
+        `DTEND:${formatDate(endTime)}`,
+        `SUMMARY:${title}`,
+        `DESCRIPTION:${description.replace(/\n/g, '\\n')}`,
+        `LOCATION:${location}`,
+        'STATUS:CONFIRMED',
+        'END:VEVENT',
+        'END:VCALENDAR'
+    ].join('\r\n');
+
+    return icsContent;
+}
+
+function downloadICSFile(icsContent, filename) {
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${filename.replace(/[^a-z0-9]/gi, '_')}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+}
+
+function openGoogleCalendar(title, startTime, endTime, description, location) {
+    const formatDateGoogle = (date) => {
+        return new Date(date).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+
+    const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formatDateGoogle(startTime)}/${formatDateGoogle(endTime)}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(location)}&sf=true&output=xml`;
+
+    window.open(calendarUrl, '_blank');
+}

@@ -49,7 +49,7 @@ export class FiltersManager {
         const select = document.getElementById('countryFilter');
         if (!select) return;
 
-        const countries = [...new Set(events.map(e => e.country).filter(Boolean))].sort();
+        const countries = [...new Set(events.map(e => e.pais).filter(Boolean))].sort();
         select.innerHTML = '<option value="">Todos los países</option>';
 
         countries.forEach(country => {
@@ -84,12 +84,12 @@ export class FiltersManager {
 
     filterEvents(events, filters) {
         return events.filter(event => {
-            if (filters.country && event.country !== filters.country) return false;
-            if (filters.impact && event.impact !== filters.impact) return false;
-            if (filters.search && !event.event.toLowerCase().includes(filters.search.toLowerCase())) return false;
+            if (filters.country && event.pais !== filters.country) return false;
+            if (filters.impact && event.impacto !== filters.impact) return false;
+            if (filters.search && !event.evento.toLowerCase().includes(filters.search.toLowerCase())) return false;
 
             if (filters.timeFrom || filters.timeTo) {
-                const eventTime = new Date(event.datetime).toTimeString().slice(0, 5);
+                const eventTime = event.hora || '00:00';
                 if (filters.timeFrom && eventTime < filters.timeFrom) return false;
                 if (filters.timeTo && eventTime > filters.timeTo) return false;
             }
