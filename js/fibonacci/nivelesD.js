@@ -32,10 +32,35 @@ export class NivelesDSection {
 
         const groups = this.reportData.unified_trends.unified_analysis;
 
+        // Calculate total active and deactivated levels across all groups
+        let totalActiveLevels = 0;
+        let totalDeactivatedLevels = 0;
+
+        groups.forEach(group => {
+            const groupId = group.unified_id.replace('UNIFIED_', '');
+            const dominantTf = group.dominant_timeframe;
+            const levelActivationData = this.getLevelActivationForGroup(groupId, dominantTf);
+
+            if (levelActivationData) {
+                totalActiveLevels += levelActivationData.active_levels || 0;
+                totalDeactivatedLevels += levelActivationData.deactivated_levels || 0;
+            }
+        });
+
         nivelesDHtml += `
             <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(76, 175, 80, 0.1); border: 1px solid #4caf50; border-radius: 6px;">
-                <div style="font-size: 0.9rem; color: var(--success); font-weight: 600; margin-bottom: 0.5rem;">
-                    📊 Total de grupos: ${groups.length}
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <div style="font-size: 0.9rem; color: var(--success); font-weight: 600;">
+                        📊 Total de grupos: ${groups.length}
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="background: var(--success); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">
+                            ✅ Niveles Activos: ${totalActiveLevels}
+                        </div>
+                        <div style="background: var(--error); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">
+                            ❌ Desactivados: ${totalDeactivatedLevels}
+                        </div>
+                    </div>
                 </div>
                 <div style="font-size: 0.8rem; color: var(--text-secondary);">
                     Visualización de niveles por grupo con estados de activación/desactivación
@@ -150,30 +175,35 @@ export class NivelesDSection {
 
     // Get level activation status for a group
     getLevelActivationForGroup(groupId, dominantTf) {
-        // Find corresponding timeframe data with multiple matching strategies
-        if (this.reportData.timeframes) {
-            const timeframeData = this.reportData.timeframes.find(tf => {
-                const tfGeneral = tf.timeframe_general;
+        // Access level activation data from new centralized location
+        const dynamicDeactivation = this.reportData?.dynamic_deactivation?.level_activation_status;
+        if (dynamicDeactivation) {
+            // Try direct match first
+            if (dynamicDeactivation[dominantTf]) {
+                return dynamicDeactivation[dominantTf];
+            }
 
-                // Direct match
-                if (tfGeneral === dominantTf) return true;
+            // Try with variations (M1, M1_I, etc.)
+            const variations = [
+                dominantTf.replace('_I', ''),
+                dominantTf.replace('_', '_I'),
+                dominantTf + '_I',
+                dominantTf.replace('_I', '')
+            ];
 
-                // Match with variations (M1, M1_I, etc.)
-                if (tfGeneral === dominantTf.replace('_I', '') ||
-                    tfGeneral === dominantTf.replace('_', '_I') ||
-                    tfGeneral === dominantTf + '_I' ||
-                    tfGeneral === dominantTf.replace('_I', '')) return true;
+            for (const variation of variations) {
+                if (dynamicDeactivation[variation]) {
+                    return dynamicDeactivation[variation];
+                }
+            }
 
-                // Match by removing/adding underscores
-                const normalizedTf = tfGeneral.replace('_', '');
-                const normalizedDominant = dominantTf.replace('_', '');
-                if (normalizedTf === normalizedDominant) return true;
-
-                return false;
-            });
-
-            if (timeframeData && timeframeData.level_activation_status) {
-                return timeframeData.level_activation_status;
+            // Try normalized comparison (remove underscores)
+            const normalizedDominant = dominantTf.replace('_', '');
+            for (const [tfKey, tfData] of Object.entries(dynamicDeactivation)) {
+                const normalizedKey = tfKey.replace('_', '');
+                if (normalizedKey === normalizedDominant) {
+                    return tfData;
+                }
             }
         }
         return null;
@@ -181,17 +211,23 @@ export class NivelesDSection {
 
     // Check if a level is active based on activation status
     isLevelActive(level, levelActivationData) {
-        if (!levelActivationData || !levelActivationData.active_level_details) {
+        if (!levelActivationData || !levelActivationData.all_level_details) {
             return false; // Default to inactive if no activation data
         }
 
         // Find matching level in activation data by name first, then by price
-        const activeLevels = levelActivationData.active_level_details;
-        const matchingLevel = activeLevels.find(activeLevel => {
+        const allLevels = levelActivationData.all_level_details;
+        const matchingLevel = allLevels.find(activeLevel => {
             // Primary match: by level name (50%, 61.8%, OB Óptimo, etc.)
             if (activeLevel.name && level.level) {
                 const activeName = activeLevel.name.toLowerCase().trim();
-                const levelName = level.level.toLowerCase().trim();
+                let levelName = level.level.toLowerCase().trim();
+
+                // Handle "OB" vs "OB Óptimo" mapping
+                if (levelName === 'ob') {
+                    levelName = 'ob óptimo';
+                }
+
                 if (activeName === levelName) {
                     return true;
                 }

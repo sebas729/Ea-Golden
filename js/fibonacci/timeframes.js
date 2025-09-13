@@ -12,9 +12,6 @@ export class TimeframeCards {
     }
 
     generateLevelItems(timeframe) {
-        const levelActivationData = timeframe.level_activation_status;
-        const activeLevelDetails = levelActivationData?.active_level_details || [];
-
         // Get Fibonacci levels
         const fibLevels = timeframe.fibonacci_levels || timeframe.price_data || {};
         const fib50 = fibLevels.level_50_percent || fibLevels['50_percent'];
@@ -27,76 +24,48 @@ export class TimeframeCards {
 
         let levelItems = '';
 
-        // Helper function to check if level is active
-        const isLevelActive = (levelName, levelValue) => {
-            const levelDetail = activeLevelDetails.find(detail =>
-                detail.name === levelName || Math.abs(parseFloat(detail.value) - parseFloat(levelValue)) < 0.01
-            );
-            return levelDetail ? levelDetail.is_active : false;
-        };
-
         // Add Fibonacci levels
         if (fib50) {
-            const isActive = isLevelActive('Nivel 50%', fib50);
             levelItems += `
-                <div class="level-item ${isActive ? 'active' : 'inactive'}">
+                <div class="level-item">
                     <span class="level-name">Nivel 50%</span>
                     <span class="level-value">${fib50.toFixed(5)}</span>
-                    <span class="level-status ${isActive ? 'active-indicator' : 'inactive-indicator'}">
-                        ${isActive ? '● ACTIVO' : '○ INACTIVO'}
-                    </span>
                 </div>
             `;
         }
 
         if (fib618) {
-            const isActive = isLevelActive('Nivel 61.8%', fib618);
             levelItems += `
-                <div class="level-item ${isActive ? 'active' : 'inactive'}">
+                <div class="level-item">
                     <span class="level-name">Nivel 61.8%</span>
                     <span class="level-value">${fib618.toFixed(5)}</span>
-                    <span class="level-status ${isActive ? 'active-indicator' : 'inactive-indicator'}">
-                        ${isActive ? '● ACTIVO' : '○ INACTIVO'}
-                    </span>
                 </div>
             `;
         }
 
         if (fib786) {
-            const isActive = isLevelActive('Nivel 78.6%', fib786);
             levelItems += `
-                <div class="level-item ${isActive ? 'active' : 'inactive'}">
+                <div class="level-item">
                     <span class="level-name">Nivel 78.6%</span>
                     <span class="level-value">${fib786.toFixed(5)}</span>
-                    <span class="level-status ${isActive ? 'active-indicator' : 'inactive-indicator'}">
-                        ${isActive ? '● ACTIVO' : '○ INACTIVO'}
-                    </span>
                 </div>
             `;
         }
 
         if (obPrice) {
-            const isActive = isLevelActive('OB Óptimo', obPrice);
             levelItems += `
-                <div class="level-item ${isActive ? 'active' : 'inactive'}">
+                <div class="level-item">
                     <span class="level-name">OB Óptimo</span>
                     <span class="level-value">${obPrice.toFixed(5)}</span>
-                    <span class="level-status ${isActive ? 'active-indicator' : 'inactive-indicator'}">
-                        ${isActive ? '● ACTIVO' : '○ INACTIVO'}
-                    </span>
                 </div>
             `;
         }
 
         if (timeframe.stophunt_price) {
-            const isActive = isLevelActive('STOPHUNT', timeframe.stophunt_price);
             levelItems += `
-                <div class="level-item ${isActive ? 'active' : 'inactive'}">
+                <div class="level-item">
                     <span class="level-name">STOPHUNT</span>
                     <span class="level-value">${timeframe.stophunt_price.toFixed(5)}</span>
-                    <span class="level-status ${isActive ? 'active-indicator' : 'inactive-indicator'}">
-                        ${isActive ? '● ACTIVO' : '○ INACTIVO'}
-                    </span>
                 </div>
             `;
         }
@@ -207,10 +176,7 @@ export class TimeframeCards {
             }
         });
 
-        // Get level activation data
-        const levelActivationData = timeframe.level_activation_status;
-        const activeLevels = levelActivationData?.active_levels || 0;
-        const deactivatedLevels = levelActivationData?.deactivated_levels || 0;
+        // Remove level activation data access as counters are moved to Niveles D tab
 
         card.innerHTML = `
             <div class="card-header">
@@ -242,16 +208,6 @@ export class TimeframeCards {
                 </div>
             </div>
 
-            <div class="status-section">
-                <div class="status-box active-levels">
-                    <div class="status-label">Niveles Activos</div>
-                    <div class="status-value">${activeLevels}</div>
-                </div>
-                <div class="status-box inactive-levels">
-                    <div class="status-label">Desactivados</div>
-                    <div class="status-value">${deactivatedLevels}</div>
-                </div>
-            </div>
 
             <div class="activation-levels">
                 <div class="section-title">Niveles de Activación</div>
