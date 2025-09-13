@@ -192,7 +192,7 @@
 
 /* Navigation Buttons */
 .nav-button {
-    background: linear-gradient(135deg, var(--accent), #0099cc);
+    background: linear-gradient(135deg, var(--accent), #3b82f6);
     color: white;
     border: none;
     padding: 0.5rem 1rem;
@@ -208,14 +208,14 @@
 }
 
 .nav-button:hover {
-    background: linear-gradient(135deg, #0099cc, var(--accent));
+    background: linear-gradient(135deg, #3b82f6, var(--accent));
     transform: translateY(-1px);
 }
 
 /* Summary Boxes */
 .summary-box {
-    background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(0, 153, 204, 0.05));
-    border: 1px solid rgba(0, 212, 255, 0.2);
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.05), rgba(59, 130, 246, 0.05));
+    border: 1px solid rgba(30, 58, 138, 0.2);
     border-radius: var(--radius);
     padding: 1.5rem;
     margin: 1.5rem 0;
@@ -242,7 +242,7 @@
     gap: 1rem;
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid rgba(0, 212, 255, 0.1);
+    border-top: 1px solid rgba(30, 58, 138, 0.1);
 }
 
 .stat-item {

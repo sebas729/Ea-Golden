@@ -13,7 +13,7 @@
 .header h1 {
     font-size: 2.5rem;
     margin-bottom: 1rem;
-    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -28,7 +28,7 @@
 }
 
 .refresh-button-header {
-    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
     color: white;
     border: none;
     border-radius: 0.375rem;
@@ -44,7 +44,7 @@
 }
 
 .refresh-button-header:hover {
-    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%);
 }
 
 .refresh-button-header:disabled {
@@ -125,7 +125,7 @@
 }
 
 .tab-button.active {
-    background: #1e3a8a;
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
     color: white;
     font-weight: 600;
 }
@@ -194,8 +194,8 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
-    background: linear-gradient(135deg, #00d4aa, #00f5ff);
-    color: #000;
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    color: white;
 }
 
 .price-section {

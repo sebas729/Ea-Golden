@@ -74,7 +74,7 @@ export class NivelesDSection {
                 <div style="border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                         <h3 style="margin: 0; color: var(--accent); font-size: 1.1rem;">📊 Grupo: ${groupId}</h3>
-                        <span style="background: var(--accent); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">#{cardNumber}</span>
+                        <span style="background: var(--accent); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">${cardNumber}</span>
                     </div>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; font-size: 0.85rem;">
                         <div><strong>TFs Grupo:</strong> ${timeframes}</div>
