@@ -55,9 +55,10 @@ export class EconomicCalendar {
         try {
             console.log('Loading economic calendar data...');
             const data = await apiClient.getEconomicCalendar();
+            console.log('Datos recibidos:', data);
 
-            if (data && data.events) {
-                this.allEvents = data.events;
+            if (data && data.eventos_economicos) {
+                this.allEvents = data.eventos_economicos;
                 this.filteredEvents = [...this.allEvents];
                 this.filtersManager.populateCountryFilter(this.allEvents);
                 this.renderEvents();
@@ -65,7 +66,7 @@ export class EconomicCalendar {
                 this.hideError();
                 console.log(`Loaded ${this.allEvents.length} events`);
             } else {
-                throw new Error('No events data received');
+                throw new Error('La respuesta no contiene la estructura esperada "eventos_economicos"');
             }
 
         } catch (error) {
