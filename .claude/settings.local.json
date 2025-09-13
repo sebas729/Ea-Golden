@@ -8,7 +8,8 @@
       "Bash(python:*)",
       "Bash(git checkout:*)",
       "Read(//c/Users/pc/Desktop/**)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(git mv:*)"
     ],
     "deny": [],
     "ask": [],
