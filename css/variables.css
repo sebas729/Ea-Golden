@@ -4,23 +4,23 @@
 
 :root {
     /* Background Colors */
-    --bg-primary: #0f1419;
-    --bg-secondary: #1a1f2e;
-    --bg-card: #212738;
-    --bg-hover: #2a3441;
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --bg-hover: #f1f3f5;
 
-    /* Alternative dark backgrounds (for calendar) */
-    --bg-dark-900: #111827;
-    --bg-dark-800: #1f2937;
-    --bg-dark-700: #374151;
+    /* Alternative light backgrounds (for calendar) */
+    --bg-light-50: #f9fafb;
+    --bg-light-100: #f3f4f6;
+    --bg-light-200: #e5e7eb;
 
     /* Text Colors */
-    --text-primary: #ffffff;
-    --text-secondary: #b0bec5;
-    --text-muted: #78909c;
-    --text-light: #d1d5db;
-    --text-medium: #9ca3af;
-    --text-white: #f9fafb;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
+    --text-light: #374151;
+    --text-medium: #6b7280;
+    --text-dark: #111827;
 
     /* Accent Colors */
     --accent: #00d4ff;
@@ -43,9 +43,9 @@
     --orange: #fb923c;
 
     /* Border Colors */
-    --border: rgba(255, 255, 255, 0.1);
-    --border-hover: rgba(255, 255, 255, 0.2);
-    --border-color: #4b5563;
+    --border: rgba(0, 0, 0, 0.1);
+    --border-hover: rgba(0, 0, 0, 0.15);
+    --border-color: #d1d5db;
 
     /* Shadows */
     --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);

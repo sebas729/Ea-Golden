@@ -12,10 +12,15 @@
 /* Base Body Styles */
 body {
     font-family: var(--font-family);
-    background: var(--bg-primary);
+    background: var(--bg-primary) !important;
     color: var(--text-primary);
     line-height: 1.6;
     min-height: 100vh;
+}
+
+/* Ensure HTML also has light background */
+html {
+    background: var(--bg-primary) !important;
 }
 
 /* Container */
