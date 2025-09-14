@@ -1,6 +1,6 @@
 /**
  * Shared API Functions
- * Common API handling functionality
+ * Common API handling functionality with JWT authentication
  */
 
 export class ApiClient {
@@ -11,6 +11,34 @@ export class ApiClient {
             'Accept': 'application/json'
         };
         this.timeout = 30000; // 30 seconds
+
+        // Import auth service dynamically to avoid circular dependencies
+        this.authService = null;
+        this.initAuthService();
+    }
+
+    /**
+     * Initialize auth service reference
+     */
+    async initAuthService() {
+        try {
+            // Dynamic import to avoid circular dependency
+            const authModule = await import('../auth/authService.js');
+            this.authService = authModule.authService;
+        } catch (error) {
+            console.warn('Auth service not available:', error.message);
+        }
+    }
+
+    /**
+     * Get authentication headers
+     * @returns {Object} Headers with authentication if available
+     */
+    getAuthHeaders() {
+        if (this.authService && this.authService.isAuthenticated()) {
+            return this.authService.getAuthHeader();
+        }
+        return {};
     }
 
     /**
@@ -24,16 +52,45 @@ export class ApiClient {
         const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
         try {
+            // Merge headers with authentication
+            const authHeaders = this.getAuthHeaders();
+            const headers = {
+                ...this.defaultHeaders,
+                ...authHeaders,
+                ...options.headers
+            };
+
             const response = await fetch(url, {
-                headers: { ...this.defaultHeaders, ...options.headers },
+                headers,
                 signal: controller.signal,
                 ...options
             });
 
             clearTimeout(timeoutId);
 
+            // Handle authentication errors
+            if (response.status === 401) {
+                if (this.authService) {
+                    console.warn('API returned 401, handling auth error...');
+                    this.authService.handleAuthError(response);
+                }
+                throw new Error('Authentication failed');
+            }
+
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                // Try to get error message from response
+                let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+
+                try {
+                    const errorData = await response.json();
+                    if (errorData.message) {
+                        errorMessage = errorData.message;
+                    }
+                } catch (e) {
+                    // If response is not JSON, use default error message
+                }
+
+                throw new Error(errorMessage);
             }
 
             const contentType = response.headers.get('content-type');
@@ -146,6 +203,43 @@ export class ApiClient {
         } catch (error) {
             console.error('Error processing OB report:', error);
             throw new Error(`Failed to process OB report: ${error.message}`);
+        }
+    }
+
+    /**
+     * Login user with credentials
+     * @param {string} username - Username
+     * @param {string} password - Password
+     * @returns {Promise<Object>} Login response
+     */
+    async login(username, password) {
+        try {
+            console.log('Attempting login...');
+            const data = await this.post('/login', {
+                username: username.trim(),
+                password: password
+            });
+            console.log('Login API call successful');
+            return data;
+        } catch (error) {
+            console.error('Login API error:', error);
+            throw new Error(`Login failed: ${error.message}`);
+        }
+    }
+
+    /**
+     * Validate JWT token
+     * @returns {Promise<Object>} Validation response
+     */
+    async validateToken() {
+        try {
+            console.log('Validating token...');
+            const data = await this.get('/validate-token');
+            console.log('Token validation successful');
+            return data;
+        } catch (error) {
+            console.error('Token validation error:', error);
+            throw new Error(`Token validation failed: ${error.message}`);
         }
     }
 

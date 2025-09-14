@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Login - EA Golden</title>
+
+    <!-- Modular CSS -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>EA Golden</h1>
+                <p>Acceso al Panel de Trading</p>
+            </div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        required
+                        autocomplete="username"
+                        placeholder="Ingresa tu usuario"
+                    >
+                    <span class="error-message" id="username-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <div class="password-input">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            required
+                            autocomplete="current-password"
+                            placeholder="Ingresa tu contraseña"
+                        >
+                        <button type="button" class="password-toggle" id="passwordToggle">
+                            👁️
+                        </button>
+                    </div>
+                    <span class="error-message" id="password-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="rememberMe" name="rememberMe">
+                        <span class="checkmark"></span>
+                        Recordarme (30 días)
+                    </label>
+                </div>
+
+                <button type="submit" class="login-button" id="loginButton">
+                    <span id="buttonText">Iniciar Sesión</span>
+                    <div id="buttonLoader" class="button-loader" style="display: none;">
+                        <div class="spinner"></div>
+                    </div>
+                </button>
+
+                <div id="loginError" class="login-error" style="display: none;">
+                    <span id="errorMessage"></span>
+                </div>
+            </form>
+
+            <div class="login-footer">
+                <p>© 2024 EA Golden - Sistema Privado</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/auth/login.js"></script>
+</body>
+</html>

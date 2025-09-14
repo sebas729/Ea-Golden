@@ -1,16 +1,31 @@
 /**
  * Navigation Menu Controller
- * Handles hamburger menu toggle functionality
+ * Handles hamburger menu toggle functionality and user session
  */
 
 export class NavigationMenu {
     constructor() {
+        this.authService = null;
         this.init();
     }
 
-    init() {
+    async init() {
+        await this.initAuthService();
         this.bindEvents();
         this.setActiveMenuItem();
+        this.updateUserInfo();
+    }
+
+    /**
+     * Initialize auth service reference
+     */
+    async initAuthService() {
+        try {
+            const authModule = await import('../auth/authService.js');
+            this.authService = authModule.authService;
+        } catch (error) {
+            console.warn('Auth service not available in menu:', error.message);
+        }
     }
 
     bindEvents() {
@@ -24,6 +39,12 @@ export class NavigationMenu {
         const overlay = document.getElementById('menuOverlay');
         if (overlay) {
             overlay.addEventListener('click', () => this.toggleMenu());
+        }
+
+        // Add logout button listener
+        const logoutButton = document.getElementById('logoutButton');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', () => this.handleLogout());
         }
 
         // Add escape key listener
@@ -69,6 +90,41 @@ export class NavigationMenu {
                 item.classList.add('active');
             }
         });
+    }
+
+    /**
+     * Update user information in the menu
+     */
+    updateUserInfo() {
+        const userNameElement = document.getElementById('userName');
+
+        if (this.authService && this.authService.isAuthenticated()) {
+            const user = this.authService.getCurrentUser();
+            if (user && userNameElement) {
+                userNameElement.textContent = user.username || 'Usuario';
+            }
+        } else {
+            if (userNameElement) {
+                userNameElement.textContent = 'Usuario';
+            }
+        }
+    }
+
+    /**
+     * Handle logout button click
+     */
+    handleLogout() {
+        if (this.authService) {
+            // Show confirmation dialog
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                console.log('User requested logout');
+                this.authService.logout();
+            }
+        } else {
+            console.warn('Auth service not available for logout');
+            // Fallback: redirect to login
+            window.location.href = 'login.html';
+        }
     }
 }
 

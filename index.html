@@ -33,6 +33,19 @@
             <span class="icon">📅</span>
             <span>Calendario Económico</span>
         </a>
+
+        <!-- User Section -->
+        <div class="menu-divider"></div>
+        <div class="user-section">
+            <div class="user-info" id="userInfo">
+                <span class="user-icon">👤</span>
+                <span class="user-name" id="userName">Usuario</span>
+            </div>
+            <button class="logout-button" id="logoutButton">
+                <span class="icon">🚪</span>
+                <span>Cerrar Sesión</span>
+            </button>
+        </div>
     </nav>
 
     <!-- Overlay -->
@@ -185,6 +198,9 @@
 
     <!-- External Libraries -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <!-- Authentication Guard (must load first) -->
+    <script type="module" src="js/auth/authGuard.js"></script>
 
     <!-- Modular JavaScript -->
     <script type="module" src="js/shared/menu.js"></script>
