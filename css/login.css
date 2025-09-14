@@ -106,7 +106,7 @@
 
 .form-group input[type="text"]:focus,
 .form-group input[type="password"]:focus {
-    border-color: var(--royal-blue);
+    border-color: #4169E1;
     background: #ffffff;
     box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.1);
     transform: translateY(-1px);
@@ -117,6 +117,7 @@
     color: var(--text-muted);
     font-weight: 400;
 }
+
 
 /* Password Input Container */
 .password-input {

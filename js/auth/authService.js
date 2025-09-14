@@ -8,11 +8,16 @@ export class AuthService {
         this.baseUrl = 'https://eagolden.online/api';
         this.tokenKey = 'ea_golden_token';
         this.userKey = 'ea_golden_user';
+        this.csrfTokenKey = 'ea_golden_csrf';
         this.loginUrl = '/login';
         this.currentUser = null;
+        this.csrfToken = null;
 
         // Initialize from storage
         this.loadFromStorage();
+
+        // Initialize CSRF token
+        this.initializeCSRF();
     }
 
     /**
@@ -22,9 +27,12 @@ export class AuthService {
         try {
             const token = localStorage.getItem(this.tokenKey);
             const userData = localStorage.getItem(this.userKey);
+            const csrfToken = localStorage.getItem(this.csrfTokenKey);
 
             if (token && userData) {
                 this.currentUser = JSON.parse(userData);
+                this.csrfToken = csrfToken;
+
                 // Verify token is still valid (basic check)
                 if (this.isTokenExpired(token)) {
                     this.logout();
@@ -34,6 +42,63 @@ export class AuthService {
             console.warn('Error loading auth data from storage:', error);
             this.logout();
         }
+    }
+
+    /**
+     * Initialize CSRF token from server
+     */
+    async initializeCSRF() {
+        if (!this.csrfToken) {
+            await this.fetchCSRFToken();
+        }
+    }
+
+    /**
+     * Fetch CSRF token from server
+     * @returns {Promise<string|null>} CSRF token or null
+     */
+    async fetchCSRFToken() {
+        try {
+            console.log('Fetching CSRF token...');
+
+            const response = await fetch(`${this.baseUrl}/csrf-token`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.csrfToken = data.csrf_token || data.token;
+
+                if (this.csrfToken) {
+                    localStorage.setItem(this.csrfTokenKey, this.csrfToken);
+                    console.log('CSRF token obtained');
+                    return this.csrfToken;
+                }
+            }
+
+            console.warn('Failed to fetch CSRF token');
+            return null;
+        } catch (error) {
+            console.warn('Error fetching CSRF token:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Get CSRF headers for requests
+     * @returns {Object} CSRF headers or empty object
+     */
+    getCSRFHeaders() {
+        if (this.csrfToken) {
+            return {
+                'X-CSRF-Token': this.csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            };
+        }
+        return {};
     }
 
     /**
@@ -61,12 +126,20 @@ export class AuthService {
      */
     async login(username, password, rememberMe = false) {
         try {
+            // Ensure we have a CSRF token
+            if (!this.csrfToken) {
+                await this.fetchCSRFToken();
+            }
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                ...this.getCSRFHeaders()
+            };
+
             const response = await fetch(`${this.baseUrl}${this.loginUrl}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
+                headers: headers,
                 body: JSON.stringify({
                     username: username.trim(),
                     password: password
@@ -134,6 +207,8 @@ export class AuthService {
     storeAuthData(token, user, rememberMe, refreshToken = null) {
         this.currentUser = {
             username: user.username,
+            full_name: user.full_name || user.username,
+            email: user.email || '',
             role: user.role || 'user',
             is_admin: user.is_admin || false,
             loginTime: new Date().toISOString(),
@@ -152,12 +227,39 @@ export class AuthService {
 
     /**
      * Logout user and clear stored data
+     * @param {boolean} callBackend - Whether to notify backend of logout
      */
-    logout() {
+    async logout(callBackend = true) {
+        const token = this.getToken();
+
+        // Notify backend if requested and token is available
+        if (callBackend && token) {
+            try {
+                await fetch(`${this.baseUrl}/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        token: token
+                    })
+                });
+                console.log('Backend notified of logout');
+            } catch (error) {
+                console.warn('Failed to notify backend of logout:', error);
+                // Continue with local logout even if backend notification fails
+            }
+        }
+
+        // Clear local data
         this.currentUser = null;
+        this.csrfToken = null;
         localStorage.removeItem(this.tokenKey);
         localStorage.removeItem(this.userKey);
         localStorage.removeItem('ea_golden_refresh_token');
+        localStorage.removeItem(this.csrfTokenKey);
 
         console.log('User logged out');
 
@@ -221,25 +323,71 @@ export class AuthService {
     }
 
     /**
-     * Refresh token if needed (placeholder for future implementation)
+     * Refresh access token using stored refresh token
      * @returns {Promise<boolean>} True if refresh successful
      */
     async refreshToken() {
-        // This would be implemented if your backend supports refresh tokens
-        console.warn('Token refresh not implemented');
-        return false;
+        const refreshToken = localStorage.getItem('ea_golden_refresh_token');
+
+        if (!refreshToken) {
+            console.warn('No refresh token available');
+            return false;
+        }
+
+        try {
+            console.log('Attempting token refresh...');
+
+            const response = await fetch(`${this.baseUrl}/refresh`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    refresh_token: refreshToken
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || `HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            // Update stored tokens
+            const newAccessToken = data.token || data.access_token;
+            if (newAccessToken) {
+                localStorage.setItem(this.tokenKey, newAccessToken);
+
+                // Update refresh token if provided
+                if (data.refresh_token) {
+                    localStorage.setItem('ea_golden_refresh_token', data.refresh_token);
+                }
+
+                console.log('Token refresh successful');
+                return true;
+            }
+
+            throw new Error('No access token in refresh response');
+
+        } catch (error) {
+            console.error('Token refresh failed:', error);
+            // If refresh fails, logout user
+            this.logout();
+            return false;
+        }
     }
 
     /**
-     * Force token validation with server
-     * @returns {Promise<boolean>} True if token is valid
+     * Force token validation with server and get auth status
+     * @returns {Promise<Object|boolean>} Auth status object or false if invalid
      */
     async validateToken() {
         const token = this.getToken();
         if (!token) return false;
 
         try {
-            const response = await fetch(`${this.baseUrl}/validate-token`, {
+            const response = await fetch(`${this.baseUrl}/auth-status`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -248,9 +396,21 @@ export class AuthService {
             });
 
             if (response.ok) {
-                return true;
+                const authStatus = await response.json();
+                console.log('Auth status:', authStatus);
+                return authStatus;
+            } else if (response.status === 401) {
+                // Try to refresh token before giving up
+                const refreshSuccessful = await this.refreshToken();
+                if (refreshSuccessful) {
+                    // Retry with new token
+                    return await this.validateToken();
+                } else {
+                    this.logout(false); // Don't call backend since we're already invalid
+                    return false;
+                }
             } else {
-                this.logout();
+                console.warn('Auth status check failed:', response.status);
                 return false;
             }
         } catch (error) {

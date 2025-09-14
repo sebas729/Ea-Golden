@@ -101,7 +101,9 @@ export class NavigationMenu {
         if (this.authService && this.authService.isAuthenticated()) {
             const user = this.authService.getCurrentUser();
             if (user && userNameElement) {
-                userNameElement.textContent = user.username || 'Usuario';
+                // Prefer full_name, fallback to username
+                const displayName = user.full_name || user.username || 'Usuario';
+                userNameElement.textContent = displayName;
             }
         } else {
             if (userNameElement) {

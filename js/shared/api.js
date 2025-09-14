@@ -52,11 +52,13 @@ export class ApiClient {
         const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
         try {
-            // Merge headers with authentication
+            // Merge headers with authentication and CSRF
             const authHeaders = this.getAuthHeaders();
+            const csrfHeaders = this.authService?.getCSRFHeaders?.() || {};
             const headers = {
                 ...this.defaultHeaders,
                 ...authHeaders,
+                ...csrfHeaders,
                 ...options.headers
             };
 
