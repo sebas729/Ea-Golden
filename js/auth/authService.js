@@ -79,13 +79,18 @@ export class AuthService {
                 throw new Error(data.message || `HTTP ${response.status}: ${response.statusText}`);
             }
 
-            // Validate response structure
-            if (!data.token) {
+            // Debug: Log response structure
+            console.log('Server response:', data);
+
+            // Validate response structure - support both 'token' and 'access_token'
+            const token = data.token || data.access_token;
+            if (!token) {
+                console.error('Expected token not found in response:', data);
                 throw new Error('Token no recibido del servidor');
             }
 
             // Store authentication data
-            this.storeAuthData(data.token, data.user || { username }, rememberMe);
+            this.storeAuthData(token, data.user || { username }, rememberMe, data.refresh_token);
 
             console.log('Login successful');
             return {
@@ -121,21 +126,28 @@ export class AuthService {
 
     /**
      * Store authentication data
-     * @param {string} token - JWT token
+     * @param {string} token - JWT access token
      * @param {Object} user - User data
      * @param {boolean} rememberMe - Whether to persist session
+     * @param {string} refreshToken - JWT refresh token (optional)
      */
-    storeAuthData(token, user, rememberMe) {
+    storeAuthData(token, user, rememberMe, refreshToken = null) {
         this.currentUser = {
             username: user.username,
+            role: user.role || 'user',
+            is_admin: user.is_admin || false,
             loginTime: new Date().toISOString(),
             rememberMe: rememberMe
         };
 
-        // Always use localStorage for simplicity
-        // In production, you might want to use sessionStorage for non-persistent sessions
+        // Store tokens
         localStorage.setItem(this.tokenKey, token);
         localStorage.setItem(this.userKey, JSON.stringify(this.currentUser));
+
+        // Store refresh token if provided
+        if (refreshToken) {
+            localStorage.setItem('ea_golden_refresh_token', refreshToken);
+        }
     }
 
     /**
@@ -145,6 +157,7 @@ export class AuthService {
         this.currentUser = null;
         localStorage.removeItem(this.tokenKey);
         localStorage.removeItem(this.userKey);
+        localStorage.removeItem('ea_golden_refresh_token');
 
         console.log('User logged out');
 
