@@ -276,16 +276,23 @@ export class AuthService {
     isAuthenticated() {
         const token = localStorage.getItem(this.tokenKey);
 
+        console.log('isAuthenticated check:');
+        console.log('- Token exists in localStorage:', !!token);
+        console.log('- currentUser exists:', !!this.currentUser);
+
         if (!token || !this.currentUser) {
+            console.log('Authentication failed: missing token or currentUser');
             return false;
         }
 
         // Check if token is expired
         if (this.isTokenExpired(token)) {
+            console.log('Token is expired, logging out');
             this.logout();
             return false;
         }
 
+        console.log('User is authenticated');
         return true;
     }
 
@@ -314,10 +321,14 @@ export class AuthService {
      */
     getAuthHeader() {
         const token = this.getToken();
+        console.log('getAuthHeader called, token exists:', !!token);
         if (token) {
+            console.log('Token first 20 chars:', token.substring(0, 20) + '...');
             return {
                 'Authorization': `Bearer ${token}`
             };
+        } else {
+            console.warn('No token available for auth header');
         }
         return {};
     }

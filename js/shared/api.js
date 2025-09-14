@@ -15,6 +15,9 @@ export class ApiClient {
         // Import auth service dynamically to avoid circular dependencies
         this.authService = null;
         this.initAuthService();
+
+        // Debug: Log constructor
+        console.log('ApiClient constructor called');
     }
 
     /**
@@ -25,8 +28,9 @@ export class ApiClient {
             // Dynamic import to avoid circular dependency
             const authModule = await import('../auth/authService.js');
             this.authService = authModule.authService;
+            console.log('AuthService initialized successfully in ApiClient');
         } catch (error) {
-            console.warn('Auth service not available:', error.message);
+            console.error('Failed to initialize auth service:', error);
         }
     }
 
@@ -34,11 +38,27 @@ export class ApiClient {
      * Get authentication headers
      * @returns {Object} Headers with authentication if available
      */
-    getAuthHeaders() {
-        if (this.authService && this.authService.isAuthenticated()) {
-            return this.authService.getAuthHeader();
+    async getAuthHeaders() {
+        // Ensure auth service is loaded
+        if (!this.authService) {
+            console.warn('AuthService not loaded yet, waiting...');
+            await this.initAuthService();
         }
-        return {};
+
+        if (this.authService && this.authService.isAuthenticated()) {
+            const authHeader = this.authService.getAuthHeader();
+            console.log('Auth service available and user authenticated');
+            console.log('Returning auth header:', authHeader);
+            return authHeader;
+        } else {
+            console.warn('Auth service not available or user not authenticated');
+            if (!this.authService) {
+                console.error('AuthService is still null after init attempt');
+            } else if (!this.authService.isAuthenticated()) {
+                console.warn('User is not authenticated according to authService');
+            }
+            return {};
+        }
     }
 
     /**
@@ -53,7 +73,7 @@ export class ApiClient {
 
         try {
             // Merge headers with authentication and CSRF
-            const authHeaders = this.getAuthHeaders();
+            const authHeaders = await this.getAuthHeaders();
             const csrfHeaders = this.authService?.getCSRFHeaders?.() || {};
             const headers = {
                 ...this.defaultHeaders,
@@ -61,6 +81,15 @@ export class ApiClient {
                 ...csrfHeaders,
                 ...options.headers
             };
+
+            // Debug: Log request details
+            console.log(`Making ${options.method || 'GET'} request to:`, url);
+            console.log('Request headers:', headers);
+            if (authHeaders.Authorization) {
+                console.log('Auth token present:', authHeaders.Authorization.substring(0, 20) + '...');
+            } else {
+                console.warn('No Authorization header found!');
+            }
 
             const response = await fetch(url, {
                 headers,
@@ -73,8 +102,20 @@ export class ApiClient {
             // Handle authentication errors
             if (response.status === 401) {
                 if (this.authService) {
-                    console.warn('API returned 401, handling auth error...');
-                    this.authService.handleAuthError(response);
+                    console.warn('API returned 401, attempting token refresh...');
+
+                    // Try to refresh token before giving up
+                    const refreshSuccessful = await this.authService.refreshToken();
+
+                    if (refreshSuccessful) {
+                        console.log('Token refreshed, retrying request...');
+                        // Retry the request with new token
+                        clearTimeout(timeoutId);
+                        return this.request(url, options);
+                    } else {
+                        console.error('Token refresh failed, logging out...');
+                        this.authService.handleAuthError(response);
+                    }
                 }
                 throw new Error('Authentication failed');
             }

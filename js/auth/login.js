@@ -34,7 +34,6 @@ class LoginController {
         }
 
         this.setupEventListeners();
-        this.prefillCredentials();
     }
 
     /**
@@ -67,17 +66,6 @@ class LoginController {
                 this.form.dispatchEvent(new Event('submit'));
             }
         });
-    }
-
-    /**
-     * Prefill credentials for development (remove in production)
-     */
-    prefillCredentials() {
-        // Only for development - remove in production
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            this.usernameInput.value = 'eagolden_admin';
-            this.passwordInput.value = 'G0ld3n$tr@t3gy2024!';
-        }
     }
 
     /**
