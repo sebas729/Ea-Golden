@@ -6,8 +6,15 @@
 .header {
     text-align: center;
     margin-bottom: 2rem;
-    padding: 2rem 0;
+    padding: 2rem 80px 2rem 80px; /* Add left padding to avoid hamburger menu overlap */
     position: relative;
+}
+
+/* Responsive header padding */
+@media (max-width: 768px) {
+    .header {
+        padding: 2rem 1rem; /* Reduce padding on mobile, hamburger menu typically collapses */
+    }
 }
 
 .header h1 {
