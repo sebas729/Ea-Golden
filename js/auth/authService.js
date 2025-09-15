@@ -5,7 +5,7 @@
 
 export class AuthService {
     constructor() {
-        this.baseUrl = 'https://eagolden.online/api';
+        this.baseUrl = 'https://securityfilter-golden.onrender.com/api';
         this.tokenKey = 'ea_golden_token';
         this.userKey = 'ea_golden_user';
         this.csrfTokenKey = 'ea_golden_csrf';
@@ -82,7 +82,12 @@ export class AuthService {
             console.warn('Failed to fetch CSRF token');
             return null;
         } catch (error) {
-            console.warn('Error fetching CSRF token:', error);
+            // Handle CORS errors gracefully - CSRF may not be required
+            if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
+                console.warn('CORS error fetching CSRF token - proceeding without CSRF token');
+            } else {
+                console.warn('Error fetching CSRF token:', error);
+            }
             return null;
         }
     }
@@ -126,20 +131,11 @@ export class AuthService {
      */
     async login(username, password, rememberMe = false) {
         try {
-            // Ensure we have a CSRF token
-            if (!this.csrfToken) {
-                await this.fetchCSRFToken();
-            }
-
-            const headers = {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                ...this.getCSRFHeaders()
-            };
-
             const response = await fetch(`${this.baseUrl}${this.loginUrl}`, {
                 method: 'POST',
-                headers: headers,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
                     username: username.trim(),
                     password: password
@@ -155,15 +151,15 @@ export class AuthService {
             // Debug: Log response structure
             console.log('Server response:', data);
 
-            // Validate response structure - support both 'token' and 'access_token'
-            const token = data.token || data.access_token;
+            // Validate response structure - token is in data.access_token
+            const token = data.data?.access_token || data.token || data.access_token;
             if (!token) {
                 console.error('Expected token not found in response:', data);
                 throw new Error('Token no recibido del servidor');
             }
 
             // Store authentication data
-            this.storeAuthData(token, data.user || { username }, rememberMe, data.refresh_token);
+            this.storeAuthData(token, data.data?.user || data.user || { username }, rememberMe, data.data?.refresh_token || data.refresh_token);
 
             console.log('Login successful');
             return {

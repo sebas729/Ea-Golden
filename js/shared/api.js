@@ -5,12 +5,12 @@
 
 export class ApiClient {
     constructor() {
-        this.baseUrl = 'https://eagolden.online/api';
+        this.baseUrl = 'http://localhost:8009/api';
         this.defaultHeaders = {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         };
-        this.timeout = 30000; // 30 seconds
+        this.timeout = 60000; // 60 seconds (1 minute)
 
         // Import auth service dynamically to avoid circular dependencies
         this.authService = null;
@@ -165,7 +165,7 @@ export class ApiClient {
     async getFibonacciReport() {
         try {
             console.log('Fetching Fibonacci report...');
-            const data = await this.get('/fibonacci-report');
+            const data = await this.get('/security-filter/fibonacci-report');
             console.log('Fibonacci report loaded successfully');
             return data;
         } catch (error) {
@@ -181,7 +181,7 @@ export class ApiClient {
     async getEconomicCalendar() {
         try {
             console.log('Fetching economic calendar...');
-            const data = await this.get('/economic-calendar');
+            const data = await this.get('/security-filter/economic-calendar');
             console.log('Economic calendar loaded successfully');
             return data;
         } catch (error) {
@@ -213,7 +213,7 @@ export class ApiClient {
 
             console.log('Data sent to endpoint:', payload);
 
-            const data = await this.post('/process-ob-report', payload);
+            const data = await this.post('/security-filter/process-ob-report', payload);
             console.log('OB report processed successfully');
             return data;
         } catch (error) {
