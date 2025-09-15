@@ -12,12 +12,18 @@ export class AuthService {
         this.loginUrl = '/login';
         this.currentUser = null;
         this.csrfToken = null;
+        this.refreshTimer = null;
 
         // Initialize from storage
         this.loadFromStorage();
 
         // Initialize CSRF token
         this.initializeCSRF();
+
+        // Start auto-refresh if user is authenticated
+        if (this.isAuthenticated()) {
+            this.startAutoRefresh();
+        }
     }
 
     /**
@@ -162,6 +168,10 @@ export class AuthService {
             this.storeAuthData(token, data.data?.user || data.user || { username }, rememberMe, data.data?.refresh_token || data.refresh_token);
 
             console.log('Login successful');
+
+            // Start auto-refresh timer for new session
+            this.startAutoRefresh();
+
             return {
                 success: true,
                 user: this.currentUser,
@@ -257,6 +267,9 @@ export class AuthService {
         localStorage.removeItem('ea_golden_refresh_token');
         localStorage.removeItem(this.csrfTokenKey);
 
+        // Stop auto-refresh timer
+        this.stopAutoRefresh();
+
         console.log('User logged out');
 
         // Redirect to login if not already there
@@ -266,23 +279,44 @@ export class AuthService {
     }
 
     /**
-     * Check if user is authenticated
-     * @returns {boolean} True if authenticated
+     * Check if user is authenticated (local check only)
+     * @param {boolean} skipServerValidation - Skip server validation for quick checks
+     * @returns {boolean} True if authenticated locally
      */
-    isAuthenticated() {
+    isAuthenticated(skipServerValidation = true) {
         const token = localStorage.getItem(this.tokenKey);
 
         if (!token || !this.currentUser) {
             return false;
         }
 
-        // Check if token is expired
+        // Quick local token expiration check
         if (this.isTokenExpired(token)) {
-            this.logout();
+            if (!skipServerValidation) {
+                // Try refresh before giving up
+                this.refreshToken().catch(() => this.logout());
+            } else {
+                this.logout();
+            }
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Check if user is authenticated with server validation
+     * @returns {Promise<boolean>} True if authenticated on server
+     */
+    async isAuthenticatedWithValidation() {
+        // First check local authentication
+        if (!this.isAuthenticated()) {
+            return false;
+        }
+
+        // Then validate with server
+        const validationResult = await this.validateToken();
+        return !!validationResult;
     }
 
     /**
@@ -350,14 +384,25 @@ export class AuthService {
                 throw new Error(data.message || `HTTP ${response.status}: ${response.statusText}`);
             }
 
-            // Update stored tokens
-            const newAccessToken = data.token || data.access_token;
+            // Handle nested response structure like login
+            const newAccessToken = data.data?.access_token || data.token || data.access_token;
             if (newAccessToken) {
                 localStorage.setItem(this.tokenKey, newAccessToken);
 
                 // Update refresh token if provided
-                if (data.refresh_token) {
-                    localStorage.setItem('ea_golden_refresh_token', data.refresh_token);
+                const newRefreshToken = data.data?.refresh_token || data.refresh_token;
+                if (newRefreshToken) {
+                    localStorage.setItem('ea_golden_refresh_token', newRefreshToken);
+                }
+
+                // Update user data if provided
+                if (data.data?.user || data.user) {
+                    const userData = data.data?.user || data.user;
+                    this.currentUser = {
+                        ...this.currentUser,
+                        ...userData
+                    };
+                    localStorage.setItem(this.userKey, JSON.stringify(this.currentUser));
                 }
 
                 console.log('Token refresh successful');
@@ -368,22 +413,101 @@ export class AuthService {
 
         } catch (error) {
             console.error('Token refresh failed:', error);
-            // If refresh fails, logout user
-            this.logout();
+
+            // Handle different error scenarios
+            if (error.message.includes('401') || error.message.includes('403')) {
+                console.warn('Refresh token invalid or expired, logging out');
+                this.logout(false); // Don't call backend since refresh failed
+            } else if (error.message.includes('Failed to fetch')) {
+                console.warn('Network error during refresh, keeping current session');
+                return false; // Don't logout on network errors
+            } else {
+                // Other errors might indicate token issues
+                this.logout(false);
+            }
+
             return false;
         }
     }
 
     /**
-     * Force token validation with server and get auth status
-     * @returns {Promise<Object|boolean>} Auth status object or false if invalid
+     * Auto-refresh token if it's close to expiration
+     * @param {number} bufferMinutes - Minutes before expiration to trigger refresh
+     * @returns {Promise<boolean>} True if refresh was attempted and successful
+     */
+    async autoRefreshToken(bufferMinutes = 5) {
+        const token = this.getToken();
+        if (!token) return false;
+
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const now = Date.now() / 1000;
+            const expirationBuffer = bufferMinutes * 60; // Convert to seconds
+            const timeToExpiry = payload.exp - now;
+
+            // If token expires within buffer time, refresh it
+            if (timeToExpiry <= expirationBuffer && timeToExpiry > 0) {
+                console.log(`Token expires in ${Math.floor(timeToExpiry / 60)} minutes, refreshing...`);
+                return await this.refreshToken();
+            }
+
+            return true; // Token is still valid
+        } catch (error) {
+            console.warn('Error checking token expiration:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Start automatic token refresh timer
+     * @param {number} intervalMinutes - Check interval in minutes
+     */
+    startAutoRefresh(intervalMinutes = 10) {
+        // Clear existing timer
+        if (this.refreshTimer) {
+            clearInterval(this.refreshTimer);
+        }
+
+        // Only start if authenticated
+        if (!this.isAuthenticated()) {
+            return;
+        }
+
+        this.refreshTimer = setInterval(async () => {
+            if (this.isAuthenticated()) {
+                await this.autoRefreshToken();
+            } else {
+                // Stop timer if no longer authenticated
+                this.stopAutoRefresh();
+            }
+        }, intervalMinutes * 60 * 1000); // Convert to milliseconds
+
+        console.log(`Auto-refresh timer started (${intervalMinutes} min intervals)`);
+    }
+
+    /**
+     * Stop automatic token refresh timer
+     */
+    stopAutoRefresh() {
+        if (this.refreshTimer) {
+            clearInterval(this.refreshTimer);
+            this.refreshTimer = null;
+            console.log('Auto-refresh timer stopped');
+        }
+    }
+
+    /**
+     * Validate token with server using new /validate-token endpoint
+     * @returns {Promise<Object|boolean>} Validation result or false if invalid
      */
     async validateToken() {
         const token = this.getToken();
         if (!token) return false;
 
         try {
-            const response = await fetch(`${this.baseUrl}/auth-status`, {
+            console.log('Validating token with server...');
+
+            const response = await fetch(`${this.baseUrl}/validate-token`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -392,26 +516,60 @@ export class AuthService {
             });
 
             if (response.ok) {
-                const authStatus = await response.json();
-                console.log('Auth status:', authStatus);
-                return authStatus;
+                const validationResult = await response.json();
+                console.log('Token validation successful:', validationResult);
+
+                // Update stored user data with fresh info from server
+                if (validationResult.user) {
+                    this.currentUser = {
+                        ...this.currentUser,
+                        ...validationResult.user,
+                        loginTime: this.currentUser?.loginTime || new Date().toISOString()
+                    };
+                    localStorage.setItem(this.userKey, JSON.stringify(this.currentUser));
+                }
+
+                return validationResult;
             } else if (response.status === 401) {
+                console.warn('Token invalid or expired');
                 // Try to refresh token before giving up
                 const refreshSuccessful = await this.refreshToken();
                 if (refreshSuccessful) {
-                    // Retry with new token
+                    // Retry validation with new token
+                    console.log('Retrying validation with refreshed token...');
                     return await this.validateToken();
                 } else {
-                    this.logout(false); // Don't call backend since we're already invalid
+                    console.warn('Token refresh failed, logging out user');
+                    this.logout(false); // Don't call backend since token is already invalid
                     return false;
                 }
             } else {
-                console.warn('Auth status check failed:', response.status);
+                console.warn('Token validation failed:', response.status);
+
+                // Handle different error status codes
+                if (response.status === 403) {
+                    console.warn('Token validation forbidden - user may be deactivated');
+                    this.logout(false);
+                    return false;
+                } else if (response.status >= 500) {
+                    // Server error - don't logout, might be temporary
+                    console.warn('Server error during validation - keeping session');
+                    return false;
+                }
+
                 return false;
             }
         } catch (error) {
-            console.warn('Token validation failed:', error);
-            return false; // Don't logout on network errors
+            console.warn('Token validation request failed:', error);
+
+            // Don't logout on network errors - might be temporary connectivity issues
+            if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                console.warn('Network error during validation - keeping session');
+                return false;
+            }
+
+            // Other errors might indicate token issues
+            return false;
         }
     }
 
