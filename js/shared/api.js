@@ -5,7 +5,7 @@
 
 export class ApiClient {
     constructor() {
-        this.baseUrl = 'http://localhost:8009/api';
+        this.baseUrl = 'https://securityfilter-golden.onrender.com/api';
         this.defaultHeaders = {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
