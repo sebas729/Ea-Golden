@@ -228,6 +228,11 @@ export class NivelesDSection {
                     levelName = 'ob óptimo';
                 }
 
+                // Handle STOPHUNT mapping
+                if (levelName === 'stophunt' || levelName === '100%') {
+                    return activeName === 'stophunt';
+                }
+
                 if (activeName === levelName) {
                     return true;
                 }

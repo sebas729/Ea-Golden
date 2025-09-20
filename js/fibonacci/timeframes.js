@@ -17,10 +17,21 @@ export class TimeframeCards {
         const fib50 = fibLevels.level_50_percent || fibLevels['50_percent'];
         const fib618 = fibLevels.level_618_percent || fibLevels['618_percent'];
         const fib786 = fibLevels.level_786_percent || fibLevels['786_percent'];
+        const fib100 = fibLevels.level_100_percent || fibLevels['100_percent'];
 
-        // Get OB data
-        const hasOB = timeframe.order_block && timeframe.order_block.ob_price;
-        const obPrice = hasOB ? timeframe.order_block.ob_price : null;
+        // Get OB data - check both old and new structures
+        let hasOB = false;
+        let obPrice = null;
+
+        if (timeframe.order_block && timeframe.order_block.ob_price) {
+            // Old structure
+            hasOB = true;
+            obPrice = timeframe.order_block.ob_price;
+        } else if (timeframe.optimal_order_block && timeframe.optimal_order_block.price) {
+            // New structure
+            hasOB = true;
+            obPrice = timeframe.optimal_order_block.price;
+        }
 
         let levelItems = '';
 
@@ -61,11 +72,11 @@ export class TimeframeCards {
             `;
         }
 
-        if (timeframe.stophunt_price) {
+        if (fib100) {
             levelItems += `
                 <div class="level-item">
                     <span class="level-name">STOPHUNT</span>
-                    <span class="level-value">${timeframe.stophunt_price.toFixed(5)}</span>
+                    <span class="level-value">${fib100.toFixed(5)}</span>
                 </div>
             `;
         }
