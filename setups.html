@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+    <title>Setups Trading - Golden Strategy</title>
+
+    <!-- Modular CSS -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/setups.css">
+</head>
+<body>
+    <!-- Menú Hamburguesa -->
+    <div class="hamburger-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Menú Lateral -->
+    <nav class="side-menu" id="sideMenu">
+        <h3>📊 Navegación</h3>
+        <a href="index.html" class="menu-item">
+            <span class="icon">📈</span>
+            <span>Fibonacci Report</span>
+        </a>
+        <a href="setups.html" class="menu-item active">
+            <span class="icon">🎯</span>
+            <span>Setups Trading</span>
+        </a>
+        <a href="economicCalendar_modular.html" class="menu-item">
+            <span class="icon">📅</span>
+            <span>Calendario Económico</span>
+        </a>
+
+        <!-- User Section -->
+        <div class="menu-divider"></div>
+        <div class="user-section">
+            <div class="user-info" id="userInfo">
+                <span class="user-icon">👤</span>
+                <span class="user-name" id="userName">Usuario</span>
+            </div>
+            <button class="logout-button" id="logoutButton">
+                <span class="icon">🚪</span>
+                <span>Cerrar Sesión</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>
+                🎯 Setups Trading Dashboard
+            </h1>
+            <div class="header-actions">
+                <button class="refresh-button-header" id="refreshButton">
+                    <span>🔄</span> Actualizar
+                </button>
+                <div class="last-update" id="lastUpdate">
+                    <span class="update-label">Última actualización:</span>
+                    <span class="update-time" id="updateTime">-</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Cargando datos de setups...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="error" style="display: none;">
+            <h3>❌ Error al cargar los datos</h3>
+            <p id="error-message">No se pudieron obtener los datos del servidor.</p>
+            <button class="refresh-button" onclick="loadSetupsData()">🔄 Reintentar</button>
+        </div>
+
+        <!-- Main Content -->
+        <div id="main-content" style="display: none;">
+            <!-- Quick Summary Cards -->
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-icon">📊</div>
+                    <div class="summary-content">
+                        <h3>Total Setups</h3>
+                        <div class="summary-value" id="totalSetups">-</div>
+                        <div class="summary-detail">
+                            <span id="complexCount">0</span> Complex •
+                            <span id="simpleCount">0</span> Simple
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-icon">💹</div>
+                    <div class="summary-content">
+                        <h3>Precio Actual</h3>
+                        <div class="summary-value" id="currentPrice">-</div>
+                        <div class="summary-detail" id="direction">-</div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-icon">🎯</div>
+                    <div class="summary-content">
+                        <h3>Setup Más Cercano</h3>
+                        <div class="summary-value" id="closestSetup">-</div>
+                        <div class="summary-detail" id="closestDistance">-</div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-icon">⭐</div>
+                    <div class="summary-content">
+                        <h3>Score Promedio</h3>
+                        <div class="summary-value" id="averageScore">-</div>
+                        <div class="summary-detail">Max: <span id="maxScore">-</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <div class="tabs">
+                <nav class="tab-nav">
+                    <button class="tab-button active" onclick="showSetupsTab('dashboard')">
+                        📈 Dashboard
+                    </button>
+                    <button class="tab-button" onclick="showSetupsTab('confluences')">
+                        🗺️ Confluencias
+                    </button>
+                    <button class="tab-button" onclick="showSetupsTab('statistics')">
+                        📊 Estadísticas
+                    </button>
+                    <button class="tab-button" onclick="showSetupsTab('proximity')">
+                        ⚡ Proximidad
+                    </button>
+                </nav>
+
+                <!-- Dashboard Tab -->
+                <div id="dashboard" class="tab-content active">
+                    <div class="dashboard-grid">
+                        <!-- Active Setups List -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>📋 Setups Activos</h2>
+                                <div class="filter-controls">
+                                    <select id="typeFilter" class="filter-select">
+                                        <option value="ALL">Todos</option>
+                                        <option value="COMPLEX">Complex</option>
+                                        <option value="SIMPLE">Simple</option>
+                                    </select>
+                                    <select id="sortFilter" class="filter-select">
+                                        <option value="proximity">Por Proximidad</option>
+                                        <option value="score">Por Score</option>
+                                        <option value="timeframe">Por Timeframe</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="setups-list" class="setups-list">
+                                <!-- Setups will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confluences Tab -->
+                <div id="confluences" class="tab-content">
+                    <div class="card">
+                        <h2>🗺️ Zonas de Confluencia</h2>
+                        <div id="confluences-summary" class="confluences-summary">
+                            <!-- Summary will be populated here -->
+                        </div>
+                        <div id="confluences-zones" class="confluences-zones">
+                            <!-- Zones will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics Tab -->
+                <div id="statistics" class="tab-content">
+                    <div class="statistics-grid">
+                        <div class="card">
+                            <h2>📊 Pipeline Statistics</h2>
+                            <div id="pipeline-stats" class="stats-grid">
+                                <!-- Pipeline stats will be populated here -->
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h2>⚡ Performance Metrics</h2>
+                            <div id="performance-metrics" class="stats-grid">
+                                <!-- Performance metrics will be populated here -->
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h2>🔧 System Health</h2>
+                            <div id="system-health" class="health-indicators">
+                                <!-- Health indicators will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Proximity Tab -->
+                <div id="proximity" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>⚡ Alertas de Proximidad</h2>
+                            <div class="proximity-controls">
+                                <label for="proximityThreshold">Distancia máxima (pips):</label>
+                                <input type="range" id="proximityThreshold" min="1" max="100" value="20" class="proximity-slider">
+                                <span id="proximityValue" class="proximity-value">20</span>
+                            </div>
+                        </div>
+                        <div id="proximity-alerts" class="proximity-alerts">
+                            <!-- Proximity alerts will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer-content">
+                    <p>🔄 Auto-refresh: <span id="autoRefreshStatus">Activo</span></p>
+                    <p>📡 Estado del sistema: <span id="systemStatus">Conectado</span></p>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Setup Detail Modal -->
+    <div id="setupDetailModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Detalle del Setup</h2>
+                <button class="modal-close" onclick="closeSetupModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Modal content will be populated here -->
+            </div>
+        </div>
+        <div class="modal-overlay" onclick="closeSetupModal()"></div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="notification" style="display: none;">
+        <div class="notification-content">
+            <span class="notification-icon" id="notificationIcon">ℹ️</span>
+            <span class="notification-message" id="notificationMessage">Mensaje</span>
+        </div>
+    </div>
+
+    <!-- Authentication Guard (must load first) -->
+    <script type="module" src="js/auth/authGuard.js"></script>
+
+    <!-- Modular JavaScript -->
+    <script type="module" src="js/shared/menu.js"></script>
+    <script type="module" src="js/setups/main.js"></script>
+</body>
+</html>

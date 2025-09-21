@@ -11,7 +11,8 @@
       "Bash(curl:*)",
       "Bash(git mv:*)",
       "Bash(git branch:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": [],
