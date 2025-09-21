@@ -287,13 +287,13 @@
     color: var(--text-light);
 }
 
-.tab-radio:checked + .tab-radio + .tab-radio + .tab-radio + * .tab-label:nth-of-type(4),
-.tab-radio:checked + .tab-radio + .tab-radio + * .tab-label:nth-of-type(3),
-.tab-radio:checked + .tab-radio + * .tab-label:nth-of-type(2),
-.tab-radio:checked + * .tab-label:nth-of-type(1) {
+#tab-high:checked ~ .tabs-nav .tab-label:nth-child(1),
+#tab-medium:checked ~ .tabs-nav .tab-label:nth-child(2),
+#tab-low:checked ~ .tabs-nav .tab-label:nth-child(3),
+#tab-all:checked ~ .tabs-nav .tab-label:nth-child(4) {
     background: var(--bg-dark-800);
     color: var(--text-light);
-    border-bottom-color: var(--blue-accent);
+    border-bottom: 3px solid var(--blue-accent);
 }
 
 .tab-content {
