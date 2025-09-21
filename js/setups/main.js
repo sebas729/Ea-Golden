@@ -164,8 +164,6 @@ export class SetupsMainController {
             // Update all components
             await this.updateAllComponents(data);
 
-            // Update last update time
-            this.updateLastUpdateTime();
 
             // Show success notification for manual refresh
             if (forceRefresh) {
@@ -270,16 +268,6 @@ export class SetupsMainController {
         }
     }
 
-    /**
-     * Update last update time
-     */
-    updateLastUpdateTime() {
-        const updateTimeElement = document.getElementById('updateTime');
-        if (updateTimeElement) {
-            const now = new Date();
-            updateTimeElement.textContent = now.toLocaleTimeString('es-ES');
-        }
-    }
 
     /**
      * Update system status indicator

@@ -3,10 +3,17 @@
    ================================ */
 
 /* Header Enhancements */
-.header-actions {
+.header {
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 1rem;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.header h1 {
+    margin: 0;
+    text-align: center;
 }
 
 .refresh-button-header {
@@ -40,22 +47,29 @@
     box-shadow: none;
 }
 
-.last-update {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+.refresh-button {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     font-size: 0.875rem;
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.update-label {
-    color: var(--text-secondary);
-    font-size: 0.75rem;
+.refresh-button:hover {
+    background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.update-time {
-    color: var(--text-primary);
-    font-weight: 500;
-}
 
 /* Summary Grid */
 .summary-grid {
@@ -1309,10 +1323,10 @@
         gap: 1rem;
     }
 
-    .header-actions {
+    .header {
         flex-direction: column;
-        align-items: flex-end;
-        gap: 0.5rem;
+        gap: 1rem;
+        text-align: center;
     }
 
     .card-header {
