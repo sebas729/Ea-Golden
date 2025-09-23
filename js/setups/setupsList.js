@@ -131,7 +131,7 @@ export class SetupsListManager {
         const scoreClass = this.getScoreClass(setup.score);
 
         return `
-            <div class="setup-item" onclick="showSetupDetail('${setup.id}')" data-setup-id="${setup.id}">
+            <div class="setup-item ${setup.type.toLowerCase()}" onclick="showSetupDetail('${setup.id}')" data-setup-id="${setup.id}">
                 <div class="setup-header">
                     <div class="setup-id">${setup.id}</div>
                     <div class="setup-type ${setup.type.toLowerCase()}">${setup.type}</div>

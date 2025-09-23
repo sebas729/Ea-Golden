@@ -208,7 +208,7 @@ export class SetupDetailManager {
                     </div>
                     <div class="metric-item">
                         <div class="metric-label">Fortaleza de TF</div>
-                        <div class="metric-value">${analysis.timeframe_strength || 'N/A'}</div>
+                        <div class="metric-value">${analysis.timeframe_strength || 'Desconocida'}</div>
                     </div>
                 </div>
             </div>
@@ -288,13 +288,17 @@ export class SetupDetailManager {
                     </div>
                     <div class="context-item">
                         <div class="context-label">Dirección del Mercado</div>
-                        <div class="context-value direction-${(marketContext.direction || '').toLowerCase()}">
-                            ${marketContext.direction || 'N/A'}
+                        <div class="context-value direction-${(marketContext.direccion || '').toLowerCase()}">
+                            ${marketContext.direccion || 'N/A'}
                         </div>
                     </div>
                     <div class="context-item">
-                        <div class="context-label">Fortaleza de Tendencia</div>
-                        <div class="context-value">${marketContext.trend_strength || 'N/A'}</div>
+                        <div class="context-label">Precio Actual</div>
+                        <div class="context-value">${marketContext.precio_actual?.toFixed(2) || 'N/A'}</div>
+                    </div>
+                    <div class="context-item">
+                        <div class="context-label">Calidad General</div>
+                        <div class="context-value">${marketContext.calidad_general || 'N/A'}</div>
                     </div>
                 </div>
             </div>
