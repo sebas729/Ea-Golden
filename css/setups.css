@@ -1532,3 +1532,338 @@
         max-width: 100%;
     }
 }
+
+/* ================================
+   Temporal Information Styles
+   (HIGH/LOW dates)
+   ================================ */
+
+/* Setup Type Badges Container */
+.setup-type-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Freshness Badge */
+.freshness-badge {
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border: 1px solid;
+}
+
+.freshness-badge.freshness-very-fresh {
+    background: linear-gradient(135deg, #00ff00, #00cc00);
+    color: #003300;
+    border-color: rgba(0, 255, 0, 0.3);
+}
+
+.freshness-badge.freshness-fresh {
+    background: linear-gradient(135deg, #90ee90, #5cb85c);
+    color: #1e4620;
+    border-color: rgba(144, 238, 144, 0.3);
+}
+
+.freshness-badge.freshness-moderate {
+    background: linear-gradient(135deg, #ffa500, #ff8c00);
+    color: #4d2600;
+    border-color: rgba(255, 165, 0, 0.3);
+}
+
+.freshness-badge.freshness-old {
+    background: linear-gradient(135deg, #ff4444, #cc0000);
+    color: white;
+    border-color: rgba(255, 68, 68, 0.3);
+}
+
+.freshness-badge.freshness-unknown {
+    background: linear-gradient(135deg, #999, #666);
+    color: white;
+    border-color: rgba(153, 153, 153, 0.3);
+}
+
+/* Temporal Info in Setup List */
+.temporal-info {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.temporal-row {
+    display: flex;
+    align-items: center;
+    font-size: 0.75rem;
+    gap: 0.5rem;
+}
+
+.temporal-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    min-width: 45px;
+}
+
+.temporal-value {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.temporal-info.complex .temporal-value {
+    color: var(--accent);
+    font-style: italic;
+}
+
+/* Temporal Section in Modal */
+.temporal-section {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.temporal-section h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.125rem;
+    color: var(--text-primary);
+}
+
+/* Temporal Grid for Simple Setups */
+.temporal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.temporal-item {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background: var(--bg-hover);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+
+.temporal-item .temporal-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.temporal-item .temporal-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.temporal-age {
+    font-size: 0.875rem;
+    font-weight: 700;
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+    display: inline-block;
+    align-self: flex-start;
+    margin-top: 0.5rem;
+}
+
+.temporal-age.freshness-very-fresh {
+    background: rgba(0, 255, 0, 0.15);
+    color: #00cc00;
+}
+
+.temporal-age.freshness-fresh {
+    background: rgba(144, 238, 144, 0.15);
+    color: #059669;
+}
+
+.temporal-age.freshness-moderate {
+    background: rgba(255, 165, 0, 0.15);
+    color: #d97706;
+}
+
+.temporal-age.freshness-old {
+    background: rgba(255, 68, 68, 0.15);
+    color: #dc2626;
+}
+
+.temporal-age.freshness-unknown {
+    background: rgba(153, 153, 153, 0.15);
+    color: #666;
+}
+
+/* Grupos Fechas Table for Complex Setups */
+.grupos-fechas-table-container {
+    overflow-x: auto;
+}
+
+.grupos-fechas-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+}
+
+.grupos-fechas-table thead {
+    background: var(--bg-hover);
+}
+
+.grupos-fechas-table th {
+    padding: 0.75rem;
+    text-align: left;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--border);
+}
+
+.grupos-fechas-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.875rem;
+}
+
+.grupos-fechas-table td.group-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.grupos-fechas-table .date-cell {
+    color: var(--text-primary);
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.grupos-fechas-table .age-cell {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.grupos-fechas-table .age-cell.freshness-very-fresh {
+    background: rgba(0, 255, 0, 0.15);
+    color: #00cc00;
+}
+
+.grupos-fechas-table .age-cell.freshness-fresh {
+    background: rgba(144, 238, 144, 0.15);
+    color: #059669;
+}
+
+.grupos-fechas-table .age-cell.freshness-moderate {
+    background: rgba(255, 165, 0, 0.15);
+    color: #d97706;
+}
+
+.grupos-fechas-table .age-cell.freshness-old {
+    background: rgba(255, 68, 68, 0.15);
+    color: #dc2626;
+}
+
+.grupos-fechas-table .age-cell.freshness-unknown {
+    background: rgba(153, 153, 153, 0.15);
+    color: #666;
+}
+
+.grupos-fechas-table tbody tr:hover {
+    background: var(--bg-hover);
+}
+
+/* Level Dates in Detail */
+.level-dates {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+}
+
+.level-date-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+}
+
+.level-date-label {
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.level-date-value {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .temporal-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .grupos-fechas-table {
+        font-size: 0.75rem;
+    }
+
+    .grupos-fechas-table th,
+    .grupos-fechas-table td {
+        padding: 0.5rem;
+    }
+
+    .temporal-info {
+        font-size: 0.7rem;
+    }
+
+    .freshness-badge {
+        font-size: 0.65rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .setup-type-badges {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .temporal-row {
+        gap: 0.35rem;
+    }
+
+    .temporal-label {
+        min-width: 35px;
+        font-size: 0.7rem;
+    }
+
+    .temporal-value {
+        font-size: 0.7rem;
+    }
+
+    .level-dates {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .grupos-fechas-table-container {
+        margin: 0 -0.5rem;
+    }
+}

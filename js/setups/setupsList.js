@@ -18,6 +18,88 @@ export class SetupsListManager {
     }
 
     /**
+     * Validate if a date string is valid
+     * @param {string} dateString - Date string to validate
+     * @returns {boolean} True if valid
+     */
+    isValidDateString(dateString) {
+        if (!dateString || typeof dateString !== 'string') return false;
+        if (dateString === 'N/A' || dateString.trim() === '') return false;
+
+        try {
+            const date = new Date(dateString);
+            return !isNaN(date.getTime());
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * Format date for display
+     * @param {string} isoString - ISO 8601 date string
+     * @returns {string} Formatted date
+     */
+    formatDate(isoString) {
+        if (!this.isValidDateString(isoString)) return 'N/A';
+
+        try {
+            const date = new Date(isoString);
+            return new Intl.DateTimeFormat('es-ES', {
+                month: 'short',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(date);
+        } catch (error) {
+            return 'N/A';
+        }
+    }
+
+    /**
+     * Calculate days ago from date
+     * @param {string} isoString - ISO 8601 date string
+     * @returns {number|null} Days ago
+     */
+    getDaysAgo(isoString) {
+        if (!isoString) return null;
+
+        try {
+            const date = new Date(isoString);
+            if (isNaN(date.getTime())) return null;
+
+            const now = new Date();
+            return Math.floor((now - date) / (1000 * 60 * 60 * 24));
+        } catch (error) {
+            return null;
+        }
+    }
+
+    /**
+     * Get freshness class for date
+     * @param {string} highTime - High time ISO string
+     * @param {string} lowTime - Low time ISO string
+     * @returns {Object} Freshness info
+     */
+    getFreshnessInfo(highTime, lowTime) {
+        const daysAgo = this.getDaysAgo(highTime);
+
+        if (daysAgo === null) {
+            return { class: 'freshness-unknown', label: 'N/A', color: '#999' };
+        }
+
+        if (daysAgo < 1) {
+            return { class: 'freshness-very-fresh', label: 'HOY', color: '#00ff00' };
+        }
+        if (daysAgo < 7) {
+            return { class: 'freshness-fresh', label: `${daysAgo}d`, color: '#90ee90' };
+        }
+        if (daysAgo < 30) {
+            return { class: 'freshness-moderate', label: `${daysAgo}d`, color: '#ffa500' };
+        }
+        return { class: 'freshness-old', label: `${daysAgo}d`, color: '#ff4444' };
+    }
+
+    /**
      * Initialize the setups list manager
      */
     async init() {
@@ -130,11 +212,18 @@ export class SetupsListManager {
         const distanceClass = this.getDistanceClass(setup.distance_pips);
         const scoreClass = this.getScoreClass(setup.score);
 
+        // Get freshness info for badge - only if we have valid data
+        const hasValidDate = this.isValidDateString(setup.high_time);
+        const freshnessInfo = hasValidDate ? this.getFreshnessInfo(setup.high_time, setup.low_time) : null;
+
         return `
             <div class="setup-item ${setup.type.toLowerCase()}" onclick="showSetupDetail('${setup.id}')" data-setup-id="${setup.id}">
                 <div class="setup-header">
                     <div class="setup-id">${setup.id}</div>
-                    <div class="setup-type ${setup.type.toLowerCase()}">${setup.type}</div>
+                    <div class="setup-type-badges">
+                        <div class="setup-type ${setup.type.toLowerCase()}">${setup.type}</div>
+                        ${setup.type === 'SIMPLE' && freshnessInfo ? `<span class="freshness-badge ${freshnessInfo.class}" title="Antigüedad: ${freshnessInfo.label}">${freshnessInfo.label}</span>` : ''}
+                    </div>
                 </div>
 
                 <div class="setup-details">
@@ -171,9 +260,60 @@ export class SetupsListManager {
                     </div>
                 </div>
 
+                ${this.renderTemporalInfo(setup)}
                 ${this.renderSetupLevels(setup.levels)}
             </div>
         `;
+    }
+
+    /**
+     * Render temporal information (HIGH/LOW dates)
+     * @param {Object} setup - Setup object
+     * @returns {string} HTML string
+     */
+    renderTemporalInfo(setup) {
+        // For SIMPLE setups, show high_time and low_time
+        if (setup.type === 'SIMPLE') {
+            // Only show if we have valid date data
+            const hasHighTime = this.isValidDateString(setup.high_time);
+            const hasLowTime = this.isValidDateString(setup.low_time);
+
+            if (!hasHighTime && !hasLowTime) return '';
+
+            return `
+                <div class="temporal-info">
+                    ${hasHighTime ? `
+                    <div class="temporal-row">
+                        <span class="temporal-label">HIGH:</span>
+                        <span class="temporal-value">${this.formatDate(setup.high_time)}</span>
+                    </div>
+                    ` : ''}
+                    ${hasLowTime ? `
+                    <div class="temporal-row">
+                        <span class="temporal-label">LOW:</span>
+                        <span class="temporal-value">${this.formatDate(setup.low_time)}</span>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // For COMPLEX setups, show a summary or click for details
+        if (setup.type === 'COMPLEX' && setup.grupos_fechas && typeof setup.grupos_fechas === 'object') {
+            const groupCount = Object.keys(setup.grupos_fechas).length;
+            if (groupCount > 0) {
+                return `
+                    <div class="temporal-info complex">
+                        <div class="temporal-row">
+                            <span class="temporal-label">Grupos:</span>
+                            <span class="temporal-value">${groupCount} grupos (Click para detalles)</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        return '';
     }
 
     /**

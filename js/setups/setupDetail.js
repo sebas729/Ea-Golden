@@ -15,6 +15,77 @@ export class SetupDetailManager {
     }
 
     /**
+     * Validate if a date string is valid
+     * @param {string} dateString - Date string to validate
+     * @returns {boolean} True if valid
+     */
+    isValidDateString(dateString) {
+        if (!dateString || typeof dateString !== 'string') return false;
+        if (dateString === 'N/A' || dateString.trim() === '') return false;
+
+        try {
+            const date = new Date(dateString);
+            return !isNaN(date.getTime());
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * Format date for display
+     * @param {string} isoString - ISO 8601 date string
+     * @returns {string} Formatted date
+     */
+    formatDate(isoString) {
+        if (!this.isValidDateString(isoString)) return 'N/A';
+
+        try {
+            const date = new Date(isoString);
+            return new Intl.DateTimeFormat('es-ES', {
+                year: 'numeric',
+                month: 'short',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(date);
+        } catch (error) {
+            return 'N/A';
+        }
+    }
+
+    /**
+     * Calculate days ago from date
+     * @param {string} isoString - ISO 8601 date string
+     * @returns {number|null} Days ago
+     */
+    getDaysAgo(isoString) {
+        if (!isoString) return null;
+
+        try {
+            const date = new Date(isoString);
+            if (isNaN(date.getTime())) return null;
+
+            const now = new Date();
+            return Math.floor((now - date) / (1000 * 60 * 60 * 24));
+        } catch (error) {
+            return null;
+        }
+    }
+
+    /**
+     * Get freshness class for date
+     * @param {number} daysAgo - Days ago
+     * @returns {string} CSS class
+     */
+    getFreshnessClass(daysAgo) {
+        if (daysAgo === null) return 'freshness-unknown';
+        if (daysAgo < 1) return 'freshness-very-fresh';
+        if (daysAgo < 7) return 'freshness-fresh';
+        if (daysAgo < 30) return 'freshness-moderate';
+        return 'freshness-old';
+    }
+
+    /**
      * Initialize the setup detail manager
      */
     async init() {
@@ -134,6 +205,7 @@ export class SetupDetailManager {
             <div class="setup-detail-modal">
                 ${this.renderSetupHeader(setup)}
                 ${this.renderSetupMetrics(setup, analysis)}
+                ${this.renderTemporalInformation(setup)}
                 ${this.renderSetupLevelsDetail(setup)}
                 ${this.renderMarketContext(marketContext)}
                 ${this.renderAnalysis(analysis)}
@@ -216,6 +288,106 @@ export class SetupDetailManager {
     }
 
     /**
+     * Render temporal information section (HIGH/LOW dates)
+     * @param {Object} setup - Setup object
+     * @returns {string} HTML string
+     */
+    renderTemporalInformation(setup) {
+        // SIMPLE setups: Show high_time and low_time directly
+        if (setup.type === 'SIMPLE') {
+            // Only show if we have valid date data
+            const hasHighTime = this.isValidDateString(setup.high_time);
+            const hasLowTime = this.isValidDateString(setup.low_time);
+
+            if (!hasHighTime && !hasLowTime) return '';
+
+            const highDays = this.getDaysAgo(setup.high_time);
+            const lowDays = this.getDaysAgo(setup.low_time);
+            const highClass = this.getFreshnessClass(highDays);
+            const lowClass = this.getFreshnessClass(lowDays);
+
+            return `
+                <div class="temporal-section">
+                    <h3>⏰ Información Temporal</h3>
+                    <div class="temporal-grid">
+                        ${hasHighTime ? `
+                        <div class="temporal-item">
+                            <div class="temporal-label">HIGH Formado</div>
+                            <div class="temporal-value">${this.formatDate(setup.high_time)}</div>
+                            <div class="temporal-age ${highClass}">
+                                ${highDays !== null ? (highDays === 0 ? 'HOY' : `${highDays} días`) : 'N/A'}
+                            </div>
+                        </div>
+                        ` : ''}
+                        ${hasLowTime ? `
+                        <div class="temporal-item">
+                            <div class="temporal-label">LOW Formado</div>
+                            <div class="temporal-value">${this.formatDate(setup.low_time)}</div>
+                            <div class="temporal-age ${lowClass}">
+                                ${lowDays !== null ? (lowDays === 0 ? 'HOY' : `${lowDays} días`) : 'N/A'}
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // COMPLEX setups: Show grupos_fechas table
+        if (setup.type === 'COMPLEX' && setup.grupos_fechas && typeof setup.grupos_fechas === 'object') {
+            const grupos = Object.entries(setup.grupos_fechas);
+            if (grupos.length === 0) return '';
+
+            const gruposHtml = grupos.map(([groupId, fechas]) => {
+                const highDays = this.getDaysAgo(fechas.high_time);
+                const lowDays = this.getDaysAgo(fechas.low_time);
+                const highClass = this.getFreshnessClass(highDays);
+                const lowClass = this.getFreshnessClass(lowDays);
+
+                return `
+                    <tr>
+                        <td class="group-name">${groupId}</td>
+                        <td>
+                            <div class="date-cell">${this.formatDate(fechas.high_time)}</div>
+                            <div class="age-cell ${highClass}">
+                                ${highDays !== null ? (highDays === 0 ? 'HOY' : `${highDays}d`) : 'N/A'}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="date-cell">${this.formatDate(fechas.low_time)}</div>
+                            <div class="age-cell ${lowClass}">
+                                ${lowDays !== null ? (lowDays === 0 ? 'HOY' : `${lowDays}d`) : 'N/A'}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            return `
+                <div class="temporal-section">
+                    <h3>⏰ Información Temporal por Grupo</h3>
+                    <div class="grupos-fechas-table-container">
+                        <table class="grupos-fechas-table">
+                            <thead>
+                                <tr>
+                                    <th>Grupo</th>
+                                    <th>HIGH</th>
+                                    <th>LOW</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${gruposHtml}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        return '';
+    }
+
+    /**
      * Render setup levels detail section
      * @param {Object} setup - Setup object
      * @returns {string} HTML string
@@ -238,19 +410,42 @@ export class SetupDetailManager {
      * @returns {string} HTML string
      */
     renderDetailedLevels(levels) {
-        const levelsHtml = levels.map(level => `
-            <div class="level-detail-item">
-                <div class="level-header">
-                    <span class="level-name">${level.level_name || 'N/A'}</span>
-                    <span class="level-type">${level.level_type || 'N/A'}</span>
+        const levelsHtml = levels.map(level => {
+            // Check if level has valid date information
+            const hasHighTime = this.isValidDateString(level.high_time);
+            const hasLowTime = this.isValidDateString(level.low_time);
+            const hasDateInfo = hasHighTime || hasLowTime;
+
+            return `
+                <div class="level-detail-item">
+                    <div class="level-header">
+                        <span class="level-name">${level.level_name || 'N/A'}</span>
+                        <span class="level-type">${level.level_type || 'N/A'}</span>
+                    </div>
+                    <div class="level-info">
+                        <span class="level-price">Precio: ${level.price?.toFixed(2) || 'N/A'}</span>
+                        <span class="level-timeframe">TF: ${level.timeframe || 'N/A'}</span>
+                        <span class="level-group">Grupo: ${level.group_id || 'N/A'}</span>
+                    </div>
+                    ${hasDateInfo ? `
+                        <div class="level-dates">
+                            ${hasHighTime ? `
+                            <div class="level-date-item">
+                                <span class="level-date-label">H:</span>
+                                <span class="level-date-value">${this.formatDate(level.high_time)}</span>
+                            </div>
+                            ` : ''}
+                            ${hasLowTime ? `
+                            <div class="level-date-item">
+                                <span class="level-date-label">L:</span>
+                                <span class="level-date-value">${this.formatDate(level.low_time)}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
                 </div>
-                <div class="level-info">
-                    <span class="level-price">Precio: ${level.price?.toFixed(2) || 'N/A'}</span>
-                    <span class="level-timeframe">TF: ${level.timeframe || 'N/A'}</span>
-                    <span class="level-group">Grupo: ${level.group_id || 'N/A'}</span>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
         return `<div class="levels-detail-list">${levelsHtml}</div>`;
     }
