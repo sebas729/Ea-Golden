@@ -7,7 +7,7 @@ import { apiClient } from '../shared/api.js';
 
 export class SetupsAlmacenadosApiService {
     constructor() {
-        this.baseEndpoint = '/security-filter/setups/stored';
+        this.baseEndpoint = '/security-filter/stored-setups';
     }
 
     /**
