@@ -10,6 +10,7 @@ import { StatisticsManager } from './statistics.js';
 import { SetupDetailManager } from './setupDetail.js';
 import { ProximityManager } from './proximity.js';
 import { AutoRefreshManager } from './autoRefresh.js';
+import { SetupsAlmacenadosManager } from './setupsAlmacenados.js';
 
 export class SetupsMainController {
     constructor() {
@@ -24,6 +25,7 @@ export class SetupsMainController {
         this.setupDetail = new SetupDetailManager();
         this.proximity = new ProximityManager();
         this.autoRefresh = new AutoRefreshManager();
+        this.setupsAlmacenados = new SetupsAlmacenadosManager();
 
         // Bind methods
         this.loadSetupsData = this.loadSetupsData.bind(this);
@@ -122,7 +124,8 @@ export class SetupsMainController {
                 this.statistics.init(),
                 this.setupDetail.init(),
                 this.proximity.init(),
-                this.autoRefresh.init()
+                this.autoRefresh.init(),
+                this.setupsAlmacenados.init()
             ]);
         } catch (error) {
             console.error('Error initializing managers:', error);
@@ -367,6 +370,10 @@ export class SetupsMainController {
                     break;
                 case 'proximity':
                     await this.proximity.update(this.currentData.setups || []);
+                    break;
+                case 'almacenados':
+                    // Load stored setups data
+                    await this.setupsAlmacenados.update();
                     break;
             }
         }
