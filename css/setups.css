@@ -1867,3 +1867,113 @@
         margin: 0 -0.5rem;
     }
 }
+
+/* ================================
+   Pagination Controls Styles
+   (For Setups Almacenados)
+   ================================ */
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    margin-top: 1rem;
+    background: var(--bg-hover);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    gap: 1rem;
+}
+
+.pagination-button {
+    padding: 0.5rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 100px;
+}
+
+.pagination-button:hover:not(:disabled) {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--bg-hover);
+}
+
+.page-info {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-align: center;
+    flex: 1;
+}
+
+/* Direction Indicator for Setup Items */
+.setup-direction {
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid;
+}
+
+.setup-direction.buy {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.setup-direction.sell {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Health Warning Status */
+.health-warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* Responsive Pagination */
+@media (max-width: 768px) {
+    .pagination-controls {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .pagination-button {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .page-info {
+        order: -1;
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination-button {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .page-info {
+        font-size: 0.75rem;
+    }
+}
