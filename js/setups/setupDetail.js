@@ -314,6 +314,7 @@ export class SetupDetailManager {
                         <div class="temporal-item">
                             <div class="temporal-label">HIGH Formado</div>
                             <div class="temporal-value">${this.formatDate(setup.high_time)}</div>
+                            ${setup.high_price != null ? `<div class="temporal-price">Precio: ${setup.high_price.toFixed(2)}</div>` : ''}
                             <div class="temporal-age ${highClass}">
                                 ${highDays !== null ? (highDays === 0 ? 'HOY' : `${highDays} días`) : 'N/A'}
                             </div>
@@ -323,6 +324,7 @@ export class SetupDetailManager {
                         <div class="temporal-item">
                             <div class="temporal-label">LOW Formado</div>
                             <div class="temporal-value">${this.formatDate(setup.low_time)}</div>
+                            ${setup.low_price != null ? `<div class="temporal-price">Precio: ${setup.low_price.toFixed(2)}</div>` : ''}
                             <div class="temporal-age ${lowClass}">
                                 ${lowDays !== null ? (lowDays === 0 ? 'HOY' : `${lowDays} días`) : 'N/A'}
                             </div>
@@ -349,12 +351,14 @@ export class SetupDetailManager {
                         <td class="group-name">${groupId}</td>
                         <td>
                             <div class="date-cell">${this.formatDate(fechas.high_time)}</div>
+                            ${fechas.high_price != null ? `<div class="price-cell">${fechas.high_price.toFixed(2)}</div>` : ''}
                             <div class="age-cell ${highClass}">
                                 ${highDays !== null ? (highDays === 0 ? 'HOY' : `${highDays}d`) : 'N/A'}
                             </div>
                         </td>
                         <td>
                             <div class="date-cell">${this.formatDate(fechas.low_time)}</div>
+                            ${fechas.low_price != null ? `<div class="price-cell">${fechas.low_price.toFixed(2)}</div>` : ''}
                             <div class="age-cell ${lowClass}">
                                 ${lowDays !== null ? (lowDays === 0 ? 'HOY' : `${lowDays}d`) : 'N/A'}
                             </div>

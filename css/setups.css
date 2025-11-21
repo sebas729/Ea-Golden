@@ -1621,6 +1621,13 @@
     font-weight: 600;
 }
 
+.temporal-price {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+}
+
 .temporal-info.complex .temporal-value {
     color: var(--accent);
     font-style: italic;
@@ -1669,6 +1676,13 @@
     font-weight: 600;
     color: var(--text-primary);
     margin-bottom: 0.25rem;
+}
+
+.temporal-item .temporal-price {
+    font-size: 0.875rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin: 0.25rem 0;
 }
 
 .temporal-age {
@@ -1747,6 +1761,13 @@
     color: var(--text-primary);
     font-weight: 500;
     margin-bottom: 0.25rem;
+}
+
+.grupos-fechas-table .price-cell {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.8rem;
+    margin: 0.25rem 0;
 }
 
 .grupos-fechas-table .age-cell {

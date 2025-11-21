@@ -286,12 +286,14 @@ export class SetupsListManager {
                     <div class="temporal-row">
                         <span class="temporal-label">HIGH:</span>
                         <span class="temporal-value">${this.formatDate(setup.high_time)}</span>
+                        ${setup.high_price != null ? `<span class="temporal-price">${setup.high_price.toFixed(2)}</span>` : ''}
                     </div>
                     ` : ''}
                     ${hasLowTime ? `
                     <div class="temporal-row">
                         <span class="temporal-label">LOW:</span>
                         <span class="temporal-value">${this.formatDate(setup.low_time)}</span>
+                        ${setup.low_price != null ? `<span class="temporal-price">${setup.low_price.toFixed(2)}</span>` : ''}
                     </div>
                     ` : ''}
                 </div>
