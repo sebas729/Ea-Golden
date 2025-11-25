@@ -126,8 +126,8 @@ export class TradeService {
 
         // Validate TP
         const tpPips = parseInt(tradeData.tpPips);
-        if (isNaN(tpPips) || tpPips < 1 || tpPips > 2000) {
-            errors.push('Take Profit must be between 1 and 2000 pips');
+        if (isNaN(tpPips) || tpPips < 1 || tpPips > 4000) {
+            errors.push('Take Profit must be between 1 and 4000 pips');
         }
 
         // Validate comment length
