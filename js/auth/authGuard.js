@@ -10,7 +10,9 @@ class AuthGuard {
         this.protectedPages = [
             'index.html',
             'economicCalendar_modular.html',
-            'economicCalendar.html'
+            'economicCalendar.html',
+            'setups.html',
+            'tradeExecution.html'
         ];
 
         this.publicPages = [

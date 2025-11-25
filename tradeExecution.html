@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+    <title>Trade Execution - Golden Strategy</title>
+
+    <!-- Modular CSS -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/trade.css">
+</head>
+<body>
+    <!-- Menú Hamburguesa -->
+    <div class="hamburger-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Menú Lateral -->
+    <nav class="side-menu" id="sideMenu">
+        <h3>📊 Navegación</h3>
+        <a href="index.html" class="menu-item">
+            <span class="icon">📈</span>
+            <span>Fibonacci Report</span>
+        </a>
+        <a href="setups.html" class="menu-item">
+            <span class="icon">🎯</span>
+            <span>Setups Trading</span>
+        </a>
+        <a href="economicCalendar_modular.html" class="menu-item">
+            <span class="icon">📅</span>
+            <span>Calendario Económico</span>
+        </a>
+        <a href="tradeExecution.html" class="menu-item active">
+            <span class="icon">💰</span>
+            <span>Trade Execution</span>
+        </a>
+
+        <!-- User Section -->
+        <div class="menu-divider"></div>
+        <div class="user-section">
+            <div class="user-info" id="userInfo">
+                <span class="user-icon">👤</span>
+                <span class="user-name" id="userName">Usuario</span>
+            </div>
+            <button class="logout-button" id="logoutButton">
+                <span class="icon">🚪</span>
+                <span>Cerrar Sesión</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <div class="container">
+        <!-- Error State -->
+        <div id="error" class="error" style="display: none;">
+            <h3>❌ Error</h3>
+            <p id="error-message">No se pudo conectar con el servidor.</p>
+            <button class="refresh-button" onclick="window.location.reload()">🔄 Reintentar</button>
+        </div>
+
+        <!-- Main Content -->
+        <div id="main-content" style="display: none;">
+            <!-- Trade Execution Form -->
+            <div class="trade-execution-container">
+                <div class="card trade-form-card">
+                    <div class="card-header">
+                        <h2>💰 Ejecutar Trade Manual</h2>
+                        <p class="card-description">Envía órdenes de mercado directamente al broker</p>
+                    </div>
+
+                    <div class="card-content">
+                        <form id="tradeForm" class="trade-form">
+                            <!-- Symbol -->
+                            <div class="form-group">
+                                <label for="symbol">Símbolo</label>
+                                <input
+                                    type="text"
+                                    id="symbol"
+                                    name="symbol"
+                                    value="XAUUSD"
+                                    readonly
+                                    class="form-input"
+                                >
+                                <small class="form-help">Símbolo de trading (solo XAUUSD)</small>
+                            </div>
+
+                            <!-- Action -->
+                            <div class="form-group">
+                                <label>Acción</label>
+                                <div class="action-buttons">
+                                    <button
+                                        type="button"
+                                        class="action-button buy-button active"
+                                        data-action="BUY"
+                                        id="buyButton"
+                                    >
+                                        📈 BUY
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="action-button sell-button"
+                                        data-action="SELL"
+                                        id="sellButton"
+                                    >
+                                        📉 SELL
+                                    </button>
+                                </div>
+                                <input type="hidden" id="action" name="action" value="BUY">
+                            </div>
+
+                            <!-- Volume -->
+                            <div class="form-group">
+                                <label for="volume">Volumen (lotes)</label>
+                                <input
+                                    type="number"
+                                    id="volume"
+                                    name="volume"
+                                    value="0.01"
+                                    min="0.01"
+                                    max="10.0"
+                                    step="0.01"
+                                    class="form-input"
+                                    required
+                                >
+                                <small class="form-help">Tamaño de la posición (0.01 - 10.0 lotes)</small>
+                            </div>
+
+                            <!-- Stop Loss -->
+                            <div class="form-group">
+                                <label for="slPips">Stop Loss (pips)</label>
+                                <input
+                                    type="number"
+                                    id="slPips"
+                                    name="slPips"
+                                    value="50"
+                                    min="1"
+                                    max="1000"
+                                    step="1"
+                                    class="form-input"
+                                    required
+                                >
+                                <small class="form-help">Distancia del SL en pips (1 - 1000)</small>
+                            </div>
+
+                            <!-- Take Profit -->
+                            <div class="form-group">
+                                <label for="tpPips">Take Profit (pips)</label>
+                                <input
+                                    type="number"
+                                    id="tpPips"
+                                    name="tpPips"
+                                    value="100"
+                                    min="1"
+                                    max="2000"
+                                    step="1"
+                                    class="form-input"
+                                    required
+                                >
+                                <small class="form-help">Distancia del TP en pips (1 - 2000)</small>
+                            </div>
+
+                            <!-- Comment -->
+                            <div class="form-group">
+                                <label for="comment">Comentario (opcional)</label>
+                                <input
+                                    type="text"
+                                    id="comment"
+                                    name="comment"
+                                    value="MANUAL_WEB"
+                                    maxlength="50"
+                                    class="form-input"
+                                    placeholder="Ej: SCALPING, BREAKOUT, etc."
+                                >
+                                <small class="form-help">Etiqueta para identificar el trade</small>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="form-actions">
+                                <button type="submit" class="submit-button" id="submitButton">
+                                    <span class="button-icon">🚀</span>
+                                    <span class="button-text">Ejecutar Trade</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Result Card -->
+                <div class="card result-card" id="resultCard" style="display: none;">
+                    <div class="card-header">
+                        <h2 id="resultTitle">Resultado</h2>
+                    </div>
+                    <div class="card-content" id="resultContent">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Guard (MUST load first) -->
+    <script type="module" src="js/auth/authGuard.js"></script>
+
+    <!-- Modular JavaScript -->
+    <script type="module" src="js/shared/menu.js"></script>
+    <script type="module" src="js/trade/main.js"></script>
+</body>
+</html>

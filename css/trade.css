@@ -1,0 +1,393 @@
+/* ================================
+   Trade Execution Module Styles
+   ================================ */
+
+/* Trade Execution Container */
+.trade-execution-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Trade Form Card */
+.trade-form-card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    border: 1px solid var(--border);
+}
+
+.card-header {
+    margin-bottom: 1.5rem;
+}
+
+.card-header h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.card-description {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.card-content {
+    padding: 0;
+}
+
+/* Trade Form */
+.trade-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.form-input {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: var(--font-family);
+    transition: all var(--transition-fast);
+    background: var(--bg-secondary);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+}
+
+.form-input:read-only {
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+}
+
+.form-input::placeholder {
+    color: var(--text-muted);
+}
+
+.form-help {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.action-button {
+    padding: 1rem 1.5rem;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.buy-button.active {
+    background: linear-gradient(135deg, #4ade80, #16a34a);
+    color: white;
+    border-color: var(--green-accent);
+}
+
+.sell-button.active {
+    background: linear-gradient(135deg, #f87171, #dc2626);
+    color: white;
+    border-color: var(--red-accent);
+}
+
+/* Submit Button */
+.form-actions {
+    margin-top: 1rem;
+}
+
+.submit-button {
+    width: 100%;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    background: linear-gradient(135deg, var(--accent), var(--blue-accent));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+}
+
+.submit-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
+}
+
+.submit-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.submit-button:disabled {
+    background: var(--bg-hover);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.button-icon {
+    font-size: 1.3rem;
+}
+
+.button-text {
+    font-size: 1rem;
+}
+
+/* Loading state for submit button */
+.submit-button.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.submit-button.loading .button-icon {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Result Card */
+.result-card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    border: 1px solid var(--border);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.result-card.success {
+    border-color: var(--green-accent);
+    background: linear-gradient(to bottom, var(--bg-card), rgba(74, 222, 128, 0.05));
+}
+
+.result-card.error {
+    border-color: var(--red-accent);
+    background: linear-gradient(to bottom, var(--bg-card), rgba(248, 113, 113, 0.05));
+}
+
+.result-card .card-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.result-details {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--bg-hover);
+    border-radius: 6px;
+}
+
+.result-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.result-value {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.result-value.highlight {
+    color: var(--accent);
+    font-size: 1.2rem;
+}
+
+.result-message {
+    padding: 1rem;
+    background: var(--bg-hover);
+    border-radius: 6px;
+    margin-top: 1rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    text-align: center;
+}
+
+/* Info Card */
+.info-card {
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.05), rgba(59, 130, 246, 0.05));
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid rgba(30, 58, 138, 0.2);
+}
+
+.info-card .card-header h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    color: var(--accent);
+}
+
+.info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.info-list li {
+    padding-left: 1.5rem;
+    position: relative;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.info-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--green-accent);
+    font-weight: 700;
+}
+
+.info-list strong {
+    color: var(--accent);
+}
+
+/* Input Validation States */
+.form-input.invalid {
+    border-color: var(--red-accent);
+}
+
+.form-input.valid {
+    border-color: var(--green-accent);
+}
+
+.form-error {
+    color: var(--red-accent);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.form-error::before {
+    content: "⚠️";
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .trade-execution-container {
+        padding: 0 1rem;
+    }
+
+    .trade-form-card,
+    .result-card,
+    .info-card {
+        padding: 1.5rem;
+    }
+
+    .card-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .action-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .submit-button {
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .trade-form-card,
+    .result-card,
+    .info-card {
+        padding: 1rem;
+    }
+
+    .card-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .form-input {
+        font-size: 0.95rem;
+        padding: 0.625rem 0.875rem;
+    }
+
+    .submit-button {
+        font-size: 0.95rem;
+    }
+
+    .info-list li {
+        font-size: 0.85rem;
+    }
+}
