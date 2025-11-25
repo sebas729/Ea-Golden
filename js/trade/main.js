@@ -4,11 +4,14 @@
  */
 
 import { TradeFormManager } from './tradeForm.js';
+import { TradeListManager } from './tradeList.js';
 
 export class TradeMainController {
     constructor() {
         this.isLoading = false;
         this.tradeForm = null;
+        this.tradeList = null;
+        this.currentTab = 'execution';
     }
 
     /**
@@ -47,10 +50,47 @@ export class TradeMainController {
     async initializeManagers() {
         try {
             this.tradeForm = new TradeFormManager();
+            this.tradeList = new TradeListManager();
+
             await this.tradeForm.init();
+            await this.tradeList.init();
         } catch (error) {
             console.error('Error initializing managers:', error);
             throw error;
+        }
+    }
+
+    /**
+     * Show specific tab
+     * @param {string} tabName - Tab name (execution or active)
+     */
+    async showTab(tabName) {
+        this.currentTab = tabName;
+
+        // Update tab buttons
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        const activeButton = Array.from(document.querySelectorAll('.tab-button'))
+            .find(btn => btn.onclick && btn.onclick.toString().includes(tabName));
+        if (activeButton) {
+            activeButton.classList.add('active');
+        }
+
+        // Update tab content
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+
+        const activeContent = document.getElementById(tabName);
+        if (activeContent) {
+            activeContent.classList.add('active');
+        }
+
+        // Load tab-specific data
+        if (tabName === 'active' && this.tradeList) {
+            await this.tradeList.loadTrades();
         }
     }
 
@@ -59,12 +99,8 @@ export class TradeMainController {
      */
     async loadInitialData() {
         try {
-            this.showLoading(true);
-
             // For trade execution, we just need to show the form
-            // No initial data loading required
-
-            this.showLoading(false);
+            // No initial data loading required - show content directly
             this.showMainContent(true);
         } catch (error) {
             console.error('Error loading initial data:', error);
@@ -153,7 +189,9 @@ export class TradeMainController {
     getState() {
         return {
             isLoading: this.isLoading,
-            tradeForm: this.tradeForm ? this.tradeForm.getState() : null
+            currentTab: this.currentTab,
+            tradeForm: this.tradeForm ? this.tradeForm.getState() : null,
+            tradeList: this.tradeList ? this.tradeList.getState() : null
         };
     }
 }
@@ -166,6 +204,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Make globally available
         window.tradeController = controller;
+
+        // Make showTab globally available
+        window.showTradeTab = (tabName) => {
+            controller.showTab(tabName);
+        };
     } catch (error) {
         console.error('Failed to initialize Trade Execution Module:', error);
     }

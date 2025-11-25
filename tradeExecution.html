@@ -68,8 +68,20 @@
 
         <!-- Main Content -->
         <div id="main-content" style="display: none;">
-            <!-- Trade Execution Form -->
-            <div class="trade-execution-container">
+            <!-- Tabs Navigation -->
+            <div class="tabs">
+                <nav class="tab-nav">
+                    <button class="tab-button active" onclick="showTradeTab('execution')">
+                        🚀 Ejecutar Trade
+                    </button>
+                    <button class="tab-button" onclick="showTradeTab('active')">
+                        📊 Trades Activos
+                    </button>
+                </nav>
+
+                <!-- Tab 1: Trade Execution Form -->
+                <div id="execution" class="tab-content active">
+                    <div class="trade-execution-container">
                 <div class="card trade-form-card">
                     <div class="card-header">
                         <h2>💰 Ejecutar Trade Manual</h2>
@@ -200,6 +212,39 @@
                     </div>
                     <div class="card-content" id="resultContent">
                         <!-- Filled dynamically -->
+                    </div>
+                </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Active Trades List -->
+                <div id="active" class="tab-content">
+                    <div class="active-trades-container">
+                        <!-- Header with refresh button -->
+                        <div class="trades-header">
+                            <h2>📊 Trades Activos</h2>
+                            <button class="refresh-trades-button" id="refreshTradesButton">
+                                <span>🔄</span> Actualizar
+                            </button>
+                        </div>
+
+                        <!-- Loading state for trades -->
+                        <div id="trades-loading" class="loading-trades" style="display: none;">
+                            <div class="spinner"></div>
+                            <p>Cargando trades...</p>
+                        </div>
+
+                        <!-- Trades list -->
+                        <div id="trades-list" class="trades-list">
+                            <!-- Filled dynamically -->
+                        </div>
+
+                        <!-- Empty state -->
+                        <div id="trades-empty" class="trades-empty" style="display: none;">
+                            <div class="empty-icon">📭</div>
+                            <h3>No hay trades activos</h3>
+                            <p>No tienes posiciones abiertas en este momento.</p>
+                        </div>
                     </div>
                 </div>
             </div>
