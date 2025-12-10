@@ -1807,6 +1807,46 @@
     background: var(--bg-hover);
 }
 
+/* Stored Setups - Clickable Items */
+.setup-item.clickable {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.setup-item.clickable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Temporal Info Inline - Compact Display */
+.temporal-info-inline {
+    border-top: 1px solid var(--border);
+    padding-top: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.temporal-compact {
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.temporal-item-inline {
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.temporal-item-inline .temporal-price {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.temporal-more {
+    color: var(--text-tertiary);
+    font-style: italic;
+    font-size: 0.75rem;
+}
+
 /* Level Dates in Detail */
 .level-dates {
     display: flex;

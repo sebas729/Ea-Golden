@@ -171,7 +171,7 @@ export class SetupsAlmacenadosManager {
         const directionClass = setup.direction?.toLowerCase() || '';
 
         return `
-            <div class="setup-item ${setup.type?.toLowerCase()}" data-setup-id="${setup.id}">
+            <div class="setup-item ${setup.type?.toLowerCase()} clickable" data-setup-id="${setup.id}">
                 <div class="setup-header">
                     <div class="setup-id">${setup.setup_id || setup.id}</div>
                     <div class="setup-type-badges">
@@ -210,6 +210,8 @@ export class SetupsAlmacenadosManager {
                         <div class="setup-detail-label">Origen</div>
                         <div class="setup-detail-value">${this.formatOriginDate(setup.origin_timestamp)}</div>
                     </div>
+
+                    ${this.renderTemporalInfoInline(setup)}
                 </div>
             </div>
         `;
@@ -234,6 +236,80 @@ export class SetupsAlmacenadosManager {
         } catch (error) {
             return 'N/A';
         }
+    }
+
+    /**
+     * Render temporal information inline (HIGH/LOW with prices)
+     * @param {Object} setup - Setup object
+     * @returns {string} HTML string
+     */
+    renderTemporalInfoInline(setup) {
+        // Get data from full_setup_data if available, otherwise use setup directly
+        const setupData = setup.full_setup_data?.contenido || setup.full_setup_data || setup;
+
+        // For SIMPLE setups
+        if (setup.type === 'SIMPLE' || setupData.tipo === 'SIMPLE') {
+            const hasHighData = setupData.high_time && setupData.high_price != null;
+            const hasLowData = setupData.low_time && setupData.low_price != null;
+
+            if (!hasHighData && !hasLowData) return '';
+
+            let infoHtml = '<div class="setup-detail temporal-info-inline">';
+            infoHtml += '<div class="setup-detail-label">Temporal</div>';
+            infoHtml += '<div class="setup-detail-value temporal-compact">';
+
+            if (hasHighData) {
+                infoHtml += `<span class="temporal-item-inline">H: ${this.formatOriginDate(setupData.high_time)} - <span class="temporal-price">${setupData.high_price.toFixed(2)}</span></span>`;
+            }
+
+            if (hasLowData) {
+                if (hasHighData) infoHtml += ' | ';
+                infoHtml += `<span class="temporal-item-inline">L: ${this.formatOriginDate(setupData.low_time)} - <span class="temporal-price">${setupData.low_price.toFixed(2)}</span></span>`;
+            }
+
+            infoHtml += '</div></div>';
+            return infoHtml;
+        }
+
+        // For COMPLEX setups - show summary or first group
+        if (setup.type === 'COMPLEX' || setupData.tipo === 'COMPLEX') {
+            const gruposFechas = setupData.grupos_fechas || {};
+            const gruposArray = Object.entries(gruposFechas);
+
+            if (gruposArray.length === 0) return '';
+
+            // Show first group or summary
+            const [firstGroupId, firstGroupData] = gruposArray[0];
+
+            if (!firstGroupData) return '';
+
+            const hasHighData = firstGroupData.high_time && firstGroupData.high_price != null;
+            const hasLowData = firstGroupData.low_time && firstGroupData.low_price != null;
+
+            if (!hasHighData && !hasLowData) return '';
+
+            let infoHtml = '<div class="setup-detail temporal-info-inline">';
+            infoHtml += `<div class="setup-detail-label">Temporal (${firstGroupId})</div>`;
+            infoHtml += '<div class="setup-detail-value temporal-compact">';
+
+            if (hasHighData) {
+                infoHtml += `<span class="temporal-item-inline">H: ${this.formatOriginDate(firstGroupData.high_time)} - <span class="temporal-price">${firstGroupData.high_price.toFixed(2)}</span></span>`;
+            }
+
+            if (hasLowData) {
+                if (hasHighData) infoHtml += ' | ';
+                infoHtml += `<span class="temporal-item-inline">L: ${this.formatOriginDate(firstGroupData.low_time)} - <span class="temporal-price">${firstGroupData.low_price.toFixed(2)}</span></span>`;
+            }
+
+            if (gruposArray.length > 1) {
+                infoHtml += ` <span class="temporal-more">(+${gruposArray.length - 1} más)</span>`;
+            }
+
+            infoHtml += '</div></div>';
+            return infoHtml;
+        }
+
+        return '';
     }
 
     /**
@@ -341,8 +417,21 @@ export class SetupsAlmacenadosManager {
      * Add event listeners to setup items
      */
     addEventListeners() {
-        // For now, stored setups don't have detail modals
-        // Could be added in the future if needed
+        // Add click handlers to stored setup items to show detail modal
+        const setupItems = this.container.querySelectorAll('.setup-item.clickable');
+
+        setupItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const setupId = item.dataset.setupId;
+                const setup = this.setups.find(s => s.id === setupId);
+
+                if (setup && window.setupsController && window.setupsController.setupDetail) {
+                    // Use full_setup_data if available, otherwise use the setup itself
+                    const setupToShow = setup.full_setup_data || setup;
+                    window.setupsController.setupDetail.showModal(setupToShow);
+                }
+            });
+        });
     }
 
     /**

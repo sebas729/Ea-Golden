@@ -127,13 +127,26 @@ export class SetupDetailManager {
             this.isLoading = true;
             this.currentSetup = setup;
 
+            // Determine if this is a stored setup or active setup
+            const isStoredSetup = !setup.distance_pips && !setup.levels_count;
+
             // Show modal immediately with basic info
-            this.modalTitle.textContent = `Setup ${setup.id} - ${setup.type}`;
+            const setupId = setup.setup_id || setup.id;
+            const setupType = setup.tipo || setup.type;
+            this.modalTitle.textContent = `Setup ${setupId} - ${setupType}`;
             this.modalBody.innerHTML = this.renderLoadingState();
             this.modal.style.display = 'flex';
 
-            // Load detailed information
-            const detailData = await setupsApi.getSetupDetail(setup.id);
+            let detailData;
+
+            if (isStoredSetup) {
+                // For stored setups, use the data we already have
+                // Adapt to the structure expected by renderModalContent
+                detailData = this.adaptStoredSetupData(setup);
+            } else {
+                // For active setups, load detailed information from API
+                detailData = await setupsApi.getSetupDetail(setup.id);
+            }
 
             // Render complete modal content
             this.renderModalContent(detailData);
@@ -144,6 +157,72 @@ export class SetupDetailManager {
         } finally {
             this.isLoading = false;
         }
+    }
+
+    /**
+     * Adapt stored setup data to match the structure expected by renderModalContent
+     * @param {Object} storedSetup - Stored setup object
+     * @returns {Object} Adapted data structure
+     */
+    adaptStoredSetupData(storedSetup) {
+        // Extract data from contenido if it exists
+        const contenido = storedSetup.contenido || storedSetup;
+
+        // Determine type from multiple possible sources
+        const setupType = storedSetup.tipo || contenido.tipo || storedSetup.type || 'SIMPLE';
+
+        // Build setup object in expected format
+        const setup = {
+            id: storedSetup.setup_id || storedSetup.id,
+            setup_id: storedSetup.setup_id || storedSetup.id,
+            type: setupType,
+            tipo: setupType,
+            price: contenido.precio_activacion || storedSetup.precio_activacion || storedSetup.price || 0,
+            timeframe: contenido.timeframe_dominante || storedSetup.timeframe_dominante || storedSetup.timeframe || 'N/A',
+            score: storedSetup.score || 0,
+            status: 'STORED',
+            direction: storedSetup.direction || contenido.direccion || 'BUY',
+            distance_pips: 0, // Stored setups don't have distance
+
+            // Temporal information
+            high_time: contenido.high_time || storedSetup.high_time,
+            low_time: contenido.low_time || storedSetup.low_time,
+            high_price: contenido.high_price != null ? contenido.high_price : storedSetup.high_price,
+            low_price: contenido.low_price != null ? contenido.low_price : storedSetup.low_price,
+
+            // Grupos fechas for COMPLEX setups
+            grupos_fechas: contenido.grupos_fechas || storedSetup.grupos_fechas,
+
+            // Levels information
+            levels: storedSetup.levels || [],
+            levels_count: storedSetup.levels?.length || (contenido.nivel ? 1 : 0),
+            levels_detail: contenido.nivel ? [{
+                level_name: contenido.nivel.level_name,
+                level_type: contenido.nivel.level_type,
+                price: contenido.nivel.value,  // Map 'value' to 'price'
+                timeframe: contenido.nivel.timeframe,
+                group_id: contenido.nivel.group_id,
+                high_time: contenido.high_time,
+                low_time: contenido.low_time
+            }] : (storedSetup.levels_detail || [])};
+
+        // Build minimal analysis object
+        const analysis = {
+            complexity: setup.type,
+            quality_score: storedSetup.score || 0,
+            proximity_to_market: 0,
+            recommended_action: 'Este es un setup almacenado. Revisa la información temporal y niveles para análisis histórico.'
+        };
+
+        return {
+            setup: setup,
+            analysis: analysis,
+            related_setups: [],
+            market_context: {
+                total_setups: 0,
+                precio_actual: setup.price
+            }
+        };
     }
 
     /**
