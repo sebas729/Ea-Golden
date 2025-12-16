@@ -29,6 +29,88 @@ export class SetupsAlmacenadosManager {
     }
 
     /**
+     * Validate if a date string is valid
+     * @param {string} dateString - Date string to validate
+     * @returns {boolean} True if valid
+     */
+    isValidDateString(dateString) {
+        if (!dateString || typeof dateString !== 'string') return false;
+        if (dateString === 'N/A' || dateString.trim() === '') return false;
+
+        try {
+            const date = new Date(dateString);
+            return !isNaN(date.getTime());
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * Format date for display
+     * @param {string} isoString - ISO 8601 date string
+     * @returns {string} Formatted date
+     */
+    formatDate(isoString) {
+        if (!this.isValidDateString(isoString)) return 'N/A';
+
+        try {
+            const date = new Date(isoString);
+            return new Intl.DateTimeFormat('es-ES', {
+                month: 'short',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(date);
+        } catch (error) {
+            return 'N/A';
+        }
+    }
+
+    /**
+     * Calculate days ago from date
+     * @param {string} isoString - ISO 8601 date string
+     * @returns {number|null} Days ago
+     */
+    getDaysAgo(isoString) {
+        if (!isoString) return null;
+
+        try {
+            const date = new Date(isoString);
+            if (isNaN(date.getTime())) return null;
+
+            const now = new Date();
+            return Math.floor((now - date) / (1000 * 60 * 60 * 24));
+        } catch (error) {
+            return null;
+        }
+    }
+
+    /**
+     * Get freshness class for date
+     * @param {string} highTime - High time ISO string
+     * @param {string} lowTime - Low time ISO string
+     * @returns {Object} Freshness info
+     */
+    getFreshnessInfo(highTime, lowTime) {
+        const daysAgo = this.getDaysAgo(highTime);
+
+        if (daysAgo === null) {
+            return { class: 'freshness-unknown', label: 'N/A', color: '#999' };
+        }
+
+        if (daysAgo < 1) {
+            return { class: 'freshness-very-fresh', label: 'HOY', color: '#00ff00' };
+        }
+        if (daysAgo < 7) {
+            return { class: 'freshness-fresh', label: `${daysAgo}d`, color: '#90ee90' };
+        }
+        if (daysAgo < 30) {
+            return { class: 'freshness-moderate', label: `${daysAgo}d`, color: '#ffa500' };
+        }
+        return { class: 'freshness-old', label: `${daysAgo}d`, color: '#ff4444' };
+    }
+
+    /**
      * Initialize the setups almacenados manager
      */
     async init() {
@@ -170,6 +252,18 @@ export class SetupsAlmacenadosManager {
         const scoreClass = this.getScoreClass(setup.score);
         const directionClass = setup.direction?.toLowerCase() || '';
 
+        // Get data from full_setup_data if available, otherwise use setup directly
+        const setupData = setup.full_setup_data?.contenido || setup.full_setup_data || setup;
+
+        // Get freshness info for badge - only if we have valid data
+        const hasValidDate = this.isValidDateString(setupData.high_time);
+        const freshnessInfo = hasValidDate ? this.getFreshnessInfo(setupData.high_time, setupData.low_time) : null;
+
+        // Get levels count
+        const levels = setup.levels || setupData.levels || setupData.niveles || [];
+        const levelsDetail = setup.levels_detail || setupData.levels_detail || [];
+        const levelsCount = levels.length || levelsDetail.length || 0;
+
         return `
             <div class="setup-item ${setup.type?.toLowerCase()} clickable" data-setup-id="${setup.id}">
                 <div class="setup-header">
@@ -177,6 +271,7 @@ export class SetupsAlmacenadosManager {
                     <div class="setup-type-badges">
                         <div class="setup-type ${setup.type?.toLowerCase()}">${setup.type}</div>
                         <span class="setup-direction ${directionClass}">${setup.direction}</span>
+                        ${setup.type === 'SIMPLE' && freshnessInfo ? `<span class="freshness-badge ${freshnessInfo.class}" title="Antigüedad: ${freshnessInfo.label}">${freshnessInfo.label}</span>` : ''}
                     </div>
                 </div>
 
@@ -197,6 +292,11 @@ export class SetupsAlmacenadosManager {
                     </div>
 
                     <div class="setup-detail">
+                        <div class="setup-detail-label">Niveles</div>
+                        <div class="setup-detail-value">${levelsCount}</div>
+                    </div>
+
+                    <div class="setup-detail">
                         <div class="setup-detail-label">Group ID</div>
                         <div class="setup-detail-value">${setup.group_id || 'N/A'}</div>
                     </div>
@@ -210,9 +310,10 @@ export class SetupsAlmacenadosManager {
                         <div class="setup-detail-label">Origen</div>
                         <div class="setup-detail-value">${this.formatOriginDate(setup.origin_timestamp)}</div>
                     </div>
-
-                    ${this.renderTemporalInfoInline(setup)}
                 </div>
+
+                ${this.renderTemporalInfo(setup)}
+                ${this.renderSetupLevels(setup)}
             </div>
         `;
     }
@@ -310,6 +411,105 @@ export class SetupsAlmacenadosManager {
         }
 
         return '';
+    }
+
+    /**
+     * Render temporal information (HIGH/LOW dates) as separate section
+     * @param {Object} setup - Setup object
+     * @returns {string} HTML string
+     */
+    renderTemporalInfo(setup) {
+        // Get data from full_setup_data if available, otherwise use setup directly
+        const setupData = setup.full_setup_data?.contenido || setup.full_setup_data || setup;
+
+        // For SIMPLE setups, show high_time and low_time
+        if (setup.type === 'SIMPLE' || setupData.tipo === 'SIMPLE') {
+            // Only show if we have valid date data
+            const hasHighTime = this.isValidDateString(setupData.high_time);
+            const hasLowTime = this.isValidDateString(setupData.low_time);
+
+            if (!hasHighTime && !hasLowTime) return '';
+
+            return `
+                <div class="temporal-info">
+                    ${hasHighTime ? `
+                    <div class="temporal-row">
+                        <span class="temporal-label">HIGH:</span>
+                        <span class="temporal-value">${this.formatDate(setupData.high_time)}</span>
+                        ${setupData.high_price != null ? `<span class="temporal-price">${setupData.high_price.toFixed(2)}</span>` : ''}
+                    </div>
+                    ` : ''}
+                    ${hasLowTime ? `
+                    <div class="temporal-row">
+                        <span class="temporal-label">LOW:</span>
+                        <span class="temporal-value">${this.formatDate(setupData.low_time)}</span>
+                        ${setupData.low_price != null ? `<span class="temporal-price">${setupData.low_price.toFixed(2)}</span>` : ''}
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // For COMPLEX setups, show a summary or click for details
+        if (setup.type === 'COMPLEX' || setupData.tipo === 'COMPLEX') {
+            const gruposFechas = setupData.grupos_fechas || {};
+            const groupCount = Object.keys(gruposFechas).length;
+            if (groupCount > 0) {
+                return `
+                    <div class="temporal-info complex">
+                        <div class="temporal-row">
+                            <span class="temporal-label">Grupos:</span>
+                            <span class="temporal-value">${groupCount} grupos (Click para detalles)</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * Render setup levels (confluence tags)
+     * @param {Object} setup - Setup object
+     * @returns {string} HTML string
+     */
+    renderSetupLevels(setup) {
+        // Get data from full_setup_data if available, otherwise use setup directly
+        const setupData = setup.full_setup_data?.contenido || setup.full_setup_data || setup;
+
+        // Try to get levels from multiple sources
+        let levels = setup.levels ||
+                    setupData.levels ||
+                    setupData.niveles ||
+                    [];
+
+        // If no levels array, try to extract from levels_detail
+        if (levels.length === 0) {
+            const levelsDetail = setup.levels_detail ||
+                                setupData.levels_detail ||
+                                [];
+
+            levels = levelsDetail.map(ld => ld.level_name || ld.level_type).filter(Boolean);
+        }
+
+        // For single nivel object (old structure)
+        if (levels.length === 0 && setupData.nivel) {
+            const nivel = setupData.nivel;
+            levels = [nivel.level_name || nivel.level_type].filter(Boolean);
+        }
+
+        if (levels.length === 0) return '';
+
+        const levelsHtml = levels.map(level => `<span class="level-tag">${level}</span>`).join('');
+
+        return `
+            <div class="setup-levels">
+                <div class="levels-list">
+                    ${levelsHtml}
+                </div>
+            </div>
+        `;
     }
 
     /**
@@ -426,9 +626,9 @@ export class SetupsAlmacenadosManager {
                 const setup = this.setups.find(s => s.id === setupId);
 
                 if (setup && window.setupsController && window.setupsController.setupDetail) {
-                    // Use full_setup_data if available, otherwise use the setup itself
-                    const setupToShow = setup.full_setup_data || setup;
-                    window.setupsController.setupDetail.showModal(setupToShow);
+                    // Pass the complete setup object which includes levels, levels_detail
+                    // and full_setup_data for adaptStoredSetupData to process
+                    window.setupsController.setupDetail.showModal(setup);
                 }
             });
         });

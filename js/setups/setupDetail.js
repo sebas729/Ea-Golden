@@ -127,12 +127,17 @@ export class SetupDetailManager {
             this.isLoading = true;
             this.currentSetup = setup;
 
-            // Determine if this is a stored setup or active setup
-            const isStoredSetup = !setup.distance_pips && !setup.levels_count;
-
             // Show modal immediately with basic info
             const setupId = setup.setup_id || setup.id;
             const setupType = setup.tipo || setup.type;
+
+            // Determine if this is a stored setup or active setup
+            // Stored setups have UUID format (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+            // Active setups have format C123 or S456
+            const isStoredSetup = setupId && setupId.includes('-') && setupId.length > 20;
+
+            console.log('[SetupDetail] Setup ID:', setupId, 'Is Stored?', isStoredSetup);
+
             this.modalTitle.textContent = `Setup ${setupId} - ${setupType}`;
             this.modalBody.innerHTML = this.renderLoadingState();
             this.modal.style.display = 'flex';
@@ -145,7 +150,7 @@ export class SetupDetailManager {
                 detailData = this.adaptStoredSetupData(setup);
             } else {
                 // For active setups, load detailed information from API
-                detailData = await setupsApi.getSetupDetail(setup.id);
+                detailData = await setupsApi.getSetupDetail(setupId);
             }
 
             // Render complete modal content
@@ -193,18 +198,50 @@ export class SetupDetailManager {
             // Grupos fechas for COMPLEX setups
             grupos_fechas: contenido.grupos_fechas || storedSetup.grupos_fechas,
 
-            // Levels information
-            levels: storedSetup.levels || [],
-            levels_count: storedSetup.levels?.length || (contenido.nivel ? 1 : 0),
-            levels_detail: contenido.nivel ? [{
-                level_name: contenido.nivel.level_name,
-                level_type: contenido.nivel.level_type,
-                price: contenido.nivel.value,  // Map 'value' to 'price'
-                timeframe: contenido.nivel.timeframe,
-                group_id: contenido.nivel.group_id,
-                high_time: contenido.high_time,
-                low_time: contenido.low_time
-            }] : (storedSetup.levels_detail || [])};
+            // Levels information - extract from multiple sources
+            levels: (() => {
+                let levels = storedSetup.levels || contenido.levels || contenido.niveles || [];
+
+                // Check if levels array contains objects instead of strings
+                if (levels.length > 0 && typeof levels[0] === 'object' && levels[0] !== null) {
+                    // Extract level names from objects
+                    levels = levels.map(l => l.level_name || l.level_type).filter(Boolean);
+                }
+
+                // If no levels array, try to extract from levels_detail
+                if (levels.length === 0) {
+                    const levelsDetail = storedSetup.levels_detail || contenido.levels_detail || [];
+                    levels = levelsDetail.map(ld => ld.level_name || ld.level_type).filter(Boolean);
+                }
+
+                // For single nivel object (old structure)
+                if (levels.length === 0 && contenido.nivel) {
+                    levels = [contenido.nivel.level_name || contenido.nivel.level_type].filter(Boolean);
+                }
+
+                return levels;
+            })(),
+            levels_count: (() => {
+                const levels = storedSetup.levels || contenido.levels || contenido.niveles || [];
+                const levelsDetail = storedSetup.levels_detail || contenido.levels_detail || [];
+                return levels.length || levelsDetail.length || (contenido.nivel ? 1 : 0);
+            })(),
+            levels_detail: (() => {
+                let levelsDetail = storedSetup.levels_detail || contenido.levels_detail || [];
+                // Handle old structure with single nivel object
+                if (levelsDetail.length === 0 && contenido.nivel) {
+                    levelsDetail = [{
+                        level_name: contenido.nivel.level_name,
+                        level_type: contenido.nivel.level_type,
+                        price: contenido.nivel.value,  // Map 'value' to 'price'
+                        timeframe: contenido.nivel.timeframe,
+                        group_id: contenido.nivel.group_id,
+                        high_time: contenido.high_time,
+                        low_time: contenido.low_time
+                    }];
+                }
+                return levelsDetail;
+            })()};
 
         // Build minimal analysis object
         const analysis = {
@@ -220,7 +257,11 @@ export class SetupDetailManager {
             related_setups: [],
             market_context: {
                 total_setups: 0,
-                precio_actual: setup.price
+                direccion: setup.direction || 'N/A',
+                precio_actual: setup.price,
+                calidad_general: setup.score >= 7 ? 'Excelente' :
+                                setup.score >= 5 ? 'Buena' :
+                                setup.score >= 3 ? 'Regular' : 'Baja'
             }
         };
     }
@@ -476,8 +517,16 @@ export class SetupDetailManager {
      * @returns {string} HTML string
      */
     renderSetupLevelsDetail(setup) {
+        // For stored setups, adaptStoredSetupData() already processed the data
+        // and placed levels_detail directly in setup object
+        // For active setups, the data comes from API and is also in setup object
         const levels = setup.levels_detail || [];
-        const simpleLevels = setup.levels || [];
+        let simpleLevels = setup.levels || [];
+
+        // If no simple levels array, try to extract from levels_detail
+        if (simpleLevels.length === 0 && levels.length > 0) {
+            simpleLevels = levels.map(ld => ld.level_name || ld.level_type).filter(Boolean);
+        }
 
         return `
             <div class="setup-levels-detail">
