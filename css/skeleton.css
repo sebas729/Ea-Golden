@@ -181,21 +181,28 @@
 
 .skeleton-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 12px;
     width: 100%;
     box-sizing: border-box;
 }
 
 /* Match real cards-grid responsive behavior */
-@media (min-width: 1200px) {
+@media (min-width: 1400px) {
+    .skeleton-cards-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+    }
+}
+
+@media (min-width: 1100px) and (max-width: 1399px) {
     .skeleton-cards-grid {
         grid-template-columns: repeat(4, 1fr);
         gap: 10px;
     }
 }
 
-@media (min-width: 900px) and (max-width: 1199px) {
+@media (min-width: 800px) and (max-width: 1099px) {
     .skeleton-cards-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 10px;
