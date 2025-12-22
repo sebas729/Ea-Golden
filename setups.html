@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
     <title>Setups Trading - Golden Strategy</title>
 
     <!-- Modular CSS -->
@@ -12,7 +14,9 @@
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/menu.css">
     <link rel="stylesheet" href="css/setups.css">
+    <link rel="stylesheet" href="css/skeleton.css">
 </head>
+
 <body>
     <!-- Menú Hamburguesa -->
     <div class="hamburger-menu">
@@ -69,10 +73,128 @@
             </button>
         </header>
 
-        <!-- Loading State -->
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <p>Cargando datos de setups...</p>
+        <!-- Loading State with Skeleton -->
+        <div id="loading" class="loading skeleton-loading">
+            <!-- Skeleton Summary Cards -->
+            <div class="skeleton-summary-grid">
+                <div class="skeleton-summary-card">
+                    <div class="skeleton skeleton-icon"></div>
+                    <div class="skeleton-summary-content">
+                        <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                        <div class="skeleton skeleton-text-xl" style="width: 40%;"></div>
+                        <div class="skeleton skeleton-text-sm" style="width: 80%;"></div>
+                    </div>
+                </div>
+                <div class="skeleton-summary-card">
+                    <div class="skeleton skeleton-icon"></div>
+                    <div class="skeleton-summary-content">
+                        <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                        <div class="skeleton skeleton-text-xl" style="width: 50%;"></div>
+                        <div class="skeleton skeleton-text-sm" style="width: 70%;"></div>
+                    </div>
+                </div>
+                <div class="skeleton-summary-card">
+                    <div class="skeleton skeleton-icon"></div>
+                    <div class="skeleton-summary-content">
+                        <div class="skeleton skeleton-text" style="width: 70%;"></div>
+                        <div class="skeleton skeleton-text-xl" style="width: 35%;"></div>
+                        <div class="skeleton skeleton-text-sm" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <div class="skeleton-summary-card">
+                    <div class="skeleton skeleton-icon"></div>
+                    <div class="skeleton-summary-content">
+                        <div class="skeleton skeleton-text" style="width: 65%;"></div>
+                        <div class="skeleton skeleton-text-xl" style="width: 45%;"></div>
+                        <div class="skeleton skeleton-text-sm" style="width: 75%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skeleton Tabs -->
+            <div class="skeleton-tabs">
+                <div class="skeleton skeleton-tab"></div>
+                <div class="skeleton skeleton-tab"></div>
+                <div class="skeleton skeleton-tab"></div>
+                <div class="skeleton skeleton-tab"></div>
+                <div class="skeleton skeleton-tab"></div>
+            </div>
+
+            <!-- Skeleton Setup Items -->
+            <div class="skeleton-setups-list">
+                <div class="skeleton-setup-item">
+                    <div class="skeleton-setup-header">
+                        <div class="skeleton skeleton-text-lg" style="width: 150px;"></div>
+                        <div class="skeleton skeleton-type-badge"></div>
+                    </div>
+                    <div class="skeleton-setup-details">
+                        <div class="skeleton-setup-detail">
+                            <div class="skeleton skeleton-text-sm" style="width: 60%;"></div>
+                            <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                        </div>
+                        <div class="skeleton-setup-detail">
+                            <div class="skeleton skeleton-text-sm" style="width: 50%;"></div>
+                            <div class="skeleton skeleton-text" style="width: 70%;"></div>
+                        </div>
+                        <div class="skeleton-setup-detail">
+                            <div class="skeleton skeleton-text-sm" style="width: 70%;"></div>
+                            <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                        </div>
+                        <div class="skeleton-setup-detail">
+                            <div class="skeleton skeleton-text-sm" style="width: 55%;"></div>
+                            <div class="skeleton skeleton-text" style="width: 75%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="skeleton-setup-item">
+                    <div class="skeleton-setup-header">
+                        <div class="skeleton skeleton-text-lg" style="width: 130px;"></div>
+                        <div class="skeleton skeleton-type-badge"></div>
+                    </div>
+                    <div class="skeleton-setup-details">
+                        <div class="skeleton-setup-detail">
+                            <div class="skeleton skeleton-text-sm" style="width: 55%;"></div>
+                            <div class="skeleton skeleton-text" style="width: 85%;"></div>
+                        </div>
+                        <div class="skeleton-setup-detail">
+                            <div class="skeleton skeleton-text-sm" style="width: 65%;"></div>
+                            <div class="skeleton skeleton-text" style="width: 65%;"></div>
+                        </div>
+                        <div class="skeleton-setup-detail">
+                            <div class="skeleton skeleton-text-sm" style="width: 60%;"></div>
+                            <div class="skeleton skeleton-text" style="width: 70%;"></div>
+                        </div>
+                        <div class="skeleton-setup-detail">
+                            <div class="skeleton skeleton-text-sm" style="width: 50%;"></div>
+                            <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="skeleton-setup-item">
+                    <div class="skeleton-setup-header">
+                        <div class="skeleton skeleton-text-lg" style="width: 140px;"></div>
+                        <div class="skeleton skeleton-type-badge"></div>
+                    </div>
+                    <div class="skeleton-setup-details">
+                        <div class="skeleton-setup-detail">
+                            <div class="skeleton skeleton-text-sm" style="width: 70%;"></div>
+                            <div class="skeleton skeleton-text" style="width: 75%;"></div>
+                        </div>
+                        <div class="skeleton-setup-detail">
+                            <div class="skeleton skeleton-text-sm" style="width: 55%;"></div>
+                            <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                        </div>
+                        <div class="skeleton-setup-detail">
+                            <div class="skeleton skeleton-text-sm" style="width: 65%;"></div>
+                            <div class="skeleton skeleton-text" style="width: 65%;"></div>
+                        </div>
+                        <div class="skeleton-setup-detail">
+                            <div class="skeleton skeleton-text-sm" style="width: 60%;"></div>
+                            <div class="skeleton skeleton-text" style="width: 70%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Error State -->
@@ -219,7 +341,8 @@
                             <h2>⚡ Alertas de Proximidad</h2>
                             <div class="proximity-controls">
                                 <label for="proximityThreshold">Distancia máxima (pips):</label>
-                                <input type="range" id="proximityThreshold" min="1" max="100" value="20" class="proximity-slider">
+                                <input type="range" id="proximityThreshold" min="1" max="100" value="20"
+                                    class="proximity-slider">
                                 <span id="proximityValue" class="proximity-value">20</span>
                             </div>
                         </div>
@@ -308,4 +431,5 @@
     <script type="module" src="js/shared/menu.js"></script>
     <script type="module" src="js/setups/main.js"></script>
 </body>
+
 </html>
