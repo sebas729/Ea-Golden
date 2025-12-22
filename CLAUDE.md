@@ -44,6 +44,7 @@ Ea-Golden/
 └── js/
     ├── shared/             # Código compartido
     │   ├── api.js          # Cliente API con JWT
+    │   ├── constants.js    # Constantes y helpers centralizados
     │   ├── utils.js        # Utilidades comunes
     │   └── menu.js         # Lógica menú hamburguesa
     ├── auth/               # Autenticación

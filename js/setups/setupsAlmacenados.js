@@ -4,6 +4,7 @@
  */
 
 import { setupsAlmacenadosApi } from '../services/setupsAlmacenadosApi.js';
+import { getScoreClass } from '../shared/constants.js';
 
 export class SetupsAlmacenadosManager {
     constructor() {
@@ -480,15 +481,15 @@ export class SetupsAlmacenadosManager {
 
         // Try to get levels from multiple sources
         let levels = setup.levels ||
-                    setupData.levels ||
-                    setupData.niveles ||
-                    [];
+            setupData.levels ||
+            setupData.niveles ||
+            [];
 
         // If no levels array, try to extract from levels_detail
         if (levels.length === 0) {
             const levelsDetail = setup.levels_detail ||
-                                setupData.levels_detail ||
-                                [];
+                setupData.levels_detail ||
+                [];
 
             levels = levelsDetail.map(ld => ld.level_name || ld.level_type).filter(Boolean);
         }
@@ -579,8 +580,8 @@ export class SetupsAlmacenadosManager {
      */
     hasActiveFilters() {
         return this.currentTimeframeFilter !== 'ALL' ||
-               this.currentTypeFilter !== 'ALL' ||
-               this.currentMinScore > 0;
+            this.currentTypeFilter !== 'ALL' ||
+            this.currentMinScore > 0;
     }
 
     /**
@@ -607,10 +608,7 @@ export class SetupsAlmacenadosManager {
      * @returns {string} CSS class
      */
     getScoreClass(score) {
-        if (score >= 7.0) return 'score-excellent';
-        if (score >= 5.0) return 'score-good';
-        if (score >= 3.0) return 'score-fair';
-        return 'score-poor';
+        return getScoreClass(score);
     }
 
     /**

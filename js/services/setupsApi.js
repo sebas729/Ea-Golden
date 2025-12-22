@@ -5,6 +5,7 @@
  */
 
 import { apiClient } from '../shared/api.js';
+import { getScoreLabelEN } from '../shared/constants.js';
 
 export class SetupsApiService {
     constructor() {
@@ -196,10 +197,7 @@ export class SetupsApiService {
      * @returns {string} Quality level
      */
     getSetupQuality(score) {
-        if (score >= 7.0) return 'EXCELLENT';
-        if (score >= 5.0) return 'GOOD';
-        if (score >= 3.0) return 'FAIR';
-        return 'POOR';
+        return getScoreLabelEN(score);
     }
 
     /**

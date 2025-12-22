@@ -3,6 +3,8 @@
  * Handles display and management of confluence zones
  */
 
+import { getScoreClass } from '../shared/constants.js';
+
 export class ConfluencesManager {
     constructor() {
         this.confluences = {};
@@ -220,10 +222,7 @@ export class ConfluencesManager {
      * @returns {string} CSS class
      */
     getScoreClass(score) {
-        if (score >= 7.0) return 'score-excellent';
-        if (score >= 5.0) return 'score-good';
-        if (score >= 3.0) return 'score-fair';
-        return 'score-poor';
+        return getScoreClass(score);
     }
 
     /**

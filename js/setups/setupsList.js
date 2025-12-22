@@ -4,6 +4,7 @@
  */
 
 import { setupsApi } from '../services/setupsApi.js';
+import { getScoreClass } from '../shared/constants.js';
 
 export class SetupsListManager {
     constructor() {
@@ -373,10 +374,7 @@ export class SetupsListManager {
      * @returns {string} CSS class
      */
     getScoreClass(score) {
-        if (score >= 7.0) return 'score-excellent';
-        if (score >= 5.0) return 'score-good';
-        if (score >= 3.0) return 'score-fair';
-        return 'score-poor';
+        return getScoreClass(score);
     }
 
     /**

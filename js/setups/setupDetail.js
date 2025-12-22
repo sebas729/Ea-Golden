@@ -4,6 +4,7 @@
  */
 
 import { setupsApi } from '../services/setupsApi.js';
+import { getScoreClass, getScoreLabel } from '../shared/constants.js';
 
 export class SetupDetailManager {
     constructor() {
@@ -241,7 +242,8 @@ export class SetupDetailManager {
                     }];
                 }
                 return levelsDetail;
-            })()};
+            })()
+        };
 
         // Build minimal analysis object
         const analysis = {
@@ -259,9 +261,7 @@ export class SetupDetailManager {
                 total_setups: 0,
                 direccion: setup.direction || 'N/A',
                 precio_actual: setup.price,
-                calidad_general: setup.score >= 7 ? 'Excelente' :
-                                setup.score >= 5 ? 'Buena' :
-                                setup.score >= 3 ? 'Regular' : 'Baja'
+                calidad_general: getScoreLabel(setup.score)
             }
         };
     }
@@ -726,10 +726,7 @@ export class SetupDetailManager {
      * @returns {string} CSS class
      */
     getScoreClass(score) {
-        if (score >= 7.0) return 'score-excellent';
-        if (score >= 5.0) return 'score-good';
-        if (score >= 3.0) return 'score-fair';
-        return 'score-poor';
+        return getScoreClass(score);
     }
 
     /**
