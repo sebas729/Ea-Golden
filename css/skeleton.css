@@ -122,6 +122,8 @@
     border-radius: var(--radius);
     border: 1px solid var(--border);
     text-align: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .skeleton-info-item {
@@ -181,6 +183,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Match real cards-grid responsive behavior */
