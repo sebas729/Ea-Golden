@@ -213,7 +213,7 @@ export class ObDynamics {
             }
         } catch (error) {
             console.error('Error rendering chart:', error);
-            chartDiv.innerHTML = `<div style="text-align: center; padding: 2rem; color: var(--error);">❌ Error al renderizar gráfico: ${error.message}</div>`;
+            chartDiv.innerHTML = `<div style="text-align: center; padding: 2rem; color: var(--error);">❌ Error al renderizar gráfico: ${Utils.escapeHtml(error.message)}</div>`;
         }
     }
 
