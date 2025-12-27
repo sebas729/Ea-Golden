@@ -71,8 +71,8 @@ export const API_TIMEOUT = 60000; // 60 seconds
 
 /** Auto-refresh intervals in milliseconds */
 export const REFRESH_INTERVALS = {
-    SETUPS: 30000,      // 30 seconds
-    FIBONACCI: 60000,   // 1 minute
+    SETUPS: 120000,     // 2 minutes (reduced to avoid rate limiting)
+    FIBONACCI: 180000,  // 3 minutes (reduced to avoid rate limiting)
     CALENDAR: 300000    // 5 minutes
 };
 

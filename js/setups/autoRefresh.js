@@ -8,7 +8,7 @@ export class AutoRefreshManager {
         this.isActive = false;
         this.interval = null;
         this.refreshCallback = null;
-        this.refreshIntervalMs = 30000; // 30 seconds default
+        this.refreshIntervalMs = 120000; // 2 minutes default (compliant with rate limits)
         this.lastRefreshTime = null;
         this.errorCount = 0;
         this.maxErrors = 3;
