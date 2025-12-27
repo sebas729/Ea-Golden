@@ -22,7 +22,7 @@ export class SetupsAlmacenadosApiService {
      */
     async getStoredSetups(page = 1, pageSize = 50, filters = {}) {
         try {
-            console.log('Fetching stored setups...', { page, pageSize, filters });
+
 
             const queryParams = new URLSearchParams({
                 page: page,
@@ -34,7 +34,7 @@ export class SetupsAlmacenadosApiService {
                 `${this.baseEndpoint}?${queryParams.toString()}`
             );
 
-            console.log('Stored setups loaded successfully:', data);
+
             return data;
         } catch (error) {
             console.error('Error fetching stored setups:', error);
@@ -48,11 +48,11 @@ export class SetupsAlmacenadosApiService {
      */
     async getSummary() {
         try {
-            console.log('Fetching stored setups summary...');
+
 
             const data = await apiClient.get(`${this.baseEndpoint}/summary`);
 
-            console.log('Stored setups summary loaded:', data);
+
             return data;
         } catch (error) {
             console.error('Error fetching summary:', error);
@@ -66,11 +66,11 @@ export class SetupsAlmacenadosApiService {
      */
     async getStatistics() {
         try {
-            console.log('Fetching stored setups statistics...');
+
 
             const data = await apiClient.get(`${this.baseEndpoint}/statistics`);
 
-            console.log('Stored setups statistics loaded:', data);
+
             return data;
         } catch (error) {
             console.error('Error fetching statistics:', error);
@@ -87,7 +87,7 @@ export class SetupsAlmacenadosApiService {
      */
     async getByTimeframe(timeframe, page = 1, pageSize = 50) {
         try {
-            console.log(`Fetching stored setups for timeframe ${timeframe}...`);
+
 
             const queryParams = new URLSearchParams({ page, page_size: pageSize });
 
@@ -95,7 +95,7 @@ export class SetupsAlmacenadosApiService {
                 `${this.baseEndpoint}/by-timeframe/${timeframe}?${queryParams.toString()}`
             );
 
-            console.log(`Stored setups for ${timeframe} loaded:`, data);
+
             return data;
         } catch (error) {
             console.error(`Error fetching setups for timeframe ${timeframe}:`, error);
@@ -112,7 +112,7 @@ export class SetupsAlmacenadosApiService {
      */
     async getByType(type, page = 1, pageSize = 50) {
         try {
-            console.log(`Fetching stored setups for type ${type}...`);
+
 
             const queryParams = new URLSearchParams({ page, page_size: pageSize });
 
@@ -120,7 +120,7 @@ export class SetupsAlmacenadosApiService {
                 `${this.baseEndpoint}/by-type/${type}?${queryParams.toString()}`
             );
 
-            console.log(`Stored setups for type ${type} loaded:`, data);
+
             return data;
         } catch (error) {
             console.error(`Error fetching setups for type ${type}:`, error);
@@ -135,11 +135,11 @@ export class SetupsAlmacenadosApiService {
      */
     async getCountByTimeframe(timeframe) {
         try {
-            console.log(`Fetching count for timeframe ${timeframe}...`);
+
 
             const data = await apiClient.get(`${this.baseEndpoint}/count/${timeframe}`);
 
-            console.log(`Count for ${timeframe} loaded:`, data);
+
             return data;
         } catch (error) {
             console.error(`Error fetching count for timeframe ${timeframe}:`, error);
@@ -153,11 +153,11 @@ export class SetupsAlmacenadosApiService {
      */
     async invalidateCache() {
         try {
-            console.log('Invalidating stored setups cache...');
+
 
             const data = await apiClient.post(`${this.baseEndpoint}/cache/invalidate`, {});
 
-            console.log('Cache invalidated successfully:', data);
+
             return data;
         } catch (error) {
             console.error('Error invalidating cache:', error);
@@ -171,11 +171,11 @@ export class SetupsAlmacenadosApiService {
      */
     async getHealth() {
         try {
-            console.log('Checking stored setups health...');
+
 
             const data = await apiClient.get(`${this.baseEndpoint}/health`);
 
-            console.log('Health check completed:', data);
+
             return data;
         } catch (error) {
             console.error('Error checking health:', error);

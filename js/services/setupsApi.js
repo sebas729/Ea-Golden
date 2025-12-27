@@ -20,9 +20,9 @@ export class SetupsApiService {
      */
     async getActiveSetups() {
         try {
-            console.log('Fetching active setups...');
+
             const data = await apiClient.get(`${this.baseEndpoint}/active`);
-            console.log('Active setups loaded successfully');
+
             return data;
         } catch (error) {
             console.error('Error fetching active setups:', error);
@@ -37,9 +37,9 @@ export class SetupsApiService {
      */
     async getSetupsSummary() {
         try {
-            console.log('Fetching setups summary...');
+
             const data = await apiClient.get(`${this.baseEndpoint}/summary`);
-            console.log('Setups summary loaded successfully');
+
             return data;
         } catch (error) {
             console.error('Error fetching setups summary:', error);
@@ -54,9 +54,9 @@ export class SetupsApiService {
      */
     async getSetupDetail(setupId) {
         try {
-            console.log(`Fetching setup detail for ${setupId}...`);
+
             const data = await apiClient.get(`${this.baseEndpoint}/${setupId}`);
-            console.log(`Setup detail for ${setupId} loaded successfully`);
+
             return data;
         } catch (error) {
             console.error(`Error fetching setup ${setupId}:`, error);
@@ -70,9 +70,9 @@ export class SetupsApiService {
      */
     async getConfluences() {
         try {
-            console.log('Fetching confluence zones...');
+
             const data = await apiClient.get(`${this.baseEndpoint}/confluences`);
-            console.log('Confluence zones loaded successfully');
+
             return data;
         } catch (error) {
             console.error('Error fetching confluences:', error);
@@ -86,9 +86,9 @@ export class SetupsApiService {
      */
     async getStatistics() {
         try {
-            console.log('Fetching system statistics...');
+
             const data = await apiClient.get(`${this.baseEndpoint}/statistics`);
-            console.log('Statistics loaded successfully');
+
             return data;
         } catch (error) {
             console.error('Error fetching statistics:', error);
@@ -103,10 +103,10 @@ export class SetupsApiService {
      */
     async refreshSetups(force = false) {
         try {
-            console.log('Refreshing setups system...');
+
             const queryParams = force ? '?force=true' : '';
             const data = await apiClient.post(`${this.baseEndpoint}/refresh${queryParams}`);
-            console.log('Setups refresh completed successfully');
+
             return data;
         } catch (error) {
             console.error('Error refreshing setups:', error);
@@ -120,9 +120,9 @@ export class SetupsApiService {
      */
     async getStatus() {
         try {
-            console.log('Checking setups system status...');
+
             const data = await apiClient.get(`${this.baseEndpoint}/status`);
-            console.log('System status retrieved successfully');
+
             return data;
         } catch (error) {
             console.error('Error fetching system status:', error);
@@ -137,9 +137,9 @@ export class SetupsApiService {
      */
     async getSetupsByType(setupType) {
         try {
-            console.log(`Fetching ${setupType} setups...`);
+
             const data = await apiClient.get(`${this.baseEndpoint}/by-type/${setupType}`);
-            console.log(`${setupType} setups loaded successfully`);
+
             return data;
         } catch (error) {
             console.error(`Error fetching ${setupType} setups:`, error);
@@ -154,10 +154,10 @@ export class SetupsApiService {
      */
     async getSetupsByProximity(maxDistancePips = 50.0) {
         try {
-            console.log(`Fetching setups within ${maxDistancePips} pips...`);
+
             const queryParams = `?max_distance_pips=${maxDistancePips}`;
             const data = await apiClient.get(`${this.baseEndpoint}/by-proximity${queryParams}`);
-            console.log('Proximity setups loaded successfully');
+
             return data;
         } catch (error) {
             console.error('Error fetching proximity setups:', error);
@@ -171,9 +171,9 @@ export class SetupsApiService {
      */
     async getHealth() {
         try {
-            console.log('Checking general system health...');
+
             const data = await apiClient.get(this.healthEndpoint);
-            console.log('General health status retrieved successfully');
+
             return data;
         } catch (error) {
             console.error('Error fetching general health:', error);

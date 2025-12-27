@@ -25,7 +25,7 @@ export class StatisticsManager {
             throw new Error('Statistics containers not found');
         }
 
-        console.log('StatisticsManager initialized');
+
     }
 
     /**

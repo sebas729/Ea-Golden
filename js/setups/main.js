@@ -44,7 +44,7 @@ export class SetupsMainController {
      */
     async init() {
         try {
-            console.log('Initializing Setups Trading Dashboard...');
+
 
             // Setup event listeners
             this.setupEventListeners();
@@ -58,7 +58,7 @@ export class SetupsMainController {
             // Start auto-refresh
             this.autoRefresh.start(() => this.loadSetupsData());
 
-            console.log('Setups Trading Dashboard initialized successfully');
+
         } catch (error) {
             console.error('Failed to initialize Setups Dashboard:', error);
             this.handleError(error);
@@ -139,7 +139,7 @@ export class SetupsMainController {
      */
     async loadSetupsData(forceRefresh = false) {
         if (this.isLoading && !forceRefresh) {
-            console.log('Already loading data, skipping...');
+
             return;
         }
 
@@ -147,7 +147,7 @@ export class SetupsMainController {
             this.isLoading = true;
             this.showLoading(true);
 
-            console.log('Loading setups data...');
+
 
             // If force refresh, call refresh endpoint first
             if (forceRefresh) {
@@ -176,7 +176,7 @@ export class SetupsMainController {
             this.showLoading(false);
             this.showMainContent(true);
 
-            console.log('Setups data loaded successfully');
+
 
         } catch (error) {
             console.error('Error loading setups data:', error);

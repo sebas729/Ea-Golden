@@ -24,7 +24,7 @@ export class EconomicCalendar {
     }
 
     init() {
-        console.log('Initializing Economic Calendar...');
+
         this.bindEvents();
         this.loadFromAPI();
         // Auto-refresh disabled
@@ -54,9 +54,9 @@ export class EconomicCalendar {
         this.disableButtons(true);
 
         try {
-            console.log('Loading economic calendar data...');
+
             const data = await apiClient.getEconomicCalendar();
-            console.log('Datos recibidos:', data);
+
 
             if (data && data.eventos_economicos) {
                 // Combinar todos los arrays de eventos por impacto
@@ -66,13 +66,13 @@ export class EconomicCalendar {
                     ...(eventosEconomicos.eventos_medio_impacto || []),
                     ...(eventosEconomicos.eventos_bajo_impacto || [])
                 ];
-                console.log(`Loaded ${this.allEvents.length} events`);
+
                 this.filteredEvents = [...this.allEvents];
                 this.filtersManager.populateCountryFilter(this.allEvents);
                 this.renderEvents();
                 this.updateLastUpdateTime();
                 this.hideError();
-                console.log(`Loaded ${this.allEvents.length} events`);
+
             } else {
                 throw new Error('La respuesta no contiene la estructura esperada "eventos_economicos"');
             }

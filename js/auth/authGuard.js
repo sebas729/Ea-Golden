@@ -43,23 +43,23 @@ class AuthGuard {
         const currentPath = window.location.pathname;
         const currentPage = this.getCurrentPageName(currentPath);
 
-        console.log(`Auth guard checking page: ${currentPage}`);
+
 
         // If on login page and already authenticated, redirect to app
         if (this.isPublicPage(currentPage) && authService.isAuthenticated()) {
-            console.log('Already authenticated, redirecting to app...');
+
             this.redirectToApp();
             return;
         }
 
         // If on protected page and not authenticated, redirect to login
         if (this.isProtectedPage(currentPage) && !authService.isAuthenticated()) {
-            console.log('Not authenticated, redirecting to login...');
+
             this.redirectToLogin(currentPath);
             return;
         }
 
-        console.log('Authentication check passed');
+
     }
 
     /**
@@ -113,7 +113,7 @@ class AuthGuard {
             loginUrl += `?returnTo=${returnTo}`;
         }
 
-        console.log(`Redirecting to: ${loginUrl}`);
+
         window.location.href = loginUrl;
     }
 
@@ -133,7 +133,7 @@ class AuthGuard {
             if (authService.isAuthenticated()) {
                 const token = authService.getToken();
                 if (authService.isTokenExpired(token)) {
-                    console.log('Token expired, logging out...');
+
                     authService.logout();
                 }
             }
@@ -144,7 +144,7 @@ class AuthGuard {
             if (authService.isAuthenticated()) {
                 const token = authService.getToken();
                 if (authService.isTokenExpired(token)) {
-                    console.log('Token expired on focus, logging out...');
+
                     authService.logout();
                 }
             }
@@ -164,7 +164,7 @@ class AuthGuard {
 
                 // Handle authentication errors
                 if (response.status === 401 && authService.isAuthenticated()) {
-                    console.log('API returned 401, logging out...');
+
                     authService.logout();
                     return response;
                 }

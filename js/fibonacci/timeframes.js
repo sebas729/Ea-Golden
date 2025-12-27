@@ -102,7 +102,7 @@ export class TimeframeCards {
         try {
             this.clearGrid();
             this.renderTimeframes();
-            console.log(`Rendered ${reportData.timeframes.length} timeframe cards`);
+
         } catch (error) {
             console.error('Error populating timeframes:', error);
             this.showErrorState(error.message);
@@ -191,20 +191,20 @@ export class TimeframeCards {
 
         card.innerHTML = `
             <div class="card-header">
-                <h2 class="timeframe">${timeframe.timeframe_general}</h2>
-                <span class="trend-badge">Tendencia ${timeframe.trend.toUpperCase()}</span>
+                <h2 class="timeframe">${Utils.escapeHtml(timeframe.timeframe_general)}</h2>
+                <span class="trend-badge">Tendencia ${Utils.escapeHtml(timeframe.trend.toUpperCase())}</span>
             </div>
 
             <div class="price-section">
                 <div class="price-box">
                     <div class="price-label">High</div>
                     <div class="price-value high-price">${highValue.toFixed(5)}</div>
-                    <div class="price-date">${highDateTime}</div>
+                    <div class="price-date">${Utils.escapeHtml(highDateTime)}</div>
                 </div>
                 <div class="price-box">
                     <div class="price-label">Low</div>
                     <div class="price-value low-price">${lowValue.toFixed(5)}</div>
-                    <div class="price-date">${lowDateTime}</div>
+                    <div class="price-date">${Utils.escapeHtml(lowDateTime)}</div>
                 </div>
             </div>
 
@@ -228,13 +228,13 @@ export class TimeframeCards {
             ${timeframe.optimal_order_block && timeframe.optimal_order_block.scoring_result ? `
             <div class="score-section">
                 <div class="score-header">
-                    <div class="score-title">Score del OB Óptimo [${timeframe.optimal_order_block.origin_timeframe || timeframe.timeframe_general}]</div>
+                    <div class="score-title">Score del OB Óptimo [${Utils.escapeHtml(timeframe.optimal_order_block.origin_timeframe || timeframe.timeframe_general)}]</div>
                     <div class="score-value">${timeframe.optimal_order_block.scoring_result.final_score.toFixed(3)}</div>
                 </div>
                 <div class="score-details">
                     ${Object.entries(timeframe.optimal_order_block.scoring_result.components).slice(0, 3).map(([key, component]) => `
                         <div class="score-item">
-                            <div class="score-item-label">${key}</div>
+                            <div class="score-item-label">${Utils.escapeHtml(key)}</div>
                             <div class="score-item-value">${component.weighted.toFixed(3)}</div>
                         </div>
                     `).join('')}
@@ -245,10 +245,10 @@ export class TimeframeCards {
             <div class="position-section">
                 <div class="position-title">POSICIÓN</div>
                 <div class="position-value">
-                    ${positionStatus || 'N/A'} ${typeof positionDistance === 'string' ? positionDistance : ((positionDirection === 'above' || positionDirection === 'ABOVE') ? '+' : '') + Math.round(positionDistance) + ' pips'}
+                    ${Utils.escapeHtml(positionStatus || 'N/A')} ${typeof positionDistance === 'string' ? Utils.escapeHtml(positionDistance) : ((positionDirection === 'above' || positionDirection === 'ABOVE') ? '+' : '') + Math.round(positionDistance) + ' pips'}
                 </div>
                 <div class="position-details">
-                    <span>Ventana: ${windowDays} ${typeof windowDays === 'number' || (typeof windowDays === 'string' && !windowDays.includes('días')) ? 'días' : ''}</span>
+                    <span>Ventana: ${Utils.escapeHtml(String(windowDays))} ${typeof windowDays === 'number' || (typeof windowDays === 'string' && !windowDays.includes('días')) ? 'días' : ''}</span>
                     <span class="pulse">${hasOB ? 'Order Block encontrado' : 'Order Block no encontrado'}</span>
                 </div>
             </div>

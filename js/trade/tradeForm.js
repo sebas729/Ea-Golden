@@ -24,7 +24,7 @@ export class TradeFormManager {
      */
     async init() {
         try {
-            console.log('Initializing TradeFormManager...');
+
 
             // Get form elements
             this.form = document.getElementById('tradeForm');
@@ -41,7 +41,7 @@ export class TradeFormManager {
             }
 
             this.setupEventListeners();
-            console.log('TradeFormManager initialized successfully');
+
         } catch (error) {
             console.error('Failed to initialize TradeFormManager:', error);
             throw error;

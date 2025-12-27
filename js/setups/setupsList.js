@@ -112,7 +112,7 @@ export class SetupsListManager {
             throw new Error('Setups list container not found');
         }
 
-        console.log('SetupsListManager initialized');
+
     }
 
     /**

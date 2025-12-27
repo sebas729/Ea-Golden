@@ -19,13 +19,13 @@ export class TradeMainController {
      */
     async init() {
         try {
-            console.log('Initializing Trade Execution Module...');
+
 
             this.setupEventListeners();
             await this.initializeManagers();
             await this.loadInitialData();
 
-            console.log('Trade Execution Module initialized successfully');
+
         } catch (error) {
             console.error('Failed to initialize Trade Execution Module:', error);
             this.handleError(error);
@@ -113,7 +113,7 @@ export class TradeMainController {
      */
     async refresh() {
         try {
-            console.log('Refreshing Trade Execution Module...');
+
 
             // Reset form to initial state
             if (this.tradeForm) {
@@ -123,7 +123,7 @@ export class TradeMainController {
             // Optionally reload any data
             await this.loadInitialData();
 
-            console.log('Refresh complete');
+
         } catch (error) {
             console.error('Error refreshing:', error);
             this.handleError(error);

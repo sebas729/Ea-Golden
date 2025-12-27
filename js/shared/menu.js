@@ -119,7 +119,7 @@ export class NavigationMenu {
         if (this.authService) {
             // Show confirmation dialog
             if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                console.log('User requested logout');
+
                 this.authService.logout();
             }
         } else {

@@ -31,7 +31,7 @@ export class FibonacciReport {
     }
 
     init() {
-        console.log('Initializing Fibonacci Report...');
+
         this.bindEvents();
         this.loadData();
     }
@@ -57,7 +57,7 @@ export class FibonacciReport {
         this.showLoading();
 
         try {
-            console.log('Loading Fibonacci report data...');
+
 
             // Try to load from API with retry mechanism
             this.reportData = await apiClient.withRetry(
@@ -66,7 +66,7 @@ export class FibonacciReport {
                 1000 // initial delay
             );
 
-            console.log('Report data loaded successfully:', this.reportData);
+
             this.showMainContent();
             this.populateUI();
 
@@ -120,7 +120,7 @@ export class FibonacciReport {
         }
 
         try {
-            console.log('Populating UI with report data...');
+
 
             // Extract the actual report data from the wrapper
             const actualReportData = this.reportData.fibonacci_strategy_report || this.reportData;
@@ -141,7 +141,7 @@ export class FibonacciReport {
                 this.obDynamics.initialize(this.reportData); // Use original, not actualReportData
             }, 500);
 
-            console.log('UI populated successfully');
+
 
         } catch (error) {
             console.error('Error populating UI:', error);
