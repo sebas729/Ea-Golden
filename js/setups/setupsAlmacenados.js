@@ -130,7 +130,7 @@ export class SetupsAlmacenadosManager {
         // Setup event listeners
         this.setupEventListeners();
 
-        console.log('SetupsAlmacenadosManager initialized');
+
     }
 
     /**

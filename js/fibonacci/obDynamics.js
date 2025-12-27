@@ -103,7 +103,7 @@ export class ObDynamics {
         const tfData = this.obDynamicsData.timeframes[timeframe];
 
         if (!tfData || !tfData.charts) {
-            container.innerHTML = '<div class="initial-message"><p>No hay gráficos disponibles para ' + timeframe + '</p></div>';
+            container.innerHTML = '<div class="initial-message"><p>No hay gráficos disponibles para ' + Utils.escapeHtml(timeframe) + '</p></div>';
             return;
         }
 
@@ -165,8 +165,8 @@ export class ObDynamics {
             metadata.innerHTML = `
                 <div style="margin: 1rem 0; padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: 6px; font-size: 0.9rem;">
                     <strong>📊 Información del Gráfico:</strong><br>
-                    <span style="color: var(--text-secondary);">TF: ${chartTf} | Generado: ${chartData.metadata.generated_at || 'N/A'}</span>
-                    ${chartData.metadata.zoom_info ? `<br><span style="color: var(--text-muted); font-size: 0.8rem;">Zoom: ${chartData.metadata.zoom_info.period} (${chartData.metadata.zoom_info.start} - ${chartData.metadata.zoom_info.end})</span>` : ''}
+                    <span style="color: var(--text-secondary);">TF: ${Utils.escapeHtml(chartTf)} | Generado: ${Utils.escapeHtml(chartData.metadata.generated_at || 'N/A')}</span>
+                    ${chartData.metadata.zoom_info ? `<br><span style="color: var(--text-muted); font-size: 0.8rem;">Zoom: ${Utils.escapeHtml(chartData.metadata.zoom_info.period)} (${Utils.escapeHtml(chartData.metadata.zoom_info.start)} - ${Utils.escapeHtml(chartData.metadata.zoom_info.end)})</span>` : ''}
                 </div>
             `;
             chartWrapper.appendChild(metadata);
@@ -213,7 +213,7 @@ export class ObDynamics {
             }
         } catch (error) {
             console.error('Error rendering chart:', error);
-            chartDiv.innerHTML = `<div style="text-align: center; padding: 2rem; color: var(--error);">❌ Error al renderizar gráfico: ${error.message}</div>`;
+            chartDiv.innerHTML = `<div style="text-align: center; padding: 2rem; color: var(--error);">❌ Error al renderizar gráfico: ${Utils.escapeHtml(error.message)}</div>`;
         }
     }
 

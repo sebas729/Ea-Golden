@@ -24,7 +24,7 @@ export class ProximityManager {
             throw new Error('Proximity alerts container not found');
         }
 
-        console.log('ProximityManager initialized');
+
     }
 
     /**
@@ -354,7 +354,7 @@ export class ProximityManager {
         if (window.setupsController && window.setupsController.showNotification) {
             window.setupsController.showNotification(message, type);
         } else {
-            console.log(`Notification: ${message}`);
+
         }
     }
 

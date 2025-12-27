@@ -57,7 +57,7 @@ export class TabManager {
         }
 
         this.activeTab = tabName;
-        console.log(`Switched to tab: ${tabName}`);
+
 
         // Trigger tab-specific initialization if needed
         this.onTabSwitch(tabName);

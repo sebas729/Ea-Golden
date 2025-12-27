@@ -20,7 +20,7 @@ export class TradeListManager {
      */
     async init() {
         try {
-            console.log('Initializing TradeListManager...');
+
 
             this.container = document.getElementById('trades-list');
             this.loadingElement = document.getElementById('trades-loading');
@@ -32,7 +32,7 @@ export class TradeListManager {
             }
 
             this.setupEventListeners();
-            console.log('TradeListManager initialized successfully');
+
         } catch (error) {
             console.error('Failed to initialize TradeListManager:', error);
             throw error;

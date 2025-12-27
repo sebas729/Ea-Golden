@@ -3,9 +3,11 @@
  * Common API handling functionality with JWT authentication
  */
 
+import { config } from '../config.js';
+
 export class ApiClient {
     constructor() {
-        this.baseUrl = 'https://securityfilter-golden.onrender.com/api';
+        this.baseUrl = config.API_BASE_URL;
         this.defaultHeaders = {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
@@ -164,9 +166,9 @@ export class ApiClient {
      */
     async getFibonacciReport() {
         try {
-            console.log('Fetching Fibonacci report...');
+
             const data = await this.get('/security-filter/fibonacci-report');
-            console.log('Fibonacci report loaded successfully');
+
             return data;
         } catch (error) {
             console.error('Error fetching Fibonacci report:', error);
@@ -180,9 +182,9 @@ export class ApiClient {
      */
     async getEconomicCalendar() {
         try {
-            console.log('Fetching economic calendar...');
+
             const data = await this.get('/security-filter/economic-calendar');
-            console.log('Economic calendar loaded successfully');
+
             return data;
         } catch (error) {
             console.error('Error fetching economic calendar:', error);
@@ -197,7 +199,7 @@ export class ApiClient {
      */
     async processObReport(reportData) {
         try {
-            console.log('Processing OB report...');
+
 
             // Use the same logic as the original
             let payload;
@@ -211,10 +213,10 @@ export class ApiClient {
                 };
             }
 
-            console.log('Data sent to endpoint:', payload);
+
 
             const data = await this.post('/security-filter/process-ob-report', payload);
-            console.log('OB report processed successfully');
+
             return data;
         } catch (error) {
             console.error('Error processing OB report:', error);
@@ -230,12 +232,12 @@ export class ApiClient {
      */
     async login(username, password) {
         try {
-            console.log('Attempting login...');
+
             const data = await this.post('/login', {
                 username: username.trim(),
                 password: password
             });
-            console.log('Login API call successful');
+
             return data;
         } catch (error) {
             console.error('Login API error:', error);
@@ -249,9 +251,9 @@ export class ApiClient {
      */
     async validateToken() {
         try {
-            console.log('Validating token...');
+
             const data = await this.get('/validate-token');
-            console.log('Token validation successful');
+
             return data;
         } catch (error) {
             console.error('Token validation error:', error);
@@ -291,7 +293,7 @@ export class ApiClient {
                 console.warn(`Request attempt ${attempt} failed:`, error.message);
 
                 if (attempt < maxRetries) {
-                    console.log(`Retrying in ${delay}ms...`);
+
                     await new Promise(resolve => setTimeout(resolve, delay));
                     delay *= 2; // Exponential backoff
                 }

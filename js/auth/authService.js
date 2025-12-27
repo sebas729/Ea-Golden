@@ -3,9 +3,11 @@
  * Handles JWT token management and user authentication
  */
 
+import { config } from '../config.js';
+
 export class AuthService {
     constructor() {
-        this.baseUrl = 'https://securityfilter-golden.onrender.com/api';
+        this.baseUrl = config.API_BASE_URL;
         this.tokenKey = 'ea_golden_token';
         this.userKey = 'ea_golden_user';
         this.csrfTokenKey = 'ea_golden_csrf';
@@ -65,7 +67,7 @@ export class AuthService {
      */
     async fetchCSRFToken() {
         try {
-            console.log('Fetching CSRF token...');
+
 
             const response = await fetch(`${this.baseUrl}/csrf-token`, {
                 method: 'GET',
@@ -80,7 +82,7 @@ export class AuthService {
 
                 if (this.csrfToken) {
                     localStorage.setItem(this.csrfTokenKey, this.csrfToken);
-                    console.log('CSRF token obtained');
+
                     return this.csrfToken;
                 }
             }
@@ -155,7 +157,7 @@ export class AuthService {
             }
 
             // Debug: Log response structure
-            console.log('Server response:', data);
+
 
             // Validate response structure - token is in data.access_token
             const token = data.data?.access_token || data.token || data.access_token;
@@ -167,7 +169,7 @@ export class AuthService {
             // Store authentication data
             this.storeAuthData(token, data.data?.user || data.user || { username }, rememberMe, data.data?.refresh_token || data.refresh_token);
 
-            console.log('Login successful');
+
 
             // Start auto-refresh timer for new session
             this.startAutoRefresh();
@@ -252,7 +254,7 @@ export class AuthService {
                         token: token
                     })
                 });
-                console.log('Backend notified of logout');
+
             } catch (error) {
                 console.warn('Failed to notify backend of logout:', error);
                 // Continue with local logout even if backend notification fails
@@ -270,7 +272,7 @@ export class AuthService {
         // Stop auto-refresh timer
         this.stopAutoRefresh();
 
-        console.log('User logged out');
+
 
         // Redirect to login if not already there
         if (!window.location.pathname.includes('login.html')) {
@@ -365,7 +367,7 @@ export class AuthService {
         }
 
         try {
-            console.log('Attempting token refresh...');
+
 
             const response = await fetch(`${this.baseUrl}/refresh`, {
                 method: 'POST',
@@ -405,7 +407,7 @@ export class AuthService {
                     localStorage.setItem(this.userKey, JSON.stringify(this.currentUser));
                 }
 
-                console.log('Token refresh successful');
+
                 return true;
             }
 
@@ -447,7 +449,7 @@ export class AuthService {
 
             // If token expires within buffer time, refresh it
             if (timeToExpiry <= expirationBuffer && timeToExpiry > 0) {
-                console.log(`Token expires in ${Math.floor(timeToExpiry / 60)} minutes, refreshing...`);
+
                 return await this.refreshToken();
             }
 
@@ -482,7 +484,7 @@ export class AuthService {
             }
         }, intervalMinutes * 60 * 1000); // Convert to milliseconds
 
-        console.log(`Auto-refresh timer started (${intervalMinutes} min intervals)`);
+
     }
 
     /**
@@ -492,7 +494,7 @@ export class AuthService {
         if (this.refreshTimer) {
             clearInterval(this.refreshTimer);
             this.refreshTimer = null;
-            console.log('Auto-refresh timer stopped');
+
         }
     }
 
@@ -505,7 +507,7 @@ export class AuthService {
         if (!token) return false;
 
         try {
-            console.log('Validating token with server...');
+
 
             const response = await fetch(`${this.baseUrl}/validate-token`, {
                 method: 'GET',
@@ -517,7 +519,7 @@ export class AuthService {
 
             if (response.ok) {
                 const validationResult = await response.json();
-                console.log('Token validation successful:', validationResult);
+
 
                 // Update stored user data with fresh info from server
                 if (validationResult.user) {
@@ -536,7 +538,7 @@ export class AuthService {
                 const refreshSuccessful = await this.refreshToken();
                 if (refreshSuccessful) {
                     // Retry validation with new token
-                    console.log('Retrying validation with refreshed token...');
+
                     return await this.validateToken();
                 } else {
                     console.warn('Token refresh failed, logging out user');

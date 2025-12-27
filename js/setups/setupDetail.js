@@ -99,7 +99,7 @@ export class SetupDetailManager {
         }
 
         this.setupEventListeners();
-        console.log('SetupDetailManager initialized');
+
     }
 
     /**
@@ -137,7 +137,7 @@ export class SetupDetailManager {
             // Active setups have format C123 or S456
             const isStoredSetup = setupId && setupId.includes('-') && setupId.length > 20;
 
-            console.log('[SetupDetail] Setup ID:', setupId, 'Is Stored?', isStoredSetup);
+
 
             this.modalTitle.textContent = `Setup ${setupId} - ${setupType}`;
             this.modalBody.innerHTML = this.renderLoadingState();

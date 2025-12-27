@@ -24,7 +24,7 @@ export class TradeService {
      */
     async executeTrade(tradeData) {
         try {
-            console.log('Executing trade...', tradeData);
+
 
             const payload = {
                 symbol: tradeData.symbol,
@@ -36,7 +36,7 @@ export class TradeService {
             };
 
             const data = await apiClient.post(`${this.baseEndpoint}/execute`, payload);
-            console.log('Trade executed successfully:', data);
+
             return data;
         } catch (error) {
             console.error('Error executing trade:', error);
@@ -50,9 +50,9 @@ export class TradeService {
      */
     async getActiveTrades() {
         try {
-            console.log('Fetching active trades...');
+
             const data = await apiClient.get(`${this.baseEndpoint}/active`);
-            console.log('Active trades loaded successfully');
+
             return data;
         } catch (error) {
             console.error('Error fetching active trades:', error);
@@ -67,9 +67,9 @@ export class TradeService {
      */
     async getTradeHistory(limit = 50) {
         try {
-            console.log('Fetching trade history...');
+
             const data = await apiClient.get(`${this.baseEndpoint}/history?limit=${limit}`);
-            console.log('Trade history loaded successfully');
+
             return data;
         } catch (error) {
             console.error('Error fetching trade history:', error);
@@ -84,9 +84,9 @@ export class TradeService {
      */
     async closeTrade(ticket) {
         try {
-            console.log(`Closing trade ${ticket}...`);
+
             const data = await apiClient.post(`${this.baseEndpoint}/${ticket}/close`);
-            console.log('Trade closed successfully');
+
             return data;
         } catch (error) {
             console.error('Error closing trade:', error);

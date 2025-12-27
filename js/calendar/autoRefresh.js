@@ -24,7 +24,7 @@ export class AutoRefresh {
             }
         }, this.refreshInterval);
 
-        console.log('Auto-refresh enabled (5 minutes interval)');
+
     }
 
     disable() {
@@ -36,7 +36,7 @@ export class AutoRefresh {
             this.interval = null;
         }
 
-        console.log('Auto-refresh disabled');
+
     }
 
     stop() {

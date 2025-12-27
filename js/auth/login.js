@@ -183,7 +183,7 @@ class LoginController {
         if (input && errorElement) {
             input.classList.add('error');
             input.classList.remove('success');
-            errorElement.textContent = message;
+            errorElement.textContent = message; // textContent is safe
             errorElement.classList.add('show');
         }
     }
@@ -219,7 +219,7 @@ class LoginController {
      * Show login error
      */
     showError(message) {
-        this.errorMessage.textContent = message;
+        this.errorMessage.textContent = message; // textContent is safe
         this.loginError.style.display = 'block';
         this.loginError.classList.add('show');
 
@@ -237,7 +237,7 @@ class LoginController {
      */
     showSuccess(message) {
         // Convert error div to success temporarily
-        this.errorMessage.textContent = message;
+        this.errorMessage.textContent = message; // textContent is safe
         this.loginError.style.background = 'rgba(16, 185, 129, 0.1)';
         this.loginError.style.borderColor = 'rgba(16, 185, 129, 0.2)';
         this.loginError.style.color = '#10b981';

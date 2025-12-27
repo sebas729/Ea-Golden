@@ -21,7 +21,7 @@ export class AutoRefreshManager {
      */
     async init() {
         this.statusElement = document.getElementById('autoRefreshStatus');
-        console.log('AutoRefreshManager initialized');
+
     }
 
     /**
@@ -31,7 +31,7 @@ export class AutoRefreshManager {
      */
     start(callback, intervalMs = this.refreshIntervalMs) {
         if (this.isActive) {
-            console.log('Auto refresh already active');
+
             return;
         }
 
@@ -44,7 +44,7 @@ export class AutoRefreshManager {
         this.scheduleNextRefresh();
         this.updateStatus('Activo');
 
-        console.log(`Auto refresh started with ${intervalMs}ms interval`);
+
     }
 
     /**
@@ -59,7 +59,7 @@ export class AutoRefreshManager {
         this.isActive = false;
         this.updateStatus('Inactivo');
 
-        console.log('Auto refresh stopped');
+
     }
 
     /**
@@ -72,7 +72,7 @@ export class AutoRefreshManager {
         }
 
         this.updateStatus('Pausado');
-        console.log('Auto refresh paused');
+
     }
 
     /**
@@ -82,7 +82,7 @@ export class AutoRefreshManager {
         if (this.isActive && !this.interval) {
             this.scheduleNextRefresh();
             this.updateStatus('Activo');
-            console.log('Auto refresh resumed');
+
         }
     }
 
@@ -106,7 +106,7 @@ export class AutoRefreshManager {
         if (!this.isActive || !this.refreshCallback) return;
 
         try {
-            console.log('Auto refresh: Performing data refresh...');
+
             this.updateStatus('Actualizando...');
 
             await this.refreshCallback();
@@ -117,7 +117,7 @@ export class AutoRefreshManager {
             this.lastRefreshTime = new Date();
 
             this.updateStatus('Activo');
-            console.log('Auto refresh: Data refreshed successfully');
+
 
             // Schedule next refresh
             this.scheduleNextRefresh();
@@ -168,7 +168,7 @@ export class AutoRefreshManager {
             this.start(this.refreshCallback, newIntervalMs);
         }
 
-        console.log(`Auto refresh interval updated to ${newIntervalMs}ms`);
+
     }
 
     /**
@@ -181,7 +181,7 @@ export class AutoRefreshManager {
         }
 
         try {
-            console.log('Force refresh triggered');
+
             this.updateStatus('Actualización manual...');
 
             // Clear current timeout
@@ -205,7 +205,7 @@ export class AutoRefreshManager {
                 this.updateStatus('Manual');
             }
 
-            console.log('Force refresh completed');
+
 
         } catch (error) {
             console.error('Force refresh error:', error);
@@ -317,10 +317,10 @@ export class AutoRefreshManager {
     setupVisibilityHandling() {
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
-                console.log('Tab hidden, pausing auto refresh');
+
                 this.pause();
             } else {
-                console.log('Tab visible, resuming auto refresh');
+
                 this.resume();
             }
         });
@@ -331,14 +331,14 @@ export class AutoRefreshManager {
      */
     setupNetworkHandling() {
         window.addEventListener('online', () => {
-            console.log('Network reconnected, resuming auto refresh');
+
             if (this.isActive && !this.interval) {
                 this.resume();
             }
         });
 
         window.addEventListener('offline', () => {
-            console.log('Network disconnected, pausing auto refresh');
+
             this.pause();
         });
     }
@@ -349,7 +349,7 @@ export class AutoRefreshManager {
     enableSmartFeatures() {
         this.setupVisibilityHandling();
         this.setupNetworkHandling();
-        console.log('Auto refresh smart features enabled');
+
     }
 
     /**
@@ -373,7 +373,7 @@ export class AutoRefreshManager {
     resetErrors() {
         this.errorCount = 0;
         this.backoffMultiplier = 1;
-        console.log('Auto refresh error state reset');
+
     }
 
     /**
@@ -382,6 +382,6 @@ export class AutoRefreshManager {
     cleanup() {
         this.stop();
         this.refreshCallback = null;
-        console.log('AutoRefreshManager cleaned up');
+
     }
 }

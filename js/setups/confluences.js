@@ -23,7 +23,7 @@ export class ConfluencesManager {
             throw new Error('Confluences containers not found');
         }
 
-        console.log('ConfluencesManager initialized');
+
     }
 
     /**
